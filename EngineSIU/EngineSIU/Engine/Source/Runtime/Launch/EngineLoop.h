@@ -6,7 +6,7 @@
 #include "UnrealEd/PrimitiveDrawBatch.h"
 #include "Stats/ProfilerStatsManager.h"
 #include "Stats/GPUTimingManager.h"
-
+#include "Runtime/Core/Lua/LuaScriptSystem.h"
 
 class FSlateAppMessageHandler;
 class UnrealEd;
@@ -18,6 +18,7 @@ class SSplitterH;
 class FGraphicDevice;
 class SLevelEditor;
 class FDXDBufferManager;
+class ScriptSystem;
 
 class FEngineLoop
 {
@@ -69,4 +70,6 @@ public:
     UnrealEd* GetUnrealEditor() const { return UnrealEditor; }
 
     FSlateAppMessageHandler* GetAppMessageHandler() const { return AppMessageHandler.get(); }
+private:
+    ScriptSystem* ScriptSys;
 };

@@ -1,0 +1,83 @@
+#include "LuaScriptSystem.h"
+#include <Math/Vector.h>
+//#include "Runtime/Launch/Launch.cpp"
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
+//#include "Runtime/Engine/Classes/Engine/Engine.cpp"
+
+#include <fstream>
+#include <ostream>
+#include <sstream>
+#include "EngineLoop.h"
+#include "UnrealClient.h"
+#include "WindowsCursor.h"
+#include "BaseGizmos/GizmoBaseComponent.h"
+#include "Engine/EditorEngine.h"
+#include "Slate/Widgets/Layout/SSplitter.h"
+#include "SlateCore/Widgets/SWindow.h"
+#include "UnrealEd/EditorViewportClient.h"
+#include "Runtime/Engine/World/World.h"
+
+void ScriptSystem::Initialize()
+{
+    // LuaJIT 런타임 초기화
+    lua.open_libraries(
+        sol::lib::base,
+        sol::lib::package,
+        sol::lib::math,
+        sol::lib::table,
+        sol::lib::string);
+
+    // 스크립트 경로 지정
+    lua["SCRIPT_PATH"] = "Saved/LuaScripts/";
+
+    lua.new_usertype<FVector>("FVector",
+        sol::constructors<FVector(), FVector(float, float, float)>(),
+        "x", &FVector::X,
+        "y", &FVector::Y,
+        "z", &FVector::Z,
+        "Normalize", &FVector::GetSafeNormal);
+
+
+    UWorld* World = GEngine->ActiveWorld;
+
+
+    // AActor 클래스 노출
+    lua.new_usertype<AActor>("Actor",
+        "GetLocation", &AActor::GetActorLocation,
+        "SetLocation", &AActor::SetActorLocation,
+        "Tick", &AActor::Tick
+    );
+
+    // 스폰 함수 바인딩(예: 문자열로 클래스 지정)
+    lua.set_function("SpawnActor", [&](const std::string& className, sol::optional<std::string> luaActorName) -> AActor* 
+    {
+            // 문자열 FName으로 변환
+            FName fnClassName{ className.c_str() };
+
+            // UClass* 검색
+            UClass* cls = UClass::FindClass(fnClassName);
+            if (!cls) {
+                // 존재하지 않는 클래스 이름인 경우
+                return nullptr;
+            }
+
+            FName fnActorName = luaActorName ? FName{luaActorName->c_str()}
+            : FName{}; // 기본 생성자는 none
+
+        //액터 스폰
+        return World->SpawnActor(cls);
+        });
+}
+
+void ScriptSystem::DoFile(const std::string& filename)
+{
+    lua.script_file(lua["SCRIPT_PATH"].get<std::string>() + filename);
+}
+
+void ScriptSystem::Tick(float dt)
+{
+    sol::function update = lua["Update"];
+    if (update.valid()) {
+        update(dt);
+    }
+}

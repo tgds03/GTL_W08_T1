@@ -54,7 +54,7 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
 
     UnrealEditor->Initialize();
     GraphicDevice.Initialize(AppWnd);
-
+    
     if (!GPUTimingManager.Initialize(GraphicDevice.Device, GraphicDevice.DeviceContext))
     {
         UE_LOG(LogLevel::Error, TEXT("Failed to initialize GPU Timing Manager!"));
@@ -93,6 +93,10 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     GEngine->Init();
 
     UpdateUI();
+
+    ScriptSys = new ScriptSystem();
+    ScriptSys->Initialize();
+    ScriptSys->DoFile("main.lua");
 
     return 0;
 }
@@ -163,6 +167,7 @@ void FEngineLoop::Tick()
 
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
+        ScriptSys->Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
         UnrealEditor->Render();
