@@ -33,11 +33,11 @@ void ScriptSystem::BindTypes()
 
 
     // AActor 클래스 노출
-    lua.new_usertype<AActor>("Actor",
-        "GetLocation", &AActor::GetActorLocation,
-        "SetLocation", &AActor::SetActorLocation,
-        "Tick", &AActor::Tick
-    );
+    // lua.new_usertype<AActor>("Actor",
+    //     "GetLocation", &AActor::GetActorLocation,
+    //     "SetLocation", &AActor::SetActorLocation,
+    //     "Tick", &AActor::Tick
+    // );
 
     // 스폰 함수 바인딩(예: 문자열로 클래스 지정)
     lua.set_function("SpawnActor", [&](const std::string& className, sol::optional<std::string> luaActorName) -> AActor* 
@@ -57,11 +57,16 @@ void ScriptSystem::BindTypes()
 
         //액터 스폰
         return World->SpawnActor(cls);
-        });
+    });
 
     lua.set_function("PrintLog", [](const std::string& str)
     {
         UE_LOG(LogLevel::Display, str.c_str());
+    });
+
+    lua.set_function("PrintObject", [&](const sol::object& obj)
+    {
+        UE_LOG(LogLevel::Display, lua_to_string(obj, 0).c_str());
     });
 }
 
@@ -106,6 +111,9 @@ void ScriptSystem::LoadFile(const std::string& fileName)
     {
         LoadScripts[fileName] = res;
         ScriptTimeStamps[fileName] = std::filesystem::last_write_time(fileName);
+    } else
+    {
+        UE_LOG(LogLevel::Error, "Failed to open %s", fileName.c_str());
     }
 }
 
@@ -141,6 +149,35 @@ bool ScriptSystem::IsOutdated(const std::string& fileName)
     // 만약 메인 파일의 저장된 타임스탬프가 없거나 현재와 다르면 변경된 것으로 처리
     if (!FoundTime || (*FoundTime != currentTime)) { return true; }
     return false;
+}
+
+std::string ScriptSystem::lua_to_string(const sol::object& obj, int depth = 0) const {
+    if (obj.is<std::string>()) {
+        return "\"" + obj.as<std::string>() + "\"";
+    } else if (obj.is<int>()) {
+        return std::to_string(obj.as<int>());
+    } else if (obj.is<double>()) {
+        return std::to_string(obj.as<double>());
+    } else if (obj.is<bool>()) {
+        return obj.as<bool>() ? "true" : "false";
+    } else if (obj.get_type() == sol::type::table) {
+        std::string result = "{";
+        sol::table tbl = obj;
+        bool first = true;
+        for (auto& kv : tbl) {
+            if (!first) result += ", ";
+            first = false;
+            result += lua_to_string(kv.first, depth + 1) + " : " + lua_to_string(kv.second, depth + 1);
+        }
+        result += "}";
+        return result;
+    } else if (obj.get_type() == sol::type::function) {
+        return "[function]";
+    } else if (obj.get_type() == sol::type::nil) {
+        return "nil";
+    } else {
+        return "[unknown type]";
+    }
 }
 
 // https://sol2.readthedocs.io/en/latest/exceptions.html

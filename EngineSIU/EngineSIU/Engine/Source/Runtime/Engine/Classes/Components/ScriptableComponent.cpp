@@ -3,7 +3,7 @@
 
 UScriptableComponent::UScriptableComponent()
 {
-    ScriptName = "./Saved/LuaScripts/template.lua";
+    ScriptName = "Saved/LuaScripts/template.lua";
 }
 
 UObject* UScriptableComponent::Duplicate(UObject* InOuter)
@@ -26,7 +26,10 @@ void UScriptableComponent::BeginPlay()
     LoadScriptAndBind();
 
     if (EventFunc.BeginPlay.valid())
-        EventFunc.BeginPlay();
+    {
+        sol::protected_function_result Result = EventFunc.BeginPlay();
+        LogIfErrorExsist("BeginPlay", Result);
+    }
 }
 
 void UScriptableComponent::TickComponent(float DeltaTime)
@@ -34,13 +37,19 @@ void UScriptableComponent::TickComponent(float DeltaTime)
     UActorComponent::TickComponent(DeltaTime);
 
     if (EventFunc.Tick.valid())
-        EventFunc.Tick(DeltaTime);
+    {
+        sol::protected_function_result Result = EventFunc.Tick(DeltaTime);
+        LogIfErrorExsist("Tick", Result);
+    }
 }
 
 void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     if (EventFunc.EndPlay.valid())
-        EventFunc.EndPlay(EndPlayReason);
+    {
+        sol::protected_function_result Result = EventFunc.EndPlay(EndPlayReason);
+        LogIfErrorExsist("EndPlay", Result);
+    }
 }
 
 void UScriptableComponent::LoadScriptAndBind()
@@ -64,3 +73,11 @@ void UScriptableComponent::LoadScriptAndBind()
     }
 }
 
+void UScriptableComponent::LogIfErrorExsist(FString funcName, sol::protected_function_result& Result)
+{
+    if (!Result.valid())
+    {
+        sol::error err = Result;
+        UE_LOG(LogLevel::Error, "Failed to call %s@%s", GetData(funcName), err.what());
+    }
+}

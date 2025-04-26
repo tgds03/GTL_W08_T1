@@ -19,7 +19,8 @@ private:
     void BindUObject();
     void LoadFile(const std::string& fileName);
     bool IsOutdated(const std::string& fileName);
-    const FString ScriptPath = "./Saved/LuaScripts/";
+    const FString ScriptPath = "Saved/LuaScripts/";
+    std::string lua_to_string(const sol::object& obj, int depth) const;
 };
 
 int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> exception, sol::string_view desc);
