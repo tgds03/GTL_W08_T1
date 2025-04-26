@@ -226,13 +226,13 @@ void FEditorViewportClient::InputKey(const FKeyEvent& InKeyEvent)
             }
             break;
         }
-        case 'M':
-        {
-            FEngineLoop::GraphicDevice.Resize(GEngineLoop.AppWnd);
-            SLevelEditor* LevelEd = GEngineLoop.GetLevelEditor();
-            LevelEd->SetEnableMultiViewport(!LevelEd->IsMultiViewport());
-            break;
-        }
+        // case 'M':
+        // {
+        //     FEngineLoop::GraphicDevice.Resize(GEngineLoop.AppWnd);
+        //     SLevelEditor* LevelEd = GEngineLoop.GetLevelEditor();
+        //     LevelEd->SetEnableMultiViewport(!LevelEd->IsMultiViewport());
+        //     break;
+        // }
         default:
             break;
         }

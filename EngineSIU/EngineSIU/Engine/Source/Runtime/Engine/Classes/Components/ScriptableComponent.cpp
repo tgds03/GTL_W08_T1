@@ -3,6 +3,16 @@
 
 UScriptableComponent::UScriptableComponent()
 {
+    ScriptName = "./Saved/LuaScripts/template.lua";
+}
+
+UObject* UScriptableComponent::Duplicate(UObject* InOuter)
+{
+    ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate(InOuter));
+
+    NewComponent->ScriptName = ScriptName;
+
+    return NewComponent;
 }
 
 void UScriptableComponent::BeginPlay()
@@ -35,11 +45,22 @@ void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UScriptableComponent::LoadScriptAndBind()
 {
-    sol::state& lua = FEngineLoop::ScriptSys.Lua();
-    lua.script_file(GetData((lua["SCRIPT_PATH"] + ScriptName)), Environment);
-
-    EventFunc.BeginPlay = Environment["BeginPlay"];
-    EventFunc.Tick = Environment["Tick"];
-    EventFunc.EndPlay = Environment["EndPlay"];
-    EventFunc.OnOverlap = Environment["OnOverlap"];
+    // lua.script_file(GetData((lua["SCRIPT_PATH"] + ScriptName)), Environment);
+    sol::function script = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
+    if (script && script.valid())
+    {
+        set_environment(Environment, script);
+        sol::protected_function_result res = script();
+        if (res.valid())
+        {
+            EventFunc.BeginPlay = Environment["BeginPlay"];
+            EventFunc.Tick = Environment["Tick"];
+            EventFunc.EndPlay = Environment["EndPlay"];
+            EventFunc.OnOverlap = Environment["OnOverlap"];
+        } 
+    } else
+    {
+        UE_LOG(LogLevel::Error, "Can not execute %s", GetData(ScriptName));
+    }
 }
+

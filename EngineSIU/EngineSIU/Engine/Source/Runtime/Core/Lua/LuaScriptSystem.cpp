@@ -18,7 +18,9 @@ void ScriptSystem::Initialize()
         sol::lib::string);
 
     // 스크립트 경로 지정
-    lua["SCRIPT_PATH"] = "Saved/LuaScripts/";
+    lua["SCRIPT_PATH"] = ScriptPath;
+
+    lua.set_exception_handler(&LuaExceptionHandler);
 }
 
 void ScriptSystem::BindTypes()
@@ -56,6 +58,11 @@ void ScriptSystem::BindTypes()
         //액터 스폰
         return World->SpawnActor(cls);
         });
+
+    lua.set_function("PrintLog", [](const std::string& str)
+    {
+        UE_LOG(LogLevel::Display, str.c_str());
+    });
 }
 
 void ScriptSystem::BindPrimitiveTypes()
@@ -91,10 +98,61 @@ void ScriptSystem::BindUObject()
     }
 }
 
+void ScriptSystem::LoadFile(const std::string& fileName)
+{
+    // lua.script_file(lua["SCRIPT_PATH"].get<std::string>() + fileName);
+    sol::load_result res = lua.load_file(fileName);
+    if (res.valid())
+    {
+        LoadScripts[fileName] = res;
+        ScriptTimeStamps[fileName] = std::filesystem::last_write_time(fileName);
+    }
+}
+
 void ScriptSystem::Tick(float dt)
 {
     sol::function update = lua["Update"];
     if (update.valid()) {
         update(dt);
     }
+}
+
+void ScriptSystem::Reload()
+{
+    TArray<FString> paths;
+    for (const auto& entry: std::filesystem::recursive_directory_iterator(GetData(ScriptPath)))
+    {
+        paths.Add(entry.path().string());
+    }
+    for (const auto& path: paths)
+    {
+        if (IsOutdated(GetData(path)))
+        {
+            LoadFile(GetData(path));
+        }
+    }
+}
+
+bool ScriptSystem::IsOutdated(const std::string& fileName)
+{
+    if (!std::filesystem::exists(fileName)) { return false; }
+    auto currentTime = std::filesystem::last_write_time(fileName);
+    auto* FoundTime = ScriptTimeStamps.Find(fileName);
+    // 만약 메인 파일의 저장된 타임스탬프가 없거나 현재와 다르면 변경된 것으로 처리
+    if (!FoundTime || (*FoundTime != currentTime)) { return true; }
+    return false;
+}
+
+// https://sol2.readthedocs.io/en/latest/exceptions.html
+int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> exception, sol::string_view desc)
+{
+    if (exception)
+    {
+        UE_LOG(LogLevel::Error, "Failed: %s", exception->what());
+    }
+    else
+    {
+        UE_LOG(LogLevel::Error, "Failed: %s", desc.data());
+    }
+    return sol::stack::push(L, desc);
 }
