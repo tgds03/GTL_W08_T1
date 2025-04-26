@@ -8,7 +8,7 @@ struct SolEventFunc
     sol::function OnOverlap;
 };
 
-class UScriptableComponent: UActorComponent
+class UScriptableComponent: public UActorComponent
 {
     DECLARE_CLASS(UScriptableComponent, UActorComponent)
 public:

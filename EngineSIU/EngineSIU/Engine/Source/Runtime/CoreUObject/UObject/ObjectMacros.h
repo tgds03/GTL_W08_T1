@@ -42,7 +42,18 @@ public: \
             } \
         }; \
         return &ClassInfo; \
-    }
+    } \
+    static TMap<FString, std::function<void(sol::usertype<TClass>)>> BindFunctions() { \
+        static TMap<FString, std::function<void(sol::usertype<TClass>)>> _binds; \
+        return _binds; \
+    } \
+    static void BindPropertiesToLua(sol::state& lua) { \
+        sol::usertype<TClass> table = lua.new_usertype<TClass>(#TClass, sol::base_classes, sol::bases<TSuperClass>()); \
+        for (const auto [name, bind] : BindFunctions()) \
+        { \
+            bind(table); \
+        } \
+    } \
 
 // RTTI를 위한 추상 클래스 매크로
 #define DECLARE_ABSTRACT_CLASS(TClass, TSuperClass) \
@@ -83,5 +94,8 @@ public: \
             ThisClass::StaticClass()->RegisterProperty( \
                 { #VarName, sizeof(Type), Offset } \
             ); \
+            BindFunctions().Add(#VarName, [](sol::usertype<ThisClass> table) { \
+                table[#VarName] = &ThisClass::VarName; \
+            }); \
         } \
     } VarName##_PropRegistrar_{};

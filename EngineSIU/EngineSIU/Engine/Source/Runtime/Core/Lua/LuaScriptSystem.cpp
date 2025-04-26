@@ -20,6 +20,12 @@ void ScriptSystem::Initialize()
     // 스크립트 경로 지정
     lua["SCRIPT_PATH"] = "Saved/LuaScripts/";
 
+
+}
+
+void ScriptSystem::Bind()
+{
+    
     lua.new_usertype<FVector>("FVector",
         sol::constructors<FVector(), FVector(float, float, float)>(),
         "x", &FVector::X,
