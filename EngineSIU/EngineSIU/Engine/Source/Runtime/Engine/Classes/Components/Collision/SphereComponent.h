@@ -18,6 +18,8 @@ public:
     float GetSphereScaledRadius() const;
     
     // Utility Function
-    float CalculateAbsMaxXYZ(const FVector& WorldScale3D) const;
+    float CalculateMaxAbsXYZ(const FVector& WorldScale3D) const;
+
+    static bool AreSpheresOverlapping(const USphereComponent* SphereA, const USphereComponent* SphereB);
 };
 
