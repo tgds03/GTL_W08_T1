@@ -8,11 +8,11 @@ struct SolEventFunc
     sol::function OnOverlap;
 };
 
-class UScrpitableComponent: UActorComponent
+class UScriptableComponent: UActorComponent
 {
-    DECLARE_CLASS(UScrpitableComponent, UActorComponent)
+    DECLARE_CLASS(UScriptableComponent, UActorComponent)
 public:
-    UScrpitableComponent();
+    UScriptableComponent();
 
     FString GetScriptName();
     virtual void BeginPlay() override;

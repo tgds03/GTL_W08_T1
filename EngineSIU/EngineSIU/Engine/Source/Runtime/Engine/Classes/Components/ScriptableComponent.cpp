@@ -1,11 +1,11 @@
 ﻿#include "GameFramework/Actor.h"
-#include "ScrpitableComponent.h"
+#include "ScriptableComponent.h"
 
-UScrpitableComponent::UScrpitableComponent()
+UScriptableComponent::UScriptableComponent()
 {
 }
 
-void UScrpitableComponent::BeginPlay()
+void UScriptableComponent::BeginPlay()
 {
     UActorComponent::BeginPlay();
 
@@ -19,7 +19,7 @@ void UScrpitableComponent::BeginPlay()
         EventFunc.BeginPlay();
 }
 
-void UScrpitableComponent::TickComponent(float DeltaTime)
+void UScriptableComponent::TickComponent(float DeltaTime)
 {
     UActorComponent::TickComponent(DeltaTime);
 
@@ -27,13 +27,13 @@ void UScrpitableComponent::TickComponent(float DeltaTime)
         EventFunc.Tick(DeltaTime);
 }
 
-void UScrpitableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     if (EventFunc.EndPlay.valid())
         EventFunc.EndPlay(EndPlayReason);
 }
 
-void UScrpitableComponent::LoadScriptAndBind()
+void UScriptableComponent::LoadScriptAndBind()
 {
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
     lua.script_file(GetData((lua["SCRIPT_PATH"] + ScriptName)), Environment);
