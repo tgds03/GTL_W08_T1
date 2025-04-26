@@ -2,7 +2,7 @@
 #include <concepts>
 #include "Object.h"
 #include "Property.h"
-
+#include <functional>
 
 class FArchive;
 /**
@@ -18,7 +18,8 @@ public:
         uint32 InClassSize,
         uint32 InAlignment,
         UClass* InSuperClass,
-        ClassConstructorType InCTOR
+        ClassConstructorType InCTOR,
+        std::function<void(sol::state&)> InBind
     );
 
     // 복사 & 이동 생성자 제거
@@ -74,6 +75,11 @@ public:
     /** 바이너리 직렬화 함수 */
     void SerializeBin(FArchive& Ar, void* Data);
 
+    /** Lua에 UPROPERTY를 Bind하는 함수.
+     *  DECLARE_CLASS에서 초기화됨
+     */
+    const std::function<void(sol::state&)> BindPropertiesToLua;
+    
 protected:
     virtual UObject* CreateDefaultObject();
 

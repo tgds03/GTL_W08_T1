@@ -19,19 +19,12 @@ void ScriptSystem::Initialize()
 
     // 스크립트 경로 지정
     lua["SCRIPT_PATH"] = "Saved/LuaScripts/";
-
-
 }
 
-void ScriptSystem::Bind()
+void ScriptSystem::BindTypes()
 {
-    
-    lua.new_usertype<FVector>("FVector",
-        sol::constructors<FVector(), FVector(float, float, float)>(),
-        "x", &FVector::X,
-        "y", &FVector::Y,
-        "z", &FVector::Z,
-        "Normalize", &FVector::GetSafeNormal);
+    BindPrimitiveTypes();
+    BindUObject();
 
 
     UWorld* World = GEngine->ActiveWorld;
@@ -63,6 +56,39 @@ void ScriptSystem::Bind()
         //액터 스폰
         return World->SpawnActor(cls);
         });
+}
+
+void ScriptSystem::BindPrimitiveTypes()
+{
+    using mFunc = sol::meta_function;
+    
+    // FVector
+    sol::usertype<FVector> vectorTypeTable = lua.new_usertype<FVector>("FVector");
+    vectorTypeTable[mFunc::construct] = sol::constructors<FVector(), FVector(float, float, float)>(); 
+    vectorTypeTable["x"] = &FVector::X;
+    vectorTypeTable["y"] = &FVector::Y;
+    vectorTypeTable["z"] = &FVector::Z;
+    vectorTypeTable["Dot"] = &FVector::Dot;
+    vectorTypeTable["Cross"] = &FVector::Cross;
+    vectorTypeTable["Length"] = &FVector::Length;
+    vectorTypeTable["LengthSquared"] = &FVector::LengthSquared;
+    vectorTypeTable["Distance"] = &FVector::Distance;
+    vectorTypeTable["Normal"] = &FVector::GetSafeNormal;
+    vectorTypeTable["Normalize"] = &FVector::Normalize;
+    
+    vectorTypeTable[mFunc::addition] = [](const FVector& a, const FVector& b) { return a + b; };
+    vectorTypeTable[mFunc::subtraction] = [](const FVector& a, const FVector& b) { return a - b; };
+    vectorTypeTable[mFunc::multiplication] = [](const FVector& v, const float f) { return v * f; };
+    vectorTypeTable[mFunc::equal_to] = [](const FVector& a, const FVector& b) { return a == b; };
+}
+
+void ScriptSystem::BindUObject()
+{
+    TMap<FName, UClass*> ClassMap = UClass::GetClassMap();
+    for (auto [name, meta]: ClassMap)
+    {
+        meta->BindPropertiesToLua(lua);
+    }
 }
 
 void ScriptSystem::Tick(float dt)

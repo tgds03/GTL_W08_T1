@@ -11,12 +11,14 @@ UClass::UClass(
     uint32 InClassSize,
     uint32 InAlignment,
     UClass* InSuperClass,
-    ClassConstructorType InCTOR
+    ClassConstructorType InCTOR,
+    std::function<void(sol::state&)> InBind
 )
     : ClassCTOR(InCTOR)
     , ClassSize(InClassSize)
     , ClassAlignment(InAlignment)
     , SuperClass(InSuperClass)
+    , BindPropertiesToLua(InBind)
 {
     NamePrivate = InClassName;
 }

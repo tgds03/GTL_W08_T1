@@ -29,20 +29,6 @@ public: \
 // RTTI를 위한 클래스 매크로
 #define DECLARE_CLASS(TClass, TSuperClass) \
     __DECLARE_COMMON_CLASS_BODY__(TClass, TSuperClass) \
-    static UClass* StaticClass() { \
-        static UClass ClassInfo{ \
-            TEXT(#TClass), \
-            static_cast<uint32>(sizeof(TClass)), \
-            static_cast<uint32>(alignof(TClass)), \
-            TSuperClass::StaticClass(), \
-            []() -> UObject* { \
-                void* RawMemory = FPlatformMemory::Malloc<EAT_Object>(sizeof(TClass)); \
-                ::new (RawMemory) TClass; \
-                return static_cast<UObject*>(RawMemory); \
-            } \
-        }; \
-        return &ClassInfo; \
-    } \
     static TMap<FString, std::function<void(sol::usertype<TClass>)>> BindFunctions() { \
         static TMap<FString, std::function<void(sol::usertype<TClass>)>> _binds; \
         return _binds; \
@@ -54,9 +40,35 @@ public: \
             bind(table); \
         } \
     } \
+    static UClass* StaticClass() { \
+        static UClass ClassInfo{ \
+            TEXT(#TClass), \
+            static_cast<uint32>(sizeof(TClass)), \
+            static_cast<uint32>(alignof(TClass)), \
+            TSuperClass::StaticClass(), \
+            []() -> UObject* { \
+                void* RawMemory = FPlatformMemory::Malloc<EAT_Object>(sizeof(TClass)); \
+                ::new (RawMemory) TClass; \
+                return static_cast<UObject*>(RawMemory); \
+            }, \
+            TClass::BindPropertiesToLua \
+        }; \
+        return &ClassInfo; \
+    } \
 
 // RTTI를 위한 추상 클래스 매크로
 #define DECLARE_ABSTRACT_CLASS(TClass, TSuperClass) \
+    static TMap<FString, std::function<void(sol::usertype<TClass>)>> BindFunctions() { \
+        static TMap<FString, std::function<void(sol::usertype<TClass>)>> _binds; \
+        return _binds; \
+    } \
+    static void BindPropertiesToLua(sol::state& lua) { \
+        sol::usertype<TClass> table = lua.new_usertype<TClass>(#TClass, sol::base_classes, sol::bases<TSuperClass>()); \
+        for (const auto [name, bind] : BindFunctions()) \
+        { \
+            bind(table); \
+        } \
+    } \
     __DECLARE_COMMON_CLASS_BODY__(TClass, TSuperClass) \
     static UClass* StaticClass() { \
         static UClass ClassInfo{ \
@@ -64,7 +76,8 @@ public: \
             static_cast<uint32>(sizeof(TClass)), \
             static_cast<uint32>(alignof(TClass)), \
             TSuperClass::StaticClass(), \
-            []() -> UObject* { return nullptr; } \
+            []() -> UObject* { return nullptr; }, \
+            TClass::BindPropertiesToLua \
         }; \
         return &ClassInfo; \
     }

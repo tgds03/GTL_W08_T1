@@ -84,6 +84,7 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     PrimitiveDrawBatch.Initialize(&GraphicDevice);
     UIMgr->Initialize(AppWnd, GraphicDevice.Device, GraphicDevice.DeviceContext);
     ResourceManager.Initialize(&Renderer, &GraphicDevice);
+    ScriptSys.Initialize();
     
     uint32 ClientWidth = 0;
     uint32 ClientHeight = 0;
@@ -93,12 +94,11 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     GEngine = FObjectFactory::ConstructObject<UEditorEngine>(nullptr);
     GEngine->Init();
 
-    ScriptSys.Initialize();
     // ScriptSys.DoFile("main.lua");
     
     UpdateUI();
 
-
+    ScriptSys.BindTypes();
     return 0;
 }
 
