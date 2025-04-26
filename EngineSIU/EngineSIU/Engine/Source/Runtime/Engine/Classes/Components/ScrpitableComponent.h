@@ -1,0 +1,29 @@
+﻿#pragma once
+#include "ActorComponent.h"
+#include "sol/sol.hpp"
+
+struct SolEventFunc
+{
+    sol::function Tick, BeginPlay, EndPlay;
+    sol::function OnOverlap;
+};
+
+class UScrpitableComponent: UActorComponent
+{
+    DECLARE_CLASS(UScrpitableComponent, UActorComponent)
+public:
+    UScrpitableComponent();
+
+    FString GetScriptName();
+    virtual void BeginPlay() override;
+    virtual void TickComponent(float DeltaTime) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+    sol::environment GetEnvironment() { return Environment; }
+protected:
+    FString ScriptName;
+    SolEventFunc EventFunc;
+private:
+    sol::environment Environment;
+    void LoadScriptAndBind();
+};

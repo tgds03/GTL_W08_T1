@@ -44,6 +44,7 @@ public:
     static FRenderer Renderer;
     static UPrimitiveDrawBatch PrimitiveDrawBatch;
     static FResourceMgr ResourceManager;
+    static ScriptSystem ScriptSys;
     static uint32 TotalAllocationBytes;
     static uint32 TotalAllocationCount;
 
@@ -70,6 +71,4 @@ public:
     UnrealEd* GetUnrealEditor() const { return UnrealEditor; }
 
     FSlateAppMessageHandler* GetAppMessageHandler() const { return AppMessageHandler.get(); }
-private:
-    ScriptSystem* ScriptSys;
 };

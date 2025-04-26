@@ -2,16 +2,13 @@
 
 #include <sol/sol.hpp>
 
-class AActor;
 class ScriptSystem {
 public:
-    sol::state lua;
     void Initialize();
     void Tick(float dt);
-    void DoFile(const std::string& filename);
-
+    sol::state& Lua() { return lua; }
 private:
-    
+    sol::state lua;
     
        
 };

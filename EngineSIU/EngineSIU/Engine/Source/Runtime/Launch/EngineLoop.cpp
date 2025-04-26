@@ -22,6 +22,7 @@ FGraphicsDevice FEngineLoop::GraphicDevice;
 FRenderer FEngineLoop::Renderer;
 UPrimitiveDrawBatch FEngineLoop::PrimitiveDrawBatch;
 FResourceMgr FEngineLoop::ResourceManager;
+ScriptSystem FEngineLoop::ScriptSys;
 uint32 FEngineLoop::TotalAllocationBytes = 0;
 uint32 FEngineLoop::TotalAllocationCount = 0;
 
@@ -92,11 +93,11 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     GEngine = FObjectFactory::ConstructObject<UEditorEngine>(nullptr);
     GEngine->Init();
 
+    ScriptSys.Initialize();
+    // ScriptSys.DoFile("main.lua");
+    
     UpdateUI();
 
-    ScriptSys = new ScriptSystem();
-    ScriptSys->Initialize();
-    ScriptSys->DoFile("main.lua");
 
     return 0;
 }
@@ -167,7 +168,7 @@ void FEngineLoop::Tick()
 
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
-        ScriptSys->Tick(DeltaTime);
+        // ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
         UnrealEditor->Render();

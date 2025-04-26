@@ -4,17 +4,7 @@
 #include "Runtime/Engine/Classes/GameFramework/Actor.h"
 //#include "Runtime/Engine/Classes/Engine/Engine.cpp"
 
-#include <fstream>
-#include <ostream>
-#include <sstream>
-#include "EngineLoop.h"
-#include "UnrealClient.h"
-#include "WindowsCursor.h"
-#include "BaseGizmos/GizmoBaseComponent.h"
 #include "Engine/EditorEngine.h"
-#include "Slate/Widgets/Layout/SSplitter.h"
-#include "SlateCore/Widgets/SWindow.h"
-#include "UnrealEd/EditorViewportClient.h"
 #include "Runtime/Engine/World/World.h"
 
 void ScriptSystem::Initialize()
@@ -67,11 +57,6 @@ void ScriptSystem::Initialize()
         //액터 스폰
         return World->SpawnActor(cls);
         });
-}
-
-void ScriptSystem::DoFile(const std::string& filename)
-{
-    lua.script_file(lua["SCRIPT_PATH"].get<std::string>() + filename);
 }
 
 void ScriptSystem::Tick(float dt)
