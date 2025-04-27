@@ -2,13 +2,12 @@
 local cube = nil
 local speed = 3
 local direction = -1
+local aaa = 0
 
 function BeginPlay()
-    -- PrintObject(obj:GetLocation().x)
-    PrintObject(USERTYPES)
-    PrintObject(obj)
-    -- SpawnActor("ACube", "TestCube")
-    PrintObject(cube)
+    PrintLog("BeginPlay")
+    PrintObject(obj:GetActorLabel())
+    PrintLog("BeginPlay--")
 end
 
 function Tick(dt)
@@ -20,4 +19,6 @@ function Tick(dt)
         direction = 1
     end
     obj:SetActorLocation(pos)
+    -- PrintObject(obj:GetActorLocation().x)
+    PrintObject(obj:GetActorLabel())
 end

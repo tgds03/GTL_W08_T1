@@ -22,7 +22,7 @@ void UScriptableComponent::BeginPlay()
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
     Environment = sol::environment(lua, sol::create, lua.globals());
     Environment["obj"] = GetOwner();
-
+    
     LoadScriptAndBind();
 
     if (EventFunc.BeginPlay.valid())
@@ -35,7 +35,7 @@ void UScriptableComponent::BeginPlay()
 void UScriptableComponent::TickComponent(float DeltaTime)
 {
     UActorComponent::TickComponent(DeltaTime);
-
+    
     if (EventFunc.Tick.valid())
     {
         sol::protected_function_result Result = EventFunc.Tick(DeltaTime);
@@ -45,6 +45,7 @@ void UScriptableComponent::TickComponent(float DeltaTime)
 
 void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    
     if (EventFunc.EndPlay.valid())
     {
         sol::protected_function_result Result = EventFunc.EndPlay(EndPlayReason);
@@ -54,8 +55,13 @@ void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UScriptableComponent::LoadScriptAndBind()
 {
-    // lua.script_file(GetData((lua["SCRIPT_PATH"] + ScriptName)), Environment);
-    sol::function script = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
+    if (!FEngineLoop::ScriptSys.LoadScripts.Contains(ScriptName))
+    {
+        UE_LOG(LogLevel::Error, "Can not find %s", GetData(ScriptName));
+        return;
+    }
+    sol::load_result& loadresult = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
+    sol::function script = loadresult;
     if (script && script.valid())
     {
         set_environment(Environment, script);
@@ -67,9 +73,13 @@ void UScriptableComponent::LoadScriptAndBind()
             EventFunc.EndPlay = Environment["EndPlay"];
             EventFunc.OnOverlap = Environment["OnOverlap"];
         } 
+    } else if (script)
+    {
+        sol::error err = loadresult;
+        UE_LOG(LogLevel::Error, "Can not execute %s@%s", GetData(ScriptName), err.what());
     } else
     {
-        UE_LOG(LogLevel::Error, "Can not execute %s", GetData(ScriptName));
+        UE_LOG(LogLevel::Error, "Can not find %s", GetData(ScriptName));
     }
 }
 

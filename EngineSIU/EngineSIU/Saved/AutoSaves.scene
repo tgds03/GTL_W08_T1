@@ -110,6 +110,18 @@
             "ActorLabel": "ACube130",
             "Components": [
                 {
+                    "ComponentClass": "UScriptableComponent",
+                    "ComponentID": "UScriptableComponent_133",
+                    "Properties": {
+                        "ComponentClass": "UScriptableComponent",
+                        "ComponentName": "UScriptableComponent_133",
+                        "ComponentOwner": "ACube_130",
+                        "ComponentOwnerClass": "ACube",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
                     "ComponentClass": "UStaticMeshComponent",
                     "ComponentID": "StaticMeshComponent_0",
                     "Properties": {
@@ -127,14 +139,41 @@
                         "bIsActive": "true",
                         "m_Type": ""
                     }
+                }
+            ],
+            "RootComponentID": "StaticMeshComponent_0"
+        },
+        {
+            "ActorClass": "ACube",
+            "ActorID": "ACube_112",
+            "ActorLabel": "OBJ_CUBE_112",
+            "Components": [
+                {
+                    "ComponentClass": "UStaticMeshComponent",
+                    "ComponentID": "StaticMeshComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=1.287 Y=1.199 Z=2.555",
+                        "AABB_min": "X=-1.287 Y=-1.199 Z=-0.000",
+                        "ComponentClass": "UStaticMeshComponent",
+                        "ComponentName": "StaticMeshComponent_0",
+                        "ComponentOwner": "ACube_112",
+                        "ComponentOwnerClass": "ACube",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Reference/Reference.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
                 },
                 {
                     "ComponentClass": "UScriptableComponent",
-                    "ComponentID": "UScriptableComponent_133",
+                    "ComponentID": "UScriptableComponent_114",
                     "Properties": {
                         "ComponentClass": "UScriptableComponent",
-                        "ComponentName": "UScriptableComponent_133",
-                        "ComponentOwner": "ACube_130",
+                        "ComponentName": "UScriptableComponent_114",
+                        "ComponentOwner": "ACube_112",
                         "ComponentOwnerClass": "ACube",
                         "bAutoActive": "true",
                         "bIsActive": "true"

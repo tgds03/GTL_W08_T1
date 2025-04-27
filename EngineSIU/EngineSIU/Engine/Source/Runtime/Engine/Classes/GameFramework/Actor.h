@@ -79,9 +79,6 @@ public:
     void SetOwner(AActor* NewOwner) { Owner = NewOwner; }
 
 public:
-    // FVector GetActorLocation() const;
-    // FRotator GetActorRotation() const;
-    // FVector GetActorScale() const;
     UFUNCTION_CONST(FVector, GetActorLocation)
     UFUNCTION_CONST(FRotator, GetActorRotation)
     UFUNCTION_CONST(FVector, GetActorScale)
@@ -90,9 +87,6 @@ public:
     FVector GetActorRightVector() const { return RootComponent ? RootComponent->GetRightVector() : FVector::RightVector; }
     FVector GetActorUpVector() const { return RootComponent ? RootComponent->GetUpVector() : FVector::UpVector; }
 
-    // bool SetActorLocation(const FVector& NewLocation);
-    // bool SetActorRotation(const FRotator& NewRotation);
-    // bool SetActorScale(const FVector& NewScale);
     UFUNCTION(bool, SetActorLocation, const FVector&)
     UFUNCTION(bool, SetActorRotation, const FRotator&)
     UFUNCTION(bool, SetActorScale, const FVector&)
@@ -116,10 +110,10 @@ private:
 #if 1 // TODO: WITH_EDITOR 추가
 public:
     /** Actor의 기본 Label을 가져옵니다. */
-    FString GetDefaultActorLabel() const;
+    UFUNCTION_CONST(FString, GetDefaultActorLabel)
 
     /** Actor의 Label을 가져옵니다. */
-    FString GetActorLabel() const;
+    UFUNCTION_CONST(FString, GetActorLabel)
 
     /** Actor의 Label을 설정합니다. */
     void SetActorLabel(const FString& NewActorLabel, bool bUUID = true);

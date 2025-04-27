@@ -68,7 +68,8 @@ void ScriptSystem::BindPrimitiveTypes()
     
     // FVector
     sol::usertype<FVector> vectorTypeTable = lua.new_usertype<FVector>("FVector");
-    vectorTypeTable[mFunc::construct] = sol::constructors<FVector(), FVector(float, float, float)>(); 
+    vectorTypeTable[mFunc::construct] = sol::constructors<FVector(), FVector(float, float, float)>();
+    vectorTypeTable[mFunc::call] = sol::constructors<FVector(), FVector(float, float, float)>();
     vectorTypeTable["x"] = &FVector::X;
     vectorTypeTable["y"] = &FVector::Y;
     vectorTypeTable["z"] = &FVector::Z;
@@ -84,6 +85,34 @@ void ScriptSystem::BindPrimitiveTypes()
     vectorTypeTable[mFunc::subtraction] = [](const FVector& a, const FVector& b) { return a - b; };
     vectorTypeTable[mFunc::multiplication] = [](const FVector& v, const float f) { return v * f; };
     vectorTypeTable[mFunc::equal_to] = [](const FVector& a, const FVector& b) { return a == b; };
+
+    // FRotator
+    sol::usertype<FRotator> rotatorTypeTable = lua.new_usertype<FRotator>("FRotator");
+    rotatorTypeTable[mFunc::construct] = sol::constructors<FRotator(), FRotator(float, float, float)>();
+    rotatorTypeTable[mFunc::call] = sol::constructors<FRotator(), FRotator(float, float, float)>();
+    rotatorTypeTable["Pitch"] = &FRotator::Pitch;
+    rotatorTypeTable["Yaw"] = &FRotator::Yaw;
+    rotatorTypeTable["Roll"] = &FRotator::Roll;
+    rotatorTypeTable["Clamp"] = &FRotator::Clamp;
+    rotatorTypeTable["GetNormalized"] = &FRotator::GetNormalized;
+    
+    rotatorTypeTable[mFunc::addition] = [](const FRotator& a, const FRotator& b) { return a + b; };
+    rotatorTypeTable[mFunc::subtraction] = [](const FRotator& a, const FRotator& b) { return a - b; };
+    rotatorTypeTable[mFunc::multiplication] = [](const FRotator& v, const float f) { return v * f; };
+    rotatorTypeTable[mFunc::equal_to] = [](const FRotator& a, const FRotator& b) { return a == b; };
+    
+    // FString
+    sol::usertype<FString> stringTypeTable = lua.new_usertype<FString>("FString");
+    stringTypeTable[mFunc::construct] = sol::constructors<FString(), FString(const std::string&), FString(const ANSICHAR*)>();
+    stringTypeTable[mFunc::call] = sol::constructors<FString(), FString(const std::string&), FString(const ANSICHAR*)>();
+    stringTypeTable["ToBool"] = &FString::ToBool;
+    stringTypeTable["ToFloat"] = &FString::ToFloat;
+    stringTypeTable["ToInt"] = &FString::ToInt;
+    stringTypeTable["Len"] = &FString::Len;
+    stringTypeTable["IsEmpty"] = &FString::IsEmpty;
+
+    stringTypeTable[mFunc::addition] = [](const FString& a, const FString& b) { return a + b; };
+    stringTypeTable[mFunc::equal_to] = [](const FString& a, const FString& b) { return a == b; };
 }
 
 void ScriptSystem::BindUObject()
@@ -101,11 +130,12 @@ void ScriptSystem::LoadFile(const std::string& fileName)
     sol::load_result res = lua.load_file(fileName);
     if (res.valid())
     {
-        LoadScripts[fileName] = res;
+        LoadScripts[fileName] = std::move(res);
         ScriptTimeStamps[fileName] = std::filesystem::last_write_time(fileName);
     } else
     {
-        UE_LOG(LogLevel::Error, "Failed to open %s", fileName.c_str());
+        sol::error err = res;
+        UE_LOG(LogLevel::Error, "Failed to open %s", err.what());
     }
 }
 
@@ -144,7 +174,9 @@ bool ScriptSystem::IsOutdated(const std::string& fileName)
 }
 
 std::string ScriptSystem::luaToString(const sol::object& obj, int depth = 0, bool showHidden = 0) const {
-    if (obj.is<std::string>()) {
+    if (obj.get_type() == sol::type::nil) {
+       return "nil";
+    } else if (obj.is<std::string>()) {
         return "\"" + obj.as<std::string>() + "\"";
     } else if (obj.is<int>()) {
         return std::to_string(obj.as<int>());
@@ -167,16 +199,35 @@ std::string ScriptSystem::luaToString(const sol::object& obj, int depth = 0, boo
         return result;
     } else if (obj.get_type() == sol::type::function) {
         return "[function]";
-    } else if (obj.get_type() == sol::type::nil) {
-        return "nil";
     } else if (obj.get_type() == sol::type::userdata) {
         sol::table tbl = obj;
         sol::table metatable = tbl[sol::metatable_key];
-        std::string result = "[";
-        result += metatable["__type"]["name"];
-        result += "]:";
-        result += luaToString(metatable, depth + 1, false);
-        return result;
+        std::string type = metatable["__type"]["name"];
+        if (obj.is<FVector>())
+        {
+            std::string result = "[FVector](";
+            result += tbl["x"];
+            result += ", ";
+            result += tbl["y"];
+            result += ", ";
+            result += tbl["z"];
+            result += ")";
+            return result;
+        }
+        else if (obj.is<FString>())
+        {
+            std::string result = "[FString]";
+            result += GetData(obj.as<FString>());
+            return result;
+        }
+        else
+        {
+            std::string result = "[";
+            result += metatable["__type"]["name"];
+            result += "]:";
+            result += luaToString(metatable, depth + 1, false);
+            return result;
+        }
     } else
     {
         return "[unknown type]";
