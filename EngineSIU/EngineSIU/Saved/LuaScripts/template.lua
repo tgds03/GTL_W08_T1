@@ -15,7 +15,5 @@ function OnOverlap(OtherActor)
 end
 
 function Tick(dt)
-    PrintObject(Velocity)
     obj:SetActorLocation(obj:GetActorLocation() + Velocity * dt)
-    PrintObject(obj:GetActorLocation())
 end
