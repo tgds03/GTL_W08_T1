@@ -1,4 +1,4 @@
-﻿#include "GameFramework/Actor.h"
+#include "GameFramework/Actor.h"
 #include "ScriptableComponent.h"
 
 UScriptableComponent::UScriptableComponent()
@@ -72,6 +72,9 @@ void UScriptableComponent::LoadScriptAndBind()
             EventFunc.Tick = Environment["Tick"];
             EventFunc.EndPlay = Environment["EndPlay"];
             EventFunc.OnOverlap = Environment["OnOverlap"];
+            EventFunc.OnKeyDown = Environment["OnKeyDown"];
+            EventFunc.OnMouseDown = Environment["OnMouseDown"];
+            EventFunc.OnMouseMove = Environment["OnMouseMove"];
         } 
     } else if (script)
     {

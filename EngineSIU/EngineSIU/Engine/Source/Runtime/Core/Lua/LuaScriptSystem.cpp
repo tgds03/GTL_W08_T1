@@ -7,6 +7,7 @@
 #include "Engine/EditorEngine.h"
 #include "Runtime/Engine/World/World.h"
 #include <InputCore/InputSystem.h>
+#include <Components/ScriptableComponent.h>
 
 extern FEngineLoop GEngineLoop;
 
@@ -30,12 +31,29 @@ void ScriptSystem::Initialize()
     auto* Handler = GEngineLoop.GetAppMessageHandler();
 
     Handler->OnKeyDownDelegate.AddLambda([](const FKeyEvent& KeyEvent)
-    {
-        sol::function onKeyDown = FEngineLoop::ScriptSys.Lua()["OnKeyDown"];
-        if (onKeyDown.valid()) {
-            onKeyDown(KeyEvent.GetKeyCode());
-        }
-    });
+        {
+            ULevel* Level = GEngine->ActiveWorld->GetActiveLevel();
+
+            if (!Level) {
+                return;
+            }
+
+            for (AActor* Actor : Level->Actors) {
+                UScriptableComponent* ScriptComp = Actor->GetComponentByClass<UScriptableComponent>();
+                if (ScriptComp)
+                {
+                    sol::protected_function OnKeyDownFunc = ScriptComp->GetEventFunc().OnKeyDown;
+                    if (OnKeyDownFunc.valid()) {
+                        sol::protected_function_result Result = OnKeyDownFunc(KeyEvent.GetKeyCode());
+                        if (!Result.valid()) {
+                            sol::error err = Result;
+                            UE_LOG(LogLevel::Error, "Lua OnKeyDown Error : %s", err.what());
+                        }
+                    }
+                }
+
+            }
+        });
 
     Handler->OnKeyUpDelegate.AddLambda([](const FKeyEvent& KeyEvent)
     {

@@ -1,11 +1,11 @@
 function BeginPlay()
-    print("[BeginPlay] " .. obj.UUID)
-    obj:PrintLocation()
+    --print("[BeginPlay] " .. obj.UUID)
+    --obj:PrintLocation()
 end
 
 function EndPlay()
-    print("[EndPlay] " .. obj.UUID)
-    obj:PrintLocation()
+    --print("[EndPlay] " .. obj.UUID)
+    --obj:PrintLocation()
 end
 
 function OnOverlap(OtherActor)
@@ -13,6 +13,6 @@ function OnOverlap(OtherActor)
 end
 
 function Tick(dt)
-    obj.Location = obj.Location + obj.Velocity * dt
-    obj:PrintLocation()
+    --obj.Location = obj.Location + obj.Velocity * dt
+    --obj:PrintLocation()
 end
