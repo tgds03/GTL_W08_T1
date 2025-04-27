@@ -27,68 +27,6 @@ void ScriptSystem::Initialize()
     lua["USERTYPES"] = lua.create_table();
 
     lua.set_exception_handler(&LuaExceptionHandler);
-
-    // 입력 이벤트를 Lua에 연결
-    auto* Handler = GEngineLoop.GetAppMessageHandler();
-
-    Handler->OnKeyDownDelegate.AddLambda([](const FKeyEvent& KeyEvent)
-        {
-            ULevel* Level = GEngine->ActiveWorld->GetActiveLevel();
-
-            if (!Level) {
-                return;
-            }
-
-            for (AActor* Actor : Level->Actors) {
-                UScriptableComponent* ScriptComp = Actor->GetComponentByClass<UScriptableComponent>();
-                if (ScriptComp)
-                {
-                    sol::protected_function OnKeyDownFunc = ScriptComp->GetEventFunc().OnKeyDown;
-                    if (OnKeyDownFunc.valid()) {
-                        sol::protected_function_result Result = OnKeyDownFunc(KeyEvent.GetKeyCode());
-                        if (!Result.valid()) {
-                            sol::error err = Result;
-                            UE_LOG(LogLevel::Error, "Lua OnKeyDown Error : %s", err.what());
-                        }
-                    }
-                }
-
-            }
-        });
-
-    Handler->OnKeyUpDelegate.AddLambda([](const FKeyEvent& KeyEvent)
-    {
-        sol::function onKeyUp = FEngineLoop::ScriptSys.Lua()["OnKeyUp"];
-        if (onKeyUp.valid()) {
-            onKeyUp(KeyEvent.GetKeyCode());
-        }
-    });
-
-    Handler->OnMouseDownDelegate.AddLambda([](const FPointerEvent& MouseEvent)
-    {
-        sol::function onMouseDown = FEngineLoop::ScriptSys.Lua()["OnMouseDown"];
-        if (onMouseDown.valid()) {
-            onMouseDown(MouseEvent.GetEffectingButton());
-        }
-    });
-
-    Handler->OnMouseUpDelegate.AddLambda([](const FPointerEvent& MouseEvent)
-        {
-            sol::function onMouseUp = FEngineLoop::ScriptSys.Lua()["OnMouseUp"];
-            if (onMouseUp.valid())
-            {
-                onMouseUp(MouseEvent.GetEffectingButton());
-            }
-        });
-
-    Handler->OnMouseMoveDelegate.AddLambda([](const FPointerEvent& MouseEvent)
-    {
-        sol::function onMouseMove = FEngineLoop::ScriptSys.Lua()["OnMouseMove"];
-        if (onMouseMove.valid())
-        {
-            onMouseMove(MouseEvent.GetScreenSpacePosition().X, MouseEvent.GetScreenSpacePosition().Y);
-        }
-    });
 }
 
 void ScriptSystem::BindTypes()
@@ -203,15 +141,24 @@ void ScriptSystem::BindInputSystem()
 void ScriptSystem::BindEKeys()
 {
     sol::table keys = lua.create_named_table("EKeys");
+    sol::table keyNames = lua.create_named_table("EKeyNames");
 
-    keys["Invalid"] = EKeys::Invalid;
-    keys["SpaceBar"] = EKeys::SpaceBar;
-    keys["W"] = EKeys::W;
-    keys["A"] = EKeys::A;
-    keys["S"] = EKeys::S;
-    keys["D"] = EKeys::D;
-    keys["LeftMouseButton"] = EKeys::LeftMouseButton;
-    keys["RightMouseButton"] = EKeys::RightMouseButton;
+#define ADD_KEY(name) \
+        keys[#name] = EKeys::name; \
+        keyNames[EKeys::name] = #name;
+
+    ADD_KEY(Invalid);
+    ADD_KEY(SpaceBar);
+    ADD_KEY(W);
+    ADD_KEY(A);
+    ADD_KEY(S);
+    ADD_KEY(D);
+    ADD_KEY(LeftMouseButton);
+    ADD_KEY(RightMouseButton);
+
+#undef ADD_KEY
+
+    lua["KeyCodeToString"] = keyNames;
 
     // NOTICE : 필요한 키 추가 시 확장
 }

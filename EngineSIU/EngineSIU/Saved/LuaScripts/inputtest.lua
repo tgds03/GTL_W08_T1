@@ -1,14 +1,21 @@
+local speed = 3
+
 function BeginPlay()
     PrintLog("Input Test")
+    PrintObject(EKeys)
 end
 function Tick(dt)
-    if Input:IsKeyDown(EKeys.W) then
-        PrintLog("W Key Down")
-    end
 end
 
 function OnKeyDown(keycode)
-    PrintLog("Key Down")
+    local keyName = KeyCodeToString[keycode]
+    if keycode == EKeys.W then
+        local pos = obj:GetActorLocation()
+        pos.y = pos.y + (-1) * speed
+        obj:SetActorLocation(pos)
+        PrintObject(obj:GetActorLabel())
+        PrintLog("W Key Down")
+    end
     if keycode == EKeys.SpaceBar then
         PrintLog("SpaceBar Key Down")
     end

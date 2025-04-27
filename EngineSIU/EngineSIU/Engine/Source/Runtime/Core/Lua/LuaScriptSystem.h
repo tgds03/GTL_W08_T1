@@ -15,6 +15,7 @@ public:
     TMap<FString, std::filesystem::file_time_type> ScriptTimeStamps;
 private:
     sol::state lua;
+    
     void BindPrimitiveTypes();
     void BindUObject();
     void BindInputSystem();

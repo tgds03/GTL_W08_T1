@@ -32,5 +32,5 @@ protected:
 private:
     sol::environment Environment;
     void LoadScriptAndBind();
-    void LogIfErrorExsist(FString funcName, sol::protected_function_result& Result);
+    void LogIfErrorExist(FString funcName, sol::protected_function_result& Result);
 };
