@@ -11,6 +11,10 @@
 #include "Components/Light/AmbientLightComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextComponent.h"
+//#include "Components/LuaScriptComponent" // TODO : LuaScriptComponent 추가되면 주석 풀기
+#include <filesystem>
+#include <Windows.h>
+#include <shellapi.h>
 #include "Engine/EditorEngine.h"
 #include "Engine/FLoaderOBJ.h"
 #include "UnrealEd/ImGuiWidget.h"
@@ -106,6 +110,14 @@ void PropertyEditorPanel::Render()
         }
 
         ImGui::PopStyleColor();
+    }
+
+    if (PickedActor)
+    {
+        if (ULuaScriptComponent* LuaScriptComponent = Cast<ULuaScriptComponent>(PickedActor->GetRootComponent()))
+        {
+            RenderLuaScriptEdit(LuaScriptComponent);
+        }
     }
 
     if (PickedActor)
@@ -982,6 +994,177 @@ void PropertyEditorPanel::RenderCreateMaterialView()
     }
 
     ImGui::End();
+}
+
+void PropertyEditorPanel::RenderLuaScriptEdit(ULuaScriptComponent* LuaScriptComp)
+{
+    if (!LuaScriptComp) return;
+
+    AActor* OwnerActor = Cast<AActor>(LuaScriptComp->GetOwner());
+    if (!OwnerActor) return;
+
+    // --- 경로 설정 (C++17 filesystem, UNICODE 환경) ---
+    namespace FileSystem = std::filesystem; // 네임스페이스 앨리어스
+    FileSystem::path BasePath;
+    try {
+        WCHAR modulePathW[MAX_PATH];
+        GetModuleFileNameW(NULL, modulePathW, MAX_PATH);
+        FileSystem::path ExecutablePath = modulePathW;
+        BasePath = ExecutablePath.parent_path();
+    }
+    catch (const FileSystem::filesystem_error& e) {
+        UE_LOG(LogLevel::Error, TEXT("Failed to get base path: %s"));
+        return;
+    }
+    catch (const std::exception& e) {
+        UE_LOG(LogLevel::Error, TEXT("Failed to get base path (std::exception): %s"));
+        return;
+    }
+
+    // 경로 변수 네이밍 변경
+    const FileSystem::path TemplateScriptPath = BasePath / L"Scripts" / L"template.lua";
+    const FileSystem::path ScriptSaveFolder = BasePath / L"Scripts" / L"Generated";
+
+    ImGui::Separator();
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.15f, 0.1f, 1.0f));
+
+    if (ImGui::TreeNodeEx("Lua Scripting", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        // 변수 네이밍 변경 및 FString 멤버 함수 사용
+        FString CurrentScriptNameFStr = LuaScriptComp->ScriptName;
+        std::wstring CurrentScriptNameWStr = CurrentScriptNameFStr.ToWideString(); // FString::ToWideString() 사용
+        FileSystem::path FullScriptPath;
+        bool bHasScriptName = !CurrentScriptNameWStr.empty();
+
+        if (bHasScriptName) {
+            try {
+                FullScriptPath = ScriptSaveFolder / CurrentScriptNameWStr;
+            }
+            catch (const std::exception& e) {
+                UE_LOG(LogLevel::Error, TEXT("Error creating script path: %s"), *FString("Generic path error"));
+                bHasScriptName = false;
+            }
+        }
+
+        // 1. 버튼 표시 로직
+        if (!bHasScriptName)
+        {
+            if (ImGui::Button("Create Script"))
+            {
+                // 스크립트 이름 생성
+                FString SceneNameFStr = OwnerActor->GetWorld() ? OwnerActor->GetWorld()->GetName() : TEXT("UnknownScene");
+                FString ActorNameFStr = OwnerActor->GetActorLabel().IsEmpty() ? OwnerActor->GetFName().ToString() : OwnerActor->GetActorLabel();
+
+                std::wstring SceneNameWStr = SceneNameFStr.ToWideString();
+                std::wstring ActorNameWStr = ActorNameFStr.ToWideString();
+                std::replace(ActorNameWStr.begin(), ActorNameWStr.end(), L' ', L'_');
+
+                std::wstring NewScriptNameWStr = SceneNameWStr + L"_" + ActorNameWStr + L".lua";
+                FileSystem::path DestPath;
+
+                try {
+                    DestPath = ScriptSaveFolder / NewScriptNameWStr;
+
+                    // 디렉토리 생성
+                    if (!FileSystem::exists(ScriptSaveFolder)) {
+                        if (!FileSystem::create_directories(ScriptSaveFolder)) {
+                            if (!FileSystem::exists(ScriptSaveFolder)) {
+                                throw FileSystem::filesystem_error("Failed to create directory", ScriptSaveFolder, std::make_error_code(std::errc::operation_not_permitted));
+                            }
+                        }
+                        UE_LOG(LogLevel::Display, TEXT("Created directory: %s"), *FString(ScriptSaveFolder.wstring().c_str()));
+                    }
+
+                    // 템플릿 파일 존재 확인
+                    if (FileSystem::exists(TemplateScriptPath)) {
+                        // 파일 복사
+                        FileSystem::copy_file(TemplateScriptPath, DestPath, FileSystem::copy_options::skip_existing);
+
+                        // 컴포넌트에 스크립트 이름 설정
+                        LuaScriptComp->ScriptName = FString(NewScriptNameWStr); // FString(const std::wstring&) 사용
+
+                        // UI 업데이트
+                        CurrentScriptNameWStr = NewScriptNameWStr;
+                        FullScriptPath = DestPath;
+                        bHasScriptName = true;
+                        UE_LOG(LogLevel::Display, TEXT("Lua script created: %s"), *FString(DestPath.wstring().c_str()));
+
+                        // 필요시 Reload 호출
+                        // LuaComp->ReloadScript();
+
+                    }
+                    else {
+                        UE_LOG(LogLevel::Error, TEXT("Template script file not found: %s"), *FString(TemplateScriptPath.wstring().c_str()));
+                    }
+                }
+                catch (const FileSystem::filesystem_error& e) {
+                    UE_LOG(LogLevel::Error, TEXT("Filesystem error during script creation: Path='%s', Code=%d, Message=%s"),
+                        *FString(e.path1().wstring().c_str()), e.code().value(), *FString(e.what())); // e.what() 변환 필요 시 FString(const char*) 가정
+                }
+                catch (const std::exception& e) {
+                    UE_LOG(LogLevel::Error, TEXT("Error during script creation: %s"), *FString("Generic error"));
+                }
+            }
+        }
+        else // bHasScriptName == true
+        {
+            if (ImGui::Button("Edit Script"))
+            {
+                try {
+                    if (FileSystem::exists(FullScriptPath))
+                    {
+                        std::wstring PathWStr = FullScriptPath.wstring();
+                        std::wstring ParentPathWStr = FullScriptPath.parent_path().wstring();
+
+                        HINSTANCE InstanceHandle = ShellExecuteW(
+                            NULL, L"open", PathWStr.c_str(), NULL, ParentPathWStr.c_str(), SW_SHOWNORMAL);
+
+                        if ((INT_PTR)InstanceHandle <= 32) {
+                            DWORD ErrorCode = GetLastError();
+                            UE_LOG(LogLevel::Error, TEXT("Failed to open script file '%s' with ShellExecuteW. Error Code: %d"), *FString(PathWStr.c_str()), ErrorCode);
+                        }
+                    }
+                    else {
+                        UE_LOG(LogLevel::Error, TEXT("Script file not found for editing: %s"), *FString(FullScriptPath.wstring().c_str()));
+                    }
+                }
+                catch (const FileSystem::filesystem_error& e) {
+                    UE_LOG(LogLevel::Error, TEXT("Filesystem error checking script existence: Path='%s', Code=%d, Message=%s"),
+                        *FString(e.path1().wstring().c_str()), e.code().value(), *FString(e.what()));
+                }
+                catch (const std::exception& e) {
+                    UE_LOG(LogLevel::Error, TEXT("Error checking script existence: %s"), *FString("Generic error"));
+                }
+            }
+            // 필요시 수동 Reload 버튼 추가
+           // ImGui::SameLine();
+           // if (ImGui::Button("Reload")) {
+           //     LuaComp->ReloadScript();
+           //     UE_LOG(LogLuaEditor, Log, TEXT("Manual script reload: %s"), *LuaComp->ScriptName);
+           // }
+        }
+
+        // 2. 스크립트 파일 경로 표시
+        ImGui::Text("Script File:");
+        ImGui::SameLine();
+        // wstring -> UTF-8 char* for ImGui
+        std::string Utf8ScriptName;
+        if (!CurrentScriptNameWStr.empty()) {
+            int BufferSize = WideCharToMultiByte(CP_UTF8, 0, CurrentScriptNameWStr.c_str(), -1, NULL, 0, NULL, NULL);
+            if (BufferSize > 0) {
+                Utf8ScriptName.resize(BufferSize - 1);
+                WideCharToMultiByte(CP_UTF8, 0, CurrentScriptNameWStr.c_str(), -1, &Utf8ScriptName[0], BufferSize, NULL, NULL);
+            }
+        }
+        char ScriptNameBuffer[512];
+        strncpy_s(ScriptNameBuffer, sizeof(ScriptNameBuffer), Utf8ScriptName.c_str(), _TRUNCATE);
+        ImGui::PushItemWidth(-1);
+        ImGui::InputText("##ScriptName", ScriptNameBuffer, sizeof(ScriptNameBuffer), ImGuiInputTextFlags_ReadOnly);
+        ImGui::PopItemWidth();
+
+        ImGui::TreePop(); // "Lua Scripting" TreeNode 닫기
+    }
+    ImGui::PopStyleColor();
 }
 
 void PropertyEditorPanel::OnResize(HWND hWnd)
