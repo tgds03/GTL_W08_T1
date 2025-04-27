@@ -1,4 +1,4 @@
-local Velocity = FVector:new(0.0, 1.0, 0.0)
+local Velocity = FVector(0.0, 1.0, 0.0)
 
 function BeginPlay()
     PrintLog("[BeginPlay] " .. tostring(obj:GetUUID()))

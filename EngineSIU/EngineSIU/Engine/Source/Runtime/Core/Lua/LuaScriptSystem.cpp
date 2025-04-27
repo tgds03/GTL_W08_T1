@@ -69,14 +69,9 @@ void ScriptSystem::BindPrimitiveTypes()
     
     // FVector
     sol::usertype<FVector> vectorTypeTable = lua.new_usertype<FVector>("FVector",
+        sol::call_constructor,
         sol::constructors<FVector(), FVector(float, float, float)>()
     );
-    sol::table vectorMetaTable = vectorTypeTable[sol::metatable_key];
-    vectorMetaTable[mFunc::call] = sol::factories(
-        []() { return FVector(); },
-        [](float x, float y, float z) { return FVector(x, y, z); }
-    );
-    vectorTypeTable[sol::metatable_key] = vectorTypeTable;
 
     vectorTypeTable["x"] = &FVector::X;
     vectorTypeTable["y"] = &FVector::Y;
@@ -96,14 +91,9 @@ void ScriptSystem::BindPrimitiveTypes()
 
     // FRotator
     sol::usertype<FRotator> rotatorTypeTable = lua.new_usertype<FRotator>("FRotator",
+        sol::call_constructor,
         sol::constructors<FRotator(), FRotator(float, float, float)>()
     );
-    sol::table rotatorMetaTable = rotatorTypeTable[sol::metatable_key];
-    rotatorMetaTable[mFunc::call] = sol::factories(
-        []() { return FRotator(); },
-        [](float pitch, float yaw, float roll) { return FRotator(pitch, yaw, roll); }
-    );
-    rotatorTypeTable[sol::metatable_key] = rotatorMetaTable;
     
     rotatorTypeTable["Pitch"] = &FRotator::Pitch;
     rotatorTypeTable["Yaw"] = &FRotator::Yaw;
@@ -118,15 +108,10 @@ void ScriptSystem::BindPrimitiveTypes()
     
     // FString
     sol::usertype<FString> stringTypeTable = lua.new_usertype<FString>("FString",
+        sol::call_constructor,
         sol::constructors<FString(), FString(const std::string&), FString(const ANSICHAR*)>()
     );
-    sol::table stringMetaTable = stringTypeTable[sol::metatable_key];
-    stringMetaTable[mFunc::call] = sol::factories(
-        [](){ return FString(); },
-        [](const std::string& str) { return FString(str); },
-        [](const ANSICHAR* str) { return FString(str); }
-    );
-    stringTypeTable[sol::metatable_key] = stringMetaTable;
+    
     stringTypeTable["ToBool"] = &FString::ToBool;
     stringTypeTable["ToFloat"] = &FString::ToFloat;
     stringTypeTable["ToInt"] = &FString::ToInt;
