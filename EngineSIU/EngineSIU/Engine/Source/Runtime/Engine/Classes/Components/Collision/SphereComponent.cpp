@@ -101,42 +101,88 @@ bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, co
     return DistanceSquared <= RadiusSumABSquared;
 }
 
-void USphereComponent::TickComponent(float DeltaTime)
-{
-    Super::TickComponent(DeltaTime);
+//void USphereComponent::TickComponent(float DeltaTime)
+//{
+//    Super::TickComponent(DeltaTime);
+//
+//    UWorld* MyWorld = GetWorld();
+//    if (!MyWorld) { return; }
+//
+//    ULevel* ActiveLevel = MyWorld->GetActiveLevel();
+//    if (!ActiveLevel) { return; }
+//
+//    // 모든 USphereComponent 찾기. 
+//    for (AActor* ActorInLevel : ActiveLevel->Actors)
+//    {
+//        if (!ActorInLevel) continue;
+//
+//        // 액터의 모든 컴포넌트 순회 (Actor 클래스에 OwnedComponents 같은 멤버가 있다고 가정)
+//        const TSet<UActorComponent*>& Components = ActorInLevel->GetComponents(); // <- AActor의 실제 멤버 변수/함수로 수정!
+//
+//        for (UActorComponent* FoundComp : Components)
+//        {
+//            USphereComponent* OtherSphere = dynamic_cast<USphereComponent*>(FoundComp);
+//
+//            if (!OtherSphere || OtherSphere == this)
+//            {
+//                continue;
+//            }
+//
+//            if (USphereComponent::AreSpheresOverlapping(this, OtherSphere))
+//            {
+//                // 겹치면 로그 출력
+//                AActor* MyOwner = GetOwner();
+//                AActor* OtherOwner = OtherSphere ? OtherSphere->GetOwner() : nullptr;
+//                FString MyOwnerName = MyOwner ? MyOwner->GetName() : TEXT("Unknown");
+//                FString OtherOwnerName = OtherOwner ? OtherOwner->GetName() : TEXT("Unknown");
+//
+//                UE_LOG(LogLevel::Warning, TEXT("[Overlap Tick] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
+//            }
+//        }
+//    }
+//}
 
+void USphereComponent::ManualTickCollisionCheck()
+{
+    UE_LOG(LogLevel::Warning, TEXT("ManualTickCollisionCheck called for: %s"), *GetName()); // ★★★ 추가 ★★★
+    
     UWorld* MyWorld = GetWorld();
     if (!MyWorld) { return; }
 
     ULevel* ActiveLevel = MyWorld->GetActiveLevel();
     if (!ActiveLevel) { return; }
 
-    // 모든 USphereComponent 찾기. 
+    // ★★★ 월드의 모든 액터 순회 ★★★
     for (AActor* ActorInLevel : ActiveLevel->Actors)
     {
         if (!ActorInLevel) continue;
 
-        // 액터의 모든 컴포넌트 순회 (Actor 클래스에 OwnedComponents 같은 멤버가 있다고 가정)
-        const TSet<UActorComponent*>& Components = ActorInLevel->GetComponents(); // <- AActor의 실제 멤버 변수/함수로 수정!
+        // ★★★ 액터의 컴포넌트 목록 가져오기 ★★★
+        const TSet<UActorComponent*>& Components = ActorInLevel->GetComponents();
 
+        // ★★★ 각 컴포넌트가 Sphere 인지 확인하고 충돌 검사 ★★★
         for (UActorComponent* FoundComp : Components)
         {
+            // dynamic_cast 또는 다른 RTTI 방법 사용
             USphereComponent* OtherSphere = dynamic_cast<USphereComponent*>(FoundComp);
 
-            if (!OtherSphere || OtherSphere == this)
+            // 유효하지 않거나 자기 자신이거나, 파괴 중(확인 기능 있다면)이면 건너뛰기
+            if (!OtherSphere || OtherSphere == this /* || OtherSphere->IsBeingDestroyed() */)
             {
                 continue;
             }
 
+            // ★★★ Static 겹침 확인 함수 호출 ★★★
             if (USphereComponent::AreSpheresOverlapping(this, OtherSphere))
             {
                 // 겹치면 로그 출력
                 AActor* MyOwner = GetOwner();
-                AActor* OtherOwner = OtherSphere ? OtherSphere->GetOwner() : nullptr;
+                AActor* OtherOwner = OtherSphere->GetOwner();
                 FString MyOwnerName = MyOwner ? MyOwner->GetName() : TEXT("Unknown");
                 FString OtherOwnerName = OtherOwner ? OtherOwner->GetName() : TEXT("Unknown");
 
-                UE_LOG(LogLevel::Warning, TEXT("[Overlap Tick] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
+                // 로그 매크로 사용 (LogLevel 및 포맷팅 방식 확인)
+                UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
             }
         }
     }

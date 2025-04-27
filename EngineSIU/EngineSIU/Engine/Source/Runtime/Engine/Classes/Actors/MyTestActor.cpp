@@ -24,7 +24,7 @@ void AMyTestActor::BeginPlay()
         if (TestSphere)
         {
             // TestSphere->RegisterComponent(); // <- 삭제! AddComponent가 처리할 것으로 예상
-
+            UE_LOG(LogLevel::Warning, TEXT("BeginPlay: SphereComponent ADDED for %s"), *GetName()); // ★★★ 성공 로그 ★★★
             USceneComponent* CurrentRoot = GetRootComponent();
             if (CurrentRoot) {
                 // SetupAttachment 함수가 USceneComponent에 있다고 가정
@@ -40,4 +40,21 @@ void AMyTestActor::BeginPlay()
         }
     }
     // ★★★ ----------------------------------------- ★★★
+}
+
+void AMyTestActor::Tick(float DeltaTime)
+{
+    UE_LOG(LogLevel::Warning, TEXT("AMyTestActor Tick: %s"), *GetName()); // ★★★ 추가 ★★★
+    Super::Tick(DeltaTime);
+
+    // 내가 가진 SphereComp 찾기
+    USphereComponent* MySphere = GetComponentByClass<USphereComponent>();
+
+    // SphereComp 있다면 수동 충돌 검사 호출
+    if (MySphere)
+    {
+        MySphere->ManualTickCollisionCheck();
+    } else {
+        UE_LOG(LogLevel::Warning, TEXT("Tick: %s has NO SphereComponent!"), *GetName()); // ★★★ 컴포넌트 없음 로그 ★★★
+    }
 }
