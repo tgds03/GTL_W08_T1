@@ -60,7 +60,10 @@ void UScriptableComponent::LoadScriptAndBind()
         UE_LOG(LogLevel::Error, "Can not find %s", GetData(ScriptName));
         return;
     }
-    sol::load_result& loadresult = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
+    
+    sol::state& lua = FEngineLoop::ScriptSys.Lua();
+    std::string scriptText = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
+    sol::load_result loadresult = lua.load_buffer(scriptText.c_str(), scriptText.length());
     sol::function script = loadresult;
     if (script && script.valid())
     {

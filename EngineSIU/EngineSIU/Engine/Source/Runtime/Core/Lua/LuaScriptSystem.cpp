@@ -10,6 +10,7 @@
 #include <Components/ScriptableComponent.h>
 
 extern FEngineLoop GEngineLoop;
+#include <fstream>
 
 void ScriptSystem::Initialize()
 {
@@ -218,12 +219,20 @@ void ScriptSystem::BindEKeys()
 void ScriptSystem::LoadFile(const std::string& fileName)
 {
     // lua.script_file(lua["SCRIPT_PATH"].get<std::string>() + fileName);
-    sol::load_result res = lua.load_file(fileName);
-    if (res.valid())
+    std::ifstream file(fileName);
+    if (!file.is_open())
     {
-        LoadScripts[fileName] = std::move(res);
-        ScriptTimeStamps[fileName] = std::filesystem::last_write_time(fileName);
-    } else
+        UE_LOG(LogLevel::Error, "Failed to open %s", fileName.c_str());
+        return;
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    LoadScripts[fileName] = buffer.str();
+    ScriptTimeStamps[fileName] = std::filesystem::last_write_time(fileName);
+    
+    sol::load_result res = lua.load_file(fileName);
+    if (!res.valid())
     {
         sol::error err = res;
         UE_LOG(LogLevel::Error, "Failed to open %s", err.what());

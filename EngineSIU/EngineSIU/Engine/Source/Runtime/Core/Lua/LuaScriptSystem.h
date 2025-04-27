@@ -11,7 +11,7 @@ public:
     void Tick(float dt);
     void Reload();
     sol::state& Lua() { return lua; }
-    TMap<FString, sol::load_result> LoadScripts;
+    TMap<FString, std::string> LoadScripts;
     TMap<FString, std::filesystem::file_time_type> ScriptTimeStamps;
 private:
     sol::state lua;
