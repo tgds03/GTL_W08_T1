@@ -79,17 +79,23 @@ public:
     void SetOwner(AActor* NewOwner) { Owner = NewOwner; }
 
 public:
-    FVector GetActorLocation() const;
-    FRotator GetActorRotation() const;
-    FVector GetActorScale() const;
+    // FVector GetActorLocation() const;
+    // FRotator GetActorRotation() const;
+    // FVector GetActorScale() const;
+    UFUNCTION_CONST(FVector, GetActorLocation)
+    UFUNCTION_CONST(FRotator, GetActorRotation)
+    UFUNCTION_CONST(FVector, GetActorScale)
 
     FVector GetActorForwardVector() const { return RootComponent ? RootComponent->GetForwardVector() : FVector::ForwardVector; }
     FVector GetActorRightVector() const { return RootComponent ? RootComponent->GetRightVector() : FVector::RightVector; }
     FVector GetActorUpVector() const { return RootComponent ? RootComponent->GetUpVector() : FVector::UpVector; }
 
-    bool SetActorLocation(const FVector& NewLocation);
-    bool SetActorRotation(const FRotator& NewRotation);
-    bool SetActorScale(const FVector& NewScale);
+    // bool SetActorLocation(const FVector& NewLocation);
+    // bool SetActorRotation(const FRotator& NewRotation);
+    // bool SetActorScale(const FVector& NewScale);
+    UFUNCTION(bool, SetActorLocation, const FVector&)
+    UFUNCTION(bool, SetActorRotation, const FRotator&)
+    UFUNCTION(bool, SetActorScale, const FVector&)
 
 protected:
     UPROPERTY

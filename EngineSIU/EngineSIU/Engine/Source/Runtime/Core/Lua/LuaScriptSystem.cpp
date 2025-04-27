@@ -19,6 +19,7 @@ void ScriptSystem::Initialize()
 
     // 스크립트 경로 지정
     lua["SCRIPT_PATH"] = ScriptPath;
+    lua["USERTYPES"] = lua.create_table();
 
     lua.set_exception_handler(&LuaExceptionHandler);
 }
@@ -28,35 +29,26 @@ void ScriptSystem::BindTypes()
     BindPrimitiveTypes();
     BindUObject();
 
-
-    UWorld* World = GEngine->ActiveWorld;
-
-
-    // AActor 클래스 노출
-    // lua.new_usertype<AActor>("Actor",
-    //     "GetLocation", &AActor::GetActorLocation,
-    //     "SetLocation", &AActor::SetActorLocation,
-    //     "Tick", &AActor::Tick
-    // );
-
     // 스폰 함수 바인딩(예: 문자열로 클래스 지정)
     lua.set_function("SpawnActor", [&](const std::string& className, sol::optional<std::string> luaActorName) -> AActor* 
     {
-            // 문자열 FName으로 변환
-            FName fnClassName{ className.c_str() };
+        UWorld* World = GEngine->ActiveWorld;
+        // 문자열 FName으로 변환
+        FString ClassName = className;
+        FName fnClassName(ClassName);
 
-            // UClass* 검색
-            UClass* cls = UClass::FindClass(fnClassName);
-            if (!cls) {
-                // 존재하지 않는 클래스 이름인 경우
-                return nullptr;
-            }
+        // UClass* 검색
+        UClass* cls = UClass::FindClass(fnClassName);
+        if (!cls) {
+            // 존재하지 않는 클래스 이름인 경우
+            return nullptr;
+        }
 
-            FName fnActorName = luaActorName ? FName{luaActorName->c_str()}
-            : FName{}; // 기본 생성자는 none
+        FName fnActorName = luaActorName ? FName{luaActorName->c_str()}
+        : FName{}; // 기본 생성자는 none
 
         //액터 스폰
-        return World->SpawnActor(cls);
+        return World->SpawnActor(cls, fnActorName);
     });
 
     lua.set_function("PrintLog", [](const std::string& str)
@@ -66,7 +58,7 @@ void ScriptSystem::BindTypes()
 
     lua.set_function("PrintObject", [&](const sol::object& obj)
     {
-        UE_LOG(LogLevel::Display, lua_to_string(obj, 0).c_str());
+        UE_LOG(LogLevel::Display, luaToString(obj, 0, true).c_str());
     });
 }
 
@@ -101,6 +93,14 @@ void ScriptSystem::BindUObject()
     {
         meta->BindPropertiesToLua(lua);
     }
+    
+    // sol::usertype<AActor> AActorTypeTable = AActor::GetLuaUserType(lua);
+    // AActorTypeTable["GetLocation"] = &AActor::GetActorLocation;
+    // AActorTypeTable["SetLocation"] = &AActor::SetActorLocation;
+    // AActorTypeTable["GetRotation"] = &AActor::GetActorRotation;
+    // AActorTypeTable["SetRotation"] = &AActor::SetActorRotation;
+    // AActorTypeTable["GetScale"] = &AActor::GetActorScale;
+    // AActorTypeTable["SetScale"] = &AActor::SetActorScale;
 }
 
 void ScriptSystem::LoadFile(const std::string& fileName)
@@ -151,7 +151,7 @@ bool ScriptSystem::IsOutdated(const std::string& fileName)
     return false;
 }
 
-std::string ScriptSystem::lua_to_string(const sol::object& obj, int depth = 0) const {
+std::string ScriptSystem::luaToString(const sol::object& obj, int depth = 0, bool showHidden = 0) const {
     if (obj.is<std::string>()) {
         return "\"" + obj.as<std::string>() + "\"";
     } else if (obj.is<int>()) {
@@ -165,9 +165,11 @@ std::string ScriptSystem::lua_to_string(const sol::object& obj, int depth = 0) c
         sol::table tbl = obj;
         bool first = true;
         for (auto& kv : tbl) {
+            if (!showHidden && kv.first.as<std::string>().starts_with("__"))
+                continue;
             if (!first) result += ", ";
             first = false;
-            result += lua_to_string(kv.first, depth + 1) + " : " + lua_to_string(kv.second, depth + 1);
+            result += luaToString(kv.first, depth + 1, showHidden) + " : " + luaToString(kv.second, depth + 1, showHidden);
         }
         result += "}";
         return result;
@@ -175,7 +177,16 @@ std::string ScriptSystem::lua_to_string(const sol::object& obj, int depth = 0) c
         return "[function]";
     } else if (obj.get_type() == sol::type::nil) {
         return "nil";
-    } else {
+    } else if (obj.get_type() == sol::type::userdata) {
+        sol::table tbl = obj;
+        sol::table metatable = tbl[sol::metatable_key];
+        std::string result = "[";
+        result += metatable["__type"]["name"];
+        result += "]:";
+        result += luaToString(metatable, depth + 1, false);
+        return result;
+    } else
+    {
         return "[unknown type]";
     }
 }
