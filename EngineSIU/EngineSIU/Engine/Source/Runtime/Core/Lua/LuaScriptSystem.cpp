@@ -93,14 +93,6 @@ void ScriptSystem::BindUObject()
     {
         meta->BindPropertiesToLua(lua);
     }
-    
-    // sol::usertype<AActor> AActorTypeTable = AActor::GetLuaUserType(lua);
-    // AActorTypeTable["GetLocation"] = &AActor::GetActorLocation;
-    // AActorTypeTable["SetLocation"] = &AActor::SetActorLocation;
-    // AActorTypeTable["GetRotation"] = &AActor::GetActorRotation;
-    // AActorTypeTable["SetRotation"] = &AActor::SetActorRotation;
-    // AActorTypeTable["GetScale"] = &AActor::GetActorScale;
-    // AActorTypeTable["SetScale"] = &AActor::SetActorScale;
 }
 
 void ScriptSystem::LoadFile(const std::string& fileName)

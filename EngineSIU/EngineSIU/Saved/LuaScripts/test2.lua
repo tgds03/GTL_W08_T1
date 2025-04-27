@@ -1,6 +1,7 @@
 
 local cube = nil
-local a = -1
+local speed = 3
+local direction = -1
 
 function BeginPlay()
     -- PrintObject(obj:GetLocation().x)
@@ -11,5 +12,12 @@ function BeginPlay()
 end
 
 function Tick(dt)
-    obj:SetLocation(FVector(0, 0, 0))
+    local pos = obj:GetActorLocation()
+    pos.x = pos.x + direction * speed * dt
+    if (pos.x > 1) then
+        direction = -1
+    elseif (pos.x < -1) then
+        direction = 1
+    end
+    obj:SetActorLocation(pos)
 end
