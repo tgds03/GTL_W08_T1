@@ -136,6 +136,7 @@
                         "ComponentName": "UScriptableComponent_170",
                         "ComponentOwner": "ACube_167",
                         "ComponentOwnerClass": "ACube",
+                        "ScriptName": "Saved/LuaScripts/test2.lua",
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }
@@ -175,6 +176,7 @@
                         "ComponentName": "UScriptableComponent_174",
                         "ComponentOwner": "ACube_171",
                         "ComponentOwnerClass": "ACube",
+                        "ScriptName": "Saved/LuaScripts/template.lua",
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }

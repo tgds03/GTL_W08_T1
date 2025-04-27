@@ -15,6 +15,23 @@ UObject* UScriptableComponent::Duplicate(UObject* InOuter)
     return NewComponent;
 }
 
+void UScriptableComponent::GetProperties(TMap<FString, FString>& OutProperties) const
+{
+    Super::GetProperties(OutProperties);
+    OutProperties.Add(TEXT("ScriptName"), ScriptName);
+}
+
+void UScriptableComponent::SetProperties(const TMap<FString, FString>& InProperties)
+{
+    Super::SetProperties(InProperties);
+    const FString* TempStr = nullptr;
+    TempStr = InProperties.Find(TEXT("ScriptName"));
+    if (TempStr)
+    {
+        ScriptName = *TempStr;
+    }
+}
+
 void UScriptableComponent::BeginPlay()
 {
     UActorComponent::BeginPlay();

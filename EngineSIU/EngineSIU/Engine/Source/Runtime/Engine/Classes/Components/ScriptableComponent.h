@@ -14,6 +14,8 @@ class UScriptableComponent: public UActorComponent
 public:
     UScriptableComponent();
     virtual UObject* Duplicate(UObject* InOuter) override;
+    void GetProperties(TMap<FString, FString>& OutProperties) const;
+    void SetProperties(const TMap<FString, FString>& InProperties);
     FString GetScriptName();
     virtual void BeginPlay() override;
     virtual void TickComponent(float DeltaTime) override;
