@@ -14,6 +14,7 @@
 #include "Engine/EditorEngine.h"
 #include "Renderer/DepthPrePass.h"
 #include "Renderer/TileLightCullingPass.h"
+#include "InputCore/InputSystem.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -23,6 +24,7 @@ FRenderer FEngineLoop::Renderer;
 UPrimitiveDrawBatch FEngineLoop::PrimitiveDrawBatch;
 FResourceMgr FEngineLoop::ResourceManager;
 ScriptSystem FEngineLoop::ScriptSys;
+FInputSystem FEngineLoop::InputSystem;
 uint32 FEngineLoop::TotalAllocationBytes = 0;
 uint32 FEngineLoop::TotalAllocationCount = 0;
 
@@ -168,6 +170,8 @@ void FEngineLoop::Tick()
 
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
+        // FIXME : Update말고 Tick으로 일관되게 바꾸기
+        FEngineLoop::InputSystem.Update();
         // ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();

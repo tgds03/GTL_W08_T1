@@ -6,6 +6,9 @@
 
 #include "Engine/EditorEngine.h"
 #include "Runtime/Engine/World/World.h"
+#include <InputCore/InputSystem.h>
+
+extern FEngineLoop GEngineLoop;
 
 void ScriptSystem::Initialize()
 {
@@ -21,12 +24,59 @@ void ScriptSystem::Initialize()
     lua["SCRIPT_PATH"] = ScriptPath;
 
     lua.set_exception_handler(&LuaExceptionHandler);
+
+    // 입력 이벤트를 Lua에 연결
+    auto* Handler = GEngineLoop.GetAppMessageHandler();
+
+    Handler->OnKeyDownDelegate.AddLambda([](const FKeyEvent& KeyEvent)
+    {
+        sol::function onKeyDown = FEngineLoop::ScriptSys.Lua()["OnKeyDown"];
+        if (onKeyDown.valid()) {
+            onKeyDown(KeyEvent.GetKeyCode());
+        }
+    });
+
+    Handler->OnKeyUpDelegate.AddLambda([](const FKeyEvent& KeyEvent)
+    {
+        sol::function onKeyUp = FEngineLoop::ScriptSys.Lua()["OnKeyUp"];
+        if (onKeyUp.valid()) {
+            onKeyUp(KeyEvent.GetKeyCode());
+        }
+    });
+
+    Handler->OnMouseDownDelegate.AddLambda([](const FPointerEvent& MouseEvent)
+    {
+        sol::function onMouseDown = FEngineLoop::ScriptSys.Lua()["OnMouseDown"];
+        if (onMouseDown.valid()) {
+            onMouseDown(MouseEvent.GetEffectingButton());
+        }
+    });
+
+    Handler->OnMouseUpDelegate.AddLambda([](const FPointerEvent& MouseEvent)
+        {
+            sol::function onMouseUp = FEngineLoop::ScriptSys.Lua()["OnMouseUp"];
+            if (onMouseUp.valid())
+            {
+                onMouseUp(MouseEvent.GetEffectingButton());
+            }
+        });
+
+    Handler->OnMouseMoveDelegate.AddLambda([](const FPointerEvent& MouseEvent)
+    {
+        sol::function onMouseMove = FEngineLoop::ScriptSys.Lua()["OnMouseMove"];
+        if (onMouseMove.valid())
+        {
+            onMouseMove(MouseEvent.GetScreenSpacePosition().X, MouseEvent.GetScreenSpacePosition().Y);
+        }
+    });
 }
 
 void ScriptSystem::BindTypes()
 {
     BindPrimitiveTypes();
     BindUObject();
+    BindInputSystem();
+    BindEKeys();
 
 
     UWorld* World = GEngine->ActiveWorld;
@@ -36,7 +86,7 @@ void ScriptSystem::BindTypes()
     lua.new_usertype<AActor>("Actor",
         "GetLocation", &AActor::GetActorLocation,
         "SetLocation", &AActor::SetActorLocation,
-        "Tick", &AActor::Tick
+        "ActorTick", &AActor::Tick
     );
 
     // 스폰 함수 바인딩(예: 문자열로 클래스 지정)
@@ -96,6 +146,29 @@ void ScriptSystem::BindUObject()
     {
         meta->BindPropertiesToLua(lua);
     }
+}
+
+void ScriptSystem::BindInputSystem()
+{
+    sol::usertype<FInputSystem> inputSysType = lua.new_usertype<FInputSystem>("InputSystem");
+    inputSysType.set_function("IsKeyDown", &FInputSystem::isKeyDown);
+    lua["Input"] = &GEngineLoop.InputSystem;
+}
+
+void ScriptSystem::BindEKeys()
+{
+    sol::table keys = lua.create_named_table("EKeys");
+
+    keys["Invalid"] = EKeys::Invalid;
+    keys["SpaceBar"] = EKeys::SpaceBar;
+    keys["W"] = EKeys::W;
+    keys["A"] = EKeys::A;
+    keys["S"] = EKeys::S;
+    keys["D"] = EKeys::D;
+    keys["LeftMouseButton"] = EKeys::LeftMouseButton;
+    keys["RightMouseButton"] = EKeys::RightMouseButton;
+
+    // NOTICE : 필요한 키 추가 시 확장
 }
 
 void ScriptSystem::LoadFile(const std::string& fileName)
