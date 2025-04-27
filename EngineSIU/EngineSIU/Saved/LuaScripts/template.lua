@@ -1,11 +1,13 @@
+local Velocity = FVector:new(0.0, 1.0, 0.0)
+
 function BeginPlay()
-    print("[BeginPlay] " .. obj.UUID)
-    obj:PrintLocation()
+    PrintLog("[BeginPlay] " .. tostring(obj:GetUUID()))
+    PrintObject(obj:GetActorLocation())
 end
 
 function EndPlay()
-    print("[EndPlay] " .. obj.UUID)
-    obj:PrintLocation()
+    PrintLog("[EndPlay] " .. tostring(obj:GetUUID()))
+    PrintObject(obj:GetActorLocation())
 end
 
 function OnOverlap(OtherActor)
@@ -13,6 +15,7 @@ function OnOverlap(OtherActor)
 end
 
 function Tick(dt)
-    obj.Location = obj.Location + obj.Velocity * dt
-    obj:PrintLocation()
+    PrintObject(Velocity)
+    obj:SetActorLocation(obj:GetActorLocation() + Velocity * dt)
+    PrintObject(obj:GetActorLocation())
 end

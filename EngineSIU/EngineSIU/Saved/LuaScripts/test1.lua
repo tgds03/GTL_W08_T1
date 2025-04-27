@@ -9,14 +9,15 @@ function BeginPlay()
     PrintLog("BeginPlay")
     PrintObject(obj:GetActorLabel())
     PrintLog("BeginPlay--")
+    -- cube = SpawnActor("ACube", "CubeActor")
 end
 
 function Tick(dt)
     local pos = obj:GetActorLocation()
     pos.x = pos.x + direction * speed * dt
-    if (pos.x > 1) then
+    if (pos.x > 2) then
         direction = -1
-    elseif (pos.x < -1) then
+    elseif (pos.x < -2) then
         direction = 1
     end
     obj:SetActorLocation(pos)

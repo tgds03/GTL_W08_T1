@@ -21,7 +21,6 @@ void UScriptableComponent::BeginPlay()
 
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
     Environment = sol::environment(lua, sol::create, lua.globals());
-    Environment["obj"] = GetOwner();
     
     LoadScriptAndBind();
 
@@ -61,6 +60,8 @@ void UScriptableComponent::LoadScriptAndBind()
         return;
     }
     
+    Environment["obj"] = GetOwner();
+    
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
     std::string scriptText = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
     sol::load_result loadresult = lua.load_buffer(scriptText.c_str(), scriptText.length());
@@ -75,7 +76,10 @@ void UScriptableComponent::LoadScriptAndBind()
             EventFunc.Tick = Environment["Tick"];
             EventFunc.EndPlay = Environment["EndPlay"];
             EventFunc.OnOverlap = Environment["OnOverlap"];
-        } 
+        } else
+        {
+            LogIfErrorExsist("", res);
+        }
     } else if (script)
     {
         sol::error err = loadresult;
@@ -90,7 +94,13 @@ void UScriptableComponent::LogIfErrorExsist(FString funcName, sol::protected_fun
 {
     if (!Result.valid())
     {
-        sol::error err = Result;
-        UE_LOG(LogLevel::Error, "Failed to call %s@%s", GetData(funcName), err.what());
+        if (Result.get_type() == sol::type::string) {
+            sol::error err = Result;
+            UE_LOG(LogLevel::Error, "Failed to call %s@%s", GetData(funcName), err.what());
+        } else
+        {
+            UE_LOG(LogLevel::Error, "Failed to call %s with non-string error", GetData(funcName));
+        }
+        
     }
 }
