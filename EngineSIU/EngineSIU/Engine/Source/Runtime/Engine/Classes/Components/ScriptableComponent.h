@@ -4,8 +4,8 @@
 
 struct SolEventFunc
 {
-    sol::function Tick, BeginPlay, EndPlay;
-    sol::function OnOverlap;
+    sol::protected_function Tick, BeginPlay, EndPlay;
+    sol::protected_function OnOverlap;
 };
 
 class UScriptableComponent: public UActorComponent
@@ -27,4 +27,5 @@ protected:
 private:
     sol::environment Environment;
     void LoadScriptAndBind();
+    void LogIfErrorExsist(FString funcName, sol::protected_function_result& Result);
 };

@@ -22,6 +22,7 @@ void ScriptSystem::Initialize()
 
     // 스크립트 경로 지정
     lua["SCRIPT_PATH"] = ScriptPath;
+    lua["USERTYPES"] = lua.create_table();
 
     lua.set_exception_handler(&LuaExceptionHandler);
 
@@ -78,40 +79,36 @@ void ScriptSystem::BindTypes()
     BindInputSystem();
     BindEKeys();
 
-
-    UWorld* World = GEngine->ActiveWorld;
-
-
-    // AActor 클래스 노출
-    lua.new_usertype<AActor>("Actor",
-        "GetLocation", &AActor::GetActorLocation,
-        "SetLocation", &AActor::SetActorLocation,
-        "ActorTick", &AActor::Tick
-    );
-
     // 스폰 함수 바인딩(예: 문자열로 클래스 지정)
     lua.set_function("SpawnActor", [&](const std::string& className, sol::optional<std::string> luaActorName) -> AActor* 
     {
-            // 문자열 FName으로 변환
-            FName fnClassName{ className.c_str() };
+        UWorld* World = GEngine->ActiveWorld;
+        // 문자열 FName으로 변환
+        FString ClassName = className;
+        FName fnClassName(ClassName);
 
-            // UClass* 검색
-            UClass* cls = UClass::FindClass(fnClassName);
-            if (!cls) {
-                // 존재하지 않는 클래스 이름인 경우
-                return nullptr;
-            }
+        // UClass* 검색
+        UClass* cls = UClass::FindClass(fnClassName);
+        if (!cls) {
+            // 존재하지 않는 클래스 이름인 경우
+            return nullptr;
+        }
 
-            FName fnActorName = luaActorName ? FName{luaActorName->c_str()}
-            : FName{}; // 기본 생성자는 none
+        FName fnActorName = luaActorName ? FName{luaActorName->c_str()}
+        : FName{}; // 기본 생성자는 none
 
         //액터 스폰
-        return World->SpawnActor(cls);
-        });
+        return World->SpawnActor(cls, fnActorName);
+    });
 
     lua.set_function("PrintLog", [](const std::string& str)
     {
         UE_LOG(LogLevel::Display, str.c_str());
+    });
+
+    lua.set_function("PrintObject", [&](const sol::object& obj)
+    {
+        UE_LOG(LogLevel::Display, luaToString(obj, 0, true).c_str());
     });
 }
 
@@ -121,7 +118,8 @@ void ScriptSystem::BindPrimitiveTypes()
     
     // FVector
     sol::usertype<FVector> vectorTypeTable = lua.new_usertype<FVector>("FVector");
-    vectorTypeTable[mFunc::construct] = sol::constructors<FVector(), FVector(float, float, float)>(); 
+    vectorTypeTable[mFunc::construct] = sol::constructors<FVector(), FVector(float, float, float)>();
+    vectorTypeTable[mFunc::call] = sol::constructors<FVector(), FVector(float, float, float)>();
     vectorTypeTable["x"] = &FVector::X;
     vectorTypeTable["y"] = &FVector::Y;
     vectorTypeTable["z"] = &FVector::Z;
@@ -137,6 +135,34 @@ void ScriptSystem::BindPrimitiveTypes()
     vectorTypeTable[mFunc::subtraction] = [](const FVector& a, const FVector& b) { return a - b; };
     vectorTypeTable[mFunc::multiplication] = [](const FVector& v, const float f) { return v * f; };
     vectorTypeTable[mFunc::equal_to] = [](const FVector& a, const FVector& b) { return a == b; };
+
+    // FRotator
+    sol::usertype<FRotator> rotatorTypeTable = lua.new_usertype<FRotator>("FRotator");
+    rotatorTypeTable[mFunc::construct] = sol::constructors<FRotator(), FRotator(float, float, float)>();
+    rotatorTypeTable[mFunc::call] = sol::constructors<FRotator(), FRotator(float, float, float)>();
+    rotatorTypeTable["Pitch"] = &FRotator::Pitch;
+    rotatorTypeTable["Yaw"] = &FRotator::Yaw;
+    rotatorTypeTable["Roll"] = &FRotator::Roll;
+    rotatorTypeTable["Clamp"] = &FRotator::Clamp;
+    rotatorTypeTable["GetNormalized"] = &FRotator::GetNormalized;
+    
+    rotatorTypeTable[mFunc::addition] = [](const FRotator& a, const FRotator& b) { return a + b; };
+    rotatorTypeTable[mFunc::subtraction] = [](const FRotator& a, const FRotator& b) { return a - b; };
+    rotatorTypeTable[mFunc::multiplication] = [](const FRotator& v, const float f) { return v * f; };
+    rotatorTypeTable[mFunc::equal_to] = [](const FRotator& a, const FRotator& b) { return a == b; };
+    
+    // FString
+    sol::usertype<FString> stringTypeTable = lua.new_usertype<FString>("FString");
+    stringTypeTable[mFunc::construct] = sol::constructors<FString(), FString(const std::string&), FString(const ANSICHAR*)>();
+    stringTypeTable[mFunc::call] = sol::constructors<FString(), FString(const std::string&), FString(const ANSICHAR*)>();
+    stringTypeTable["ToBool"] = &FString::ToBool;
+    stringTypeTable["ToFloat"] = &FString::ToFloat;
+    stringTypeTable["ToInt"] = &FString::ToInt;
+    stringTypeTable["Len"] = &FString::Len;
+    stringTypeTable["IsEmpty"] = &FString::IsEmpty;
+
+    stringTypeTable[mFunc::addition] = [](const FString& a, const FString& b) { return a + b; };
+    stringTypeTable[mFunc::equal_to] = [](const FString& a, const FString& b) { return a == b; };
 }
 
 void ScriptSystem::BindUObject()
@@ -177,8 +203,12 @@ void ScriptSystem::LoadFile(const std::string& fileName)
     sol::load_result res = lua.load_file(fileName);
     if (res.valid())
     {
-        LoadScripts[fileName] = res;
+        LoadScripts[fileName] = std::move(res);
         ScriptTimeStamps[fileName] = std::filesystem::last_write_time(fileName);
+    } else
+    {
+        sol::error err = res;
+        UE_LOG(LogLevel::Error, "Failed to open %s", err.what());
     }
 }
 
@@ -214,6 +244,67 @@ bool ScriptSystem::IsOutdated(const std::string& fileName)
     // 만약 메인 파일의 저장된 타임스탬프가 없거나 현재와 다르면 변경된 것으로 처리
     if (!FoundTime || (*FoundTime != currentTime)) { return true; }
     return false;
+}
+
+std::string ScriptSystem::luaToString(const sol::object& obj, int depth = 0, bool showHidden = 0) const {
+    if (obj.get_type() == sol::type::nil) {
+       return "nil";
+    } else if (obj.is<std::string>()) {
+        return "\"" + obj.as<std::string>() + "\"";
+    } else if (obj.is<int>()) {
+        return std::to_string(obj.as<int>());
+    } else if (obj.is<double>()) {
+        return std::to_string(obj.as<double>());
+    } else if (obj.is<bool>()) {
+        return obj.as<bool>() ? "true" : "false";
+    } else if (obj.get_type() == sol::type::table) {
+        std::string result = "{";
+        sol::table tbl = obj;
+        bool first = true;
+        for (auto& kv : tbl) {
+            if (!showHidden && kv.first.as<std::string>().starts_with("__"))
+                continue;
+            if (!first) result += ", ";
+            first = false;
+            result += luaToString(kv.first, depth + 1, showHidden) + " : " + luaToString(kv.second, depth + 1, showHidden);
+        }
+        result += "}";
+        return result;
+    } else if (obj.get_type() == sol::type::function) {
+        return "[function]";
+    } else if (obj.get_type() == sol::type::userdata) {
+        sol::table tbl = obj;
+        sol::table metatable = tbl[sol::metatable_key];
+        std::string type = metatable["__type"]["name"];
+        if (obj.is<FVector>())
+        {
+            std::string result = "[FVector](";
+            result += tbl["x"];
+            result += ", ";
+            result += tbl["y"];
+            result += ", ";
+            result += tbl["z"];
+            result += ")";
+            return result;
+        }
+        else if (obj.is<FString>())
+        {
+            std::string result = "[FString]";
+            result += GetData(obj.as<FString>());
+            return result;
+        }
+        else
+        {
+            std::string result = "[";
+            result += metatable["__type"]["name"];
+            result += "]:";
+            result += luaToString(metatable, depth + 1, false);
+            return result;
+        }
+    } else
+    {
+        return "[unknown type]";
+    }
 }
 
 // https://sol2.readthedocs.io/en/latest/exceptions.html
