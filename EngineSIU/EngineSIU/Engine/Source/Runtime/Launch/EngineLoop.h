@@ -6,7 +6,7 @@
 #include "UnrealEd/PrimitiveDrawBatch.h"
 #include "Stats/ProfilerStatsManager.h"
 #include "Stats/GPUTimingManager.h"
-
+#include "Runtime/Core/Lua/LuaScriptSystem.h"
 
 class FSlateAppMessageHandler;
 class UnrealEd;
@@ -18,6 +18,7 @@ class SSplitterH;
 class FGraphicDevice;
 class SLevelEditor;
 class FDXDBufferManager;
+class ScriptSystem;
 
 class FEngineLoop
 {
@@ -43,6 +44,7 @@ public:
     static FRenderer Renderer;
     static UPrimitiveDrawBatch PrimitiveDrawBatch;
     static FResourceMgr ResourceManager;
+    static ScriptSystem ScriptSys;
     static uint32 TotalAllocationBytes;
     static uint32 TotalAllocationCount;
 

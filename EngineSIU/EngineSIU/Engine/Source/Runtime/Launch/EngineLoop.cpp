@@ -22,6 +22,7 @@ FGraphicsDevice FEngineLoop::GraphicDevice;
 FRenderer FEngineLoop::Renderer;
 UPrimitiveDrawBatch FEngineLoop::PrimitiveDrawBatch;
 FResourceMgr FEngineLoop::ResourceManager;
+ScriptSystem FEngineLoop::ScriptSys;
 uint32 FEngineLoop::TotalAllocationBytes = 0;
 uint32 FEngineLoop::TotalAllocationCount = 0;
 
@@ -54,7 +55,7 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
 
     UnrealEditor->Initialize();
     GraphicDevice.Initialize(AppWnd);
-
+    
     if (!GPUTimingManager.Initialize(GraphicDevice.Device, GraphicDevice.DeviceContext))
     {
         UE_LOG(LogLevel::Error, TEXT("Failed to initialize GPU Timing Manager!"));
@@ -83,6 +84,7 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     PrimitiveDrawBatch.Initialize(&GraphicDevice);
     UIMgr->Initialize(AppWnd, GraphicDevice.Device, GraphicDevice.DeviceContext);
     ResourceManager.Initialize(&Renderer, &GraphicDevice);
+    ScriptSys.Initialize();
     
     uint32 ClientWidth = 0;
     uint32 ClientHeight = 0;
@@ -92,8 +94,11 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     GEngine = FObjectFactory::ConstructObject<UEditorEngine>(nullptr);
     GEngine->Init();
 
+    // ScriptSys.DoFile("main.lua");
+    
     UpdateUI();
 
+    ScriptSys.BindTypes();
     return 0;
 }
 
@@ -163,6 +168,7 @@ void FEngineLoop::Tick()
 
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
+        // ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
         UnrealEditor->Render();

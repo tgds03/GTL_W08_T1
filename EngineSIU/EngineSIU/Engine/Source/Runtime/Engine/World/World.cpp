@@ -116,6 +116,7 @@ void UWorld::Tick(float DeltaTime)
 
 void UWorld::BeginPlay()
 {
+    FEngineLoop::ScriptSys.Reload();
     for (AActor* Actor : ActiveLevel->Actors)
     {
         if (Actor->GetWorld() == this)
