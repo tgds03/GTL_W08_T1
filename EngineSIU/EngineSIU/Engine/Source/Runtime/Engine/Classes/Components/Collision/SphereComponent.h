@@ -21,5 +21,7 @@ public:
     float CalculateMaxAbsXYZ(const FVector& WorldScale3D) const;
 
     static bool AreSpheresOverlapping(const USphereComponent* SphereA, const USphereComponent* SphereB);
+
+    virtual void TickComponent(float DeltaTime) override;
 };
 

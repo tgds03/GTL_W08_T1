@@ -1,4 +1,34 @@
-#include "SphereComponent.h"
+// --- 엔진/라이브러리 헤더 (Include 경로 기준으로 작성) ---
+
+// ActorComponent.h ( 기준: ...\Engine\Classes\ -> Components/ActorComponent.h )
+#include "Components/ActorComponent.h"
+
+// World.h ( 기준: ...\Engine\ -> World/World.h - 실제 경로 확인 필요! )
+// 예시 경로: Engine/World/World.h 또는 Public/World.h 등일 수 있음
+#include "Engine/World/World.h" // <- World.h의 정확한 상대 경로 확인 후 수정!
+
+// Object.h ( 기준: ...\CoreUObject\ -> UObject/Object.h )
+#include "UObject/Object.h"
+
+// String.h ( 기준: ...\Core\ -> Container/String.h )
+#include "Container/String.h"
+
+// Actor.h ( 기준: ...\Engine\Classes\ -> GameFramework/Actor.h )
+#include "GameFramework/Actor.h"
+
+// MathUtility.h ( 기준: ...\Core\ -> Math/MathUtility.h )
+#include "Math/MathUtility.h" // <- FMath 들어있는 헤더 이름 확인!
+
+// Vector.h ( 기준: ...\Core\ -> Math/Vector.h )
+#include "Math/Vector.h"
+
+// Define.h ( 기준: Engine\Source\ -> Define.h 또는 특정 폴더 아래?)
+// Define.h의 정확한 위치에 따라 경로 수정 필요
+#include "Define.h" // <- Define.h의 정확한 상대 경로 확인 후 수정!
+
+
+// --- 자기 자신 헤더 ---
+#include "SphereComponent.h" // SphereComponent.cpp와 같은 폴더에 있으므로 경로 없음
 
 USphereComponent::USphereComponent()
 {
@@ -71,6 +101,43 @@ bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, co
     return DistanceSquared <= RadiusSumABSquared;
 }
 
+void USphereComponent::TickComponent(float DeltaTime)
+{
+    Super::TickComponent(DeltaTime);
 
+    UWorld* MyWorld = GetWorld();
+    if (!MyWorld) { return; }
 
+    ULevel* ActiveLevel = MyWorld->GetActiveLevel();
+    if (!ActiveLevel) { return; }
 
+    // 모든 USphereComponent 찾기. 
+    for (AActor* ActorInLevel : ActiveLevel->Actors)
+    {
+        if (!ActorInLevel) continue;
+
+        // 액터의 모든 컴포넌트 순회 (Actor 클래스에 OwnedComponents 같은 멤버가 있다고 가정)
+        const TSet<UActorComponent*>& Components = ActorInLevel->GetComponents(); // <- AActor의 실제 멤버 변수/함수로 수정!
+
+        for (UActorComponent* FoundComp : Components)
+        {
+            USphereComponent* OtherSphere = dynamic_cast<USphereComponent*>(FoundComp);
+
+            if (!OtherSphere || OtherSphere == this)
+            {
+                continue;
+            }
+
+            if (USphereComponent::AreSpheresOverlapping(this, OtherSphere))
+            {
+                // 겹치면 로그 출력
+                AActor* MyOwner = GetOwner();
+                AActor* OtherOwner = OtherSphere ? OtherSphere->GetOwner() : nullptr;
+                FString MyOwnerName = MyOwner ? MyOwner->GetName() : TEXT("Unknown");
+                FString OtherOwnerName = OtherOwner ? OtherOwner->GetName() : TEXT("Unknown");
+
+                UE_LOG(LogLevel::Warning, TEXT("[Overlap Tick] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
+            }
+        }
+    }
+}
