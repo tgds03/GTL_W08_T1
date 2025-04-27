@@ -5,7 +5,7 @@
 #include "Math/Rotator.h"
 
 class UStaticMeshComponent;
-class ULuaScriptComponent;
+class UScriptableComponent;
 
 // 헬퍼 함수 예시
 template<typename Getter, typename Setter>
@@ -47,7 +47,7 @@ private:
     void RenderCreateMaterialView();
 
     // Lua Script Edit
-    void RenderLuaScriptEdit(ULuaScriptComponent* LuaScriptComp);
+    void RenderLuaScriptEdit(UScriptableComponent* LuaScriptComp);
 private:
     float Width = 0, Height = 0;
     FVector Location = FVector(0, 0, 0);

@@ -6,6 +6,8 @@
 
 #include "Engine/EditorEngine.h"
 #include "Runtime/Engine/World/World.h"
+#include "Components/ScriptableComponent.h"
+#include "UObject/UObjectIterator.h"
 
 void ScriptSystem::Initialize()
 {
@@ -159,6 +161,11 @@ void ScriptSystem::Reload()
         if (IsOutdated(GetData(path)))
         {
             LoadFile(GetData(path));
+
+            for (const auto iter : TObjectRange<UScriptableComponent>())
+            {
+                iter->LoadScriptAndBind();
+            }
         }
     }
 }

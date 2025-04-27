@@ -1,9 +1,9 @@
-﻿#include "GameFramework/Actor.h"
+#include "GameFramework/Actor.h"
 #include "ScriptableComponent.h"
 
 UScriptableComponent::UScriptableComponent()
 {
-    ScriptName = "Saved/LuaScripts/template.lua";
+    //ScriptName = "Saved/LuaScripts/template.lua";
 }
 
 UObject* UScriptableComponent::Duplicate(UObject* InOuter)
