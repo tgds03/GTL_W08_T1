@@ -37,6 +37,9 @@ public:
     sol::environment GetEnvironment() { return Environment; }
     SolEventFunc GetEventFunc() { return EventFunc; }
 
+    void GetProperties(TMap<FString, FString>& OutProperties) const;
+    void SetProperties(const TMap<FString, FString>& InProperties);
+
     void LoadScriptAndBind();
 protected:
     SolEventFunc EventFunc;
