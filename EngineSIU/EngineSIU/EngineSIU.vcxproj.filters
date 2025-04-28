@@ -806,6 +806,9 @@
     <ClCompile Include="Engine\Source\Runtime\Core\Stats\ProfilerStatsManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\ShadowManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Lua\LuaScriptSystem.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ScriptableComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Collision\SphereComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -883,6 +886,9 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShadowManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Stats\StatDefine.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaScriptSystem.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ScriptableComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\Collision\SphereComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
