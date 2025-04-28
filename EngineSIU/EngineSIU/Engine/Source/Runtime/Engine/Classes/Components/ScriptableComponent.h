@@ -2,6 +2,7 @@
 #include "ActorComponent.h"
 #include "sol/sol.hpp"
 #include "Engine/Classes/Components/ScriptableComponent.h"
+#include "Collision/SphereComponent.h"
 
 enum class HandlerType : int
 {
@@ -33,6 +34,7 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     UPROPERTY(FString, ScriptName)
+    FString ScriptName;
     
     sol::environment GetEnvironment() { return Environment; }
     SolEventFunc GetEventFunc() { return EventFunc; }
@@ -41,6 +43,10 @@ public:
     void SetProperties(const TMap<FString, FString>& InProperties);
 
     void LoadScriptAndBind();
+
+    // Lua OnOverlap 콜백을 호출하기 위한 C++ 핸들러
+    UFUNCTION(void, HandleSphereOverlap, USphereComponent* OverlappedComponent, USphereComponent* OtherComponent)
+    void HandleSphereOverlap(USphereComponent* OverlappedComponent, USphereComponent* OtherComponent);
 protected:
     SolEventFunc EventFunc;
 private:

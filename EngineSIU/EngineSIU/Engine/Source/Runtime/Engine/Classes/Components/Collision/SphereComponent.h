@@ -1,13 +1,22 @@
 #pragma once
 #include "Components/ShapeComponent.h"
+#include "Delegates/Delegate.h"
+
+class USphereComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FComponentBeginOverlapSignature, USphereComponent*, OverlappedComponent, USphereComponent*, OtherComponent);
 
 class USphereComponent : public UShapeComponent
 {
+    DECLARE_CLASS(USphereComponent, UShapeComponent)
     float SphereRadius;
 
 public:
     USphereComponent();
-    
+
+    UPROPERTY(FComponentBeginOverlapSignature, OnComponentBeginOverlap)
+    FComponentBeginOverlapSignature OnComponentBeginOverlap;
+
     // Getter Function
     // 월드 공간에서의 구의 중심점 위치를 FVector 타입으로 돌려주는 함수
     FVector GetSphereCenterLocationInWorld() const;
