@@ -39,7 +39,8 @@ public:
 
 public:
     /** 이 Actor를 제거합니다. */
-    virtual bool Destroy();
+    // virtual bool Destroy();
+    UFUNCTION(bool, Destroy)
 
     /** 현재 Actor가 제거중인지 여부를 반환합니다. */
     bool IsActorBeingDestroyed() const

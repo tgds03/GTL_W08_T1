@@ -15,7 +15,7 @@ ACube::ACube()
     //USphereComponent* sphere = AddComponent<USphereComponent>();
     //sphere->AttachToComponent(RootComponent);
     // --- ★★★ 생성자 로직 수정 ★★★ ---
-    UE_LOG(LogLevel::Display, TEXT("ACube '%s': Constructor started."), *GetName());
+    // UE_LOG(LogLevel::Display, TEXT("ACube '%s': Constructor started."), *GetName());
 
     // 1. AddComponent 호출 (결과를 UActorComponent* 로 받음)
     UActorComponent* AddedComp = AddComponent<USphereComponent>(FName("MySimpleSphere"));
@@ -29,7 +29,7 @@ ACube::ACube()
         // 4. 캐스팅 성공 여부 확인
         if (CreatedSphere != nullptr)
         {
-            UE_LOG(LogLevel::Display, TEXT("ACube '%s': Successfully created and casted SphereComponent."), *GetName());
+            // UE_LOG(LogLevel::Display, TEXT("ACube '%s': Successfully created and casted SphereComponent."), *GetName());
 
             // 5. 루트 컴포넌트에 붙이기 (이제 CreatedSphere는 USceneComponent의 자식이므로 가능!)
             USceneComponent* CurrentRoot = GetRootComponent();
@@ -38,36 +38,36 @@ ACube::ACube()
                 // ★★★ SetupAttachment 호출 가능! ★★★
                 CreatedSphere->SetupAttachment(CurrentRoot);
                 CreatedSphere->SetSphereRadius(GetActorScale()); // 반지름 설정
-                UE_LOG(LogLevel::Display, TEXT("ACube '%s': SphereComponent attached to Root."), *GetName());
+                // UE_LOG(LogLevel::Display, TEXT("ACube '%s': SphereComponent attached to Root."), *GetName());
             }
             else
             {
                 // ★★★ SetRootComponent 호출 가능! ★★★
                 SetRootComponent(CreatedSphere);
                 CreatedSphere->SetSphereRadius(GetActorScale());
-                UE_LOG(LogLevel::Display, TEXT("ACube '%s': SphereComponent set as Root."), *GetName());
+                // UE_LOG(LogLevel::Display, TEXT("ACube '%s': SphereComponent set as Root."), *GetName());
             }
         }
         else
         {
             // 캐스팅 실패 로그
             FString AddedCompClassName = AddedComp->GetClass() ? AddedComp->GetClass()->GetName() : TEXT("UnknownClass");
-            UE_LOG(LogLevel::Error, TEXT("ACube '%s': AddComponent succeeded but Cast/dynamic_cast to USphereComponent FAILED! Added component was type: %s"), *GetName(), *AddedCompClassName);
+            // UE_LOG(LogLevel::Error, TEXT("ACube '%s': AddComponent succeeded but Cast/dynamic_cast to USphereComponent FAILED! Added component was type: %s"), *GetName(), *AddedCompClassName);
         }
     }
     else
     {
         // AddComponent 실패 로그
-        UE_LOG(LogLevel::Error, TEXT("ACube '%s': AddComponent<USphereComponent> returned NULL!"), *GetName());
+        // UE_LOG(LogLevel::Error, TEXT("ACube '%s': AddComponent<USphereComponent> returned NULL!"), *GetName());
     }
 
     // --- StaticMesh 설정 ---
     if (StaticMeshComponent)
     {
-        StaticMeshComponent->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/Reference/Reference.obj"));
+        StaticMeshComponent->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/Sphere.obj"));
     }
 
-    UE_LOG(LogLevel::Display, TEXT("ACube '%s': Constructor finished."), *GetName());
+    // UE_LOG(LogLevel::Display, TEXT("ACube '%s': Constructor finished."), *GetName());
 }
 
 void ACube::Tick(float DeltaTime)

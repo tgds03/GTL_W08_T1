@@ -164,7 +164,7 @@ bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, co
 
 void USphereComponent::ManualTickCollisionCheck()
 {
-    UE_LOG(LogLevel::Warning, TEXT("ManualTickCollisionCheck called for: %s"), GetData(GetOwner()->GetName())); // ★★★ 추가 ★★★
+    // UE_LOG(LogLevel::Warning, TEXT("ManualTickCollisionCheck called for: %s"), GetData(GetOwner()->GetName())); // ★★★ 추가 ★★★
     
     UWorld* MyWorld = GetWorld();
     if (!MyWorld) { return; }
@@ -197,6 +197,7 @@ void USphereComponent::ManualTickCollisionCheck()
 
             // 로그 매크로 사용 (LogLevel 및 포맷팅 방식 확인)
             //UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
+            // UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
 
             // 델리게이트 호출
             OnComponentBeginOverlap.Broadcast(this, OtherSphere);
