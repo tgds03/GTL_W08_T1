@@ -11,7 +11,7 @@ public:
     void Tick(float dt);
     void Reload();
     sol::state& Lua() { return lua; }
-    TMap<FString, sol::load_result> LoadScripts;
+    TMap<FString, std::string> LoadScripts;
     TMap<FString, std::filesystem::file_time_type> ScriptTimeStamps;
 private:
     sol::state lua;
@@ -20,7 +20,7 @@ private:
     void LoadFile(const std::string& fileName);
     bool IsOutdated(const std::string& fileName);
     const FString ScriptPath = "Saved/LuaScripts/";
-    std::string luaToString(const sol::object& obj, int depth, bool showHidden) const;
+    static std::string luaToString(const sol::object& obj, int depth, bool showHidden);
 };
 
 int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> exception, sol::string_view desc);
