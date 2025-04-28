@@ -156,6 +156,7 @@
                         "ComponentName": "UScriptableComponent_154",
                         "ComponentOwner": "ACube_151",
                         "ComponentOwnerClass": "ACube",
+                        "ScriptName": "Saved/LuaScripts/test2.lua",
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }

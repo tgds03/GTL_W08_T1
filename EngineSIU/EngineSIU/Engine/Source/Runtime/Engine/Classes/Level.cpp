@@ -11,11 +11,16 @@ void ULevel::InitLevel(UWorld* InOwningWorld)
 
 void ULevel::Release()
 {
-    
+    // EndPlay에서 SpawnActor하는 이상한 상황 대응.
+    // EndPlay와 RemoveObject를 분리.
+    TArray<AActor*> actors = Actors;
+    for (AActor* Actor : actors)
+    {
+        Actor->EndPlay(EEndPlayReason::WorldTransition);
+    }
     
     for (AActor* Actor : Actors)
     {
-        Actor->EndPlay(EEndPlayReason::WorldTransition);
         TSet<UActorComponent*> Components = Actor->GetComponents();
         for (UActorComponent* Component : Components)
         {

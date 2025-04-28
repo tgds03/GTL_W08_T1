@@ -11,6 +11,10 @@
 #include "Components/Light/AmbientLightComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextComponent.h"
+#include "Components/ScriptableComponent.h" 
+#include <filesystem>
+#include <Windows.h>
+#include <shellapi.h>
 #include "Engine/EditorEngine.h"
 #include "Engine/FLoaderOBJ.h"
 #include "UnrealEd/ImGuiWidget.h"
@@ -70,6 +74,7 @@ void PropertyEditorPanel::Render()
         ImGui::SetItemDefaultFocus();
         // TreeNode 배경색을 변경 (기본 상태)
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+        ImGui::Text("UUID: %d", PickedActor->GetUUID());
         if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
         {
             Location = PickedActor->GetActorLocation();
@@ -110,6 +115,8 @@ void PropertyEditorPanel::Render()
         ImGui::PopStyleColor();
     }
 
+ 
+
     if (PickedActor)
     {
         if (ImGui::Button("Duplicate"))
@@ -119,10 +126,14 @@ void PropertyEditorPanel::Render()
         }
     }
 
+            
+
     if (PickedActor)
     {
         if (UScriptableComponent* scriptableComponent = Cast<UScriptableComponent>(PickedActor->GetComponentByClass<UScriptableComponent>()))
         {
+            RenderLuaScriptEdit(scriptableComponent);
+
             if (ImGui::BeginCombo("Script", GetData(scriptableComponent->ScriptName)))
             {
                 FEngineLoop::ScriptSys.Reload();
@@ -1011,6 +1022,393 @@ void PropertyEditorPanel::RenderCreateMaterialView()
     }
 
     ImGui::End();
+}
+
+void PropertyEditorPanel::RenderLuaScriptEdit(UScriptableComponent* LuaScriptComp)
+{
+    namespace fs = std::filesystem; // Use alias for brevity
+
+    if (!LuaScriptComp) return;
+
+    AActor* OwnerActor = Cast<AActor>(LuaScriptComp->GetOwner());
+    if (!OwnerActor) return;
+
+    // --- Configuration ---
+    // TEXT() macro resolves to L"" on Windows Unicode builds (standard for Unreal)
+    // std::filesystem::path works correctly with wide strings.
+    const fs::path ScriptSaveFolder = fs::path(TEXT("Saved")) / TEXT("LuaScripts");
+    const fs::path TemplateScriptPath = ScriptSaveFolder / TEXT("template.lua");
+    const std::wstring DefaultExtension = L".lua";
+
+    // --- ImGui Styling ---
+    ImGui::Separator();
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.15f, 0.1f, 1.0f));
+
+    if (ImGui::TreeNodeEx("Lua Scripting", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        // --- State Variables ---
+        FString CurrentScriptNameFStr = LuaScriptComp->ScriptName;
+        std::wstring CurrentScriptNameWStr = CurrentScriptNameFStr.ToWideString();
+        fs::path FullScriptPath; // Full path to the *currently assigned* script
+        bool bHasScriptName = !CurrentScriptNameWStr.empty();
+
+        // Buffer for the new script name input field
+        static char NewScriptNameBuffer[256] = ""; // Keep state between frames
+
+        // Calculate full path if a script name exists
+        if (bHasScriptName) {
+            try {
+                // Ensure we only take the filename part from the stored string,
+                // just in case it somehow contains path separators.
+                FullScriptPath = ScriptSaveFolder / fs::path(CurrentScriptNameWStr).filename();
+            }
+            catch (const std::exception& e) {
+                // Log using Unreal's logging system
+                UE_LOG(LogLevel::Error, TEXT("Error creating full script path from existing name '%s': %s"),
+                    *CurrentScriptNameFStr, *FString("Generic path error"));
+                // If path creation fails, treat as if no script name exists for safety
+                bHasScriptName = false;
+                CurrentScriptNameWStr.clear();
+                LuaScriptComp->ScriptName = FString(); // Clear invalid script name
+            }
+        }
+
+        // --- UI Elements ---
+
+        // 1. Create Script Button (Always Visible)
+        if (ImGui::Button("Create Script"))
+        {
+            std::string NewScriptNameUtf8 = NewScriptNameBuffer;
+            if (!NewScriptNameUtf8.empty())
+            {
+                // Convert UTF-8 input from ImGui to wstring
+                std::wstring NewScriptNameBaseWStr;
+                int BufferSize = MultiByteToWideChar(CP_UTF8, 0, NewScriptNameUtf8.c_str(), -1, NULL, 0);
+                if (BufferSize > 0) {
+                    NewScriptNameBaseWStr.resize(BufferSize - 1); // Exclude null terminator
+                    MultiByteToWideChar(CP_UTF8, 0, NewScriptNameUtf8.c_str(), -1, &NewScriptNameBaseWStr[0], BufferSize);
+                }
+
+                if (!NewScriptNameBaseWStr.empty())
+                {
+                    // Append extension
+                    std::wstring NewScriptNameWithExtWStr = NewScriptNameBaseWStr + DefaultExtension;
+                    fs::path DestPath;
+
+                    try {
+                        DestPath = ScriptSaveFolder / NewScriptNameWithExtWStr;
+
+                        // Create directory if it doesn't exist
+                        if (!fs::exists(ScriptSaveFolder)) {
+                            std::error_code ec;
+                            if (!fs::create_directories(ScriptSaveFolder, ec)) {
+                                // Check again after attempting creation, another process might have created it
+                                if (!fs::exists(ScriptSaveFolder)) {
+                                    // Throw if creation failed and directory still doesn't exist
+                                    throw fs::filesystem_error("Failed to create directory", ScriptSaveFolder, ec);
+                                }
+                            }
+                            else {
+                                UE_LOG(LogLevel::Display, TEXT("Created directory: %s"), *FString(ScriptSaveFolder.wstring().c_str()));
+                            }
+                        }
+
+                        // Check if template exists before copying
+                        if (fs::exists(TemplateScriptPath)) {
+                            std::error_code copy_ec;
+                            fs::copy_file(TemplateScriptPath, DestPath, fs::copy_options::skip_existing, copy_ec); // Use skip_existing
+
+                            if (copy_ec) {
+                                // Log error but continue, maybe the file existed and skip_existing worked as intended
+                                UE_LOG(LogLevel::Warning, TEXT("Filesystem warning during script copy (template to '%s'): Code=%d, Message=%hs"),
+                                    *FString(DestPath.wstring().c_str()), copy_ec.value(), copy_ec.message().c_str());
+                                // It's okay if it already exists, we still want to assign the name
+                            }
+                            else {
+                                UE_LOG(LogLevel::Display, TEXT("Copied template to create Lua script: %s"), *FString(DestPath.wstring().c_str()));
+                            }
+
+                            // --- Success: Update component and UI state ---
+                            LuaScriptComp->ScriptName = FString(DestPath.c_str()); // Assign the new name with extension
+
+                            // Update local state for immediate UI feedback
+                            CurrentScriptNameFStr = LuaScriptComp->ScriptName;
+                            CurrentScriptNameWStr = NewScriptNameWithExtWStr;
+                            FullScriptPath = DestPath;
+                            bHasScriptName = true;
+
+                            // Clear the input buffer after successful creation
+                            NewScriptNameBuffer[0] = '\0';
+
+                            // Optional: Reload the script if the component supports it
+                            // LuaScriptComp->ReloadScript();
+
+                        }
+                        else {
+                            UE_LOG(LogLevel::Error, TEXT("Template script file not found, cannot create new script: %s"), *FString(TemplateScriptPath.wstring().c_str()));
+                            // Optionally show an ImGui error popup
+                            // ImGui::OpenPopup("Template Missing");
+                        }
+                    }
+                    catch (const fs::filesystem_error& e) {
+                        UE_LOG(LogLevel::Error, TEXT("Filesystem error during script creation: Path1='%s', Path2='%s', Code=%d, Message=%hs"),
+                            *FString(e.path1().wstring().c_str()), *FString(e.path2().wstring().c_str()), e.code().value(), e.what());
+                        // Optionally show an ImGui error popup
+                    }
+                    catch (const std::exception& e) {
+                        UE_LOG(LogLevel::Error, TEXT("Generic error during script creation: %hs"), e.what());
+                        // Optionally show an ImGui error popup
+                    }
+                }
+                else {
+                    UE_LOG(LogLevel::Warning, TEXT("Cannot create script with an empty name."));
+                    // Optionally show an ImGui warning
+                }
+            }
+            else {
+                UE_LOG(LogLevel::Warning, TEXT("New script name input is empty."));
+                // Optionally show an ImGui warning
+            }
+        } // End Create Script Button
+
+        // 2. Edit Script Button (Only if ScriptName exists)
+        if (bHasScriptName)
+        {
+            ImGui::SameLine(); // Place next to Create Script button
+            if (ImGui::Button("Edit Script"))
+            {
+                try {
+                    // Re-check existence right before opening
+                    if (fs::exists(FullScriptPath))
+                    {
+                        std::wstring PathToOpenWStr = fs::absolute(FullScriptPath).wstring(); // Use absolute path for ShellExecute
+
+                        // Use ShellExecuteW for wide strings on Windows
+                        HINSTANCE InstanceHandle = ShellExecuteW(
+                            NULL,        // Owner window handle (optional)
+                            L"open",     // Operation (open, edit, print, etc.)
+                            PathToOpenWStr.c_str(), // File path
+                            NULL,        // Parameters (if any)
+                            NULL,        // Default directory (can be NULL)
+                            SW_SHOWNORMAL // Show command
+                        );
+
+                        // Check ShellExecuteW result (<= 32 indicates an error)
+                        if ((INT_PTR)InstanceHandle <= 32) {
+                            DWORD ErrorCode = GetLastError(); // Get detailed error code
+                            UE_LOG(LogLevel::Error, TEXT("Failed to open script file '%s' with ShellExecuteW. Error Code: %d"),
+                                *FString(PathToOpenWStr.c_str()), ErrorCode);
+                            // Consider providing more user-friendly error messages based on common error codes
+                        }
+                        else {
+                            UE_LOG(LogLevel::Display, TEXT("Attempting to open script: %s"), *FString(PathToOpenWStr.c_str()));
+                        }
+                    }
+                    else {
+                        UE_LOG(LogLevel::Error, TEXT("Script file not found for editing, cannot open: %s"), *FString(FullScriptPath.wstring().c_str()));
+                        // Consider removing the invalid script name from the component here
+                        // LuaScriptComp->ScriptName = FString();
+                        // bHasScriptName = false; // Update UI state
+                        // CurrentScriptNameWStr.clear();
+                    }
+                }
+                catch (const fs::filesystem_error& e) {
+                    UE_LOG(LogLevel::Error, TEXT("Filesystem error checking script existence before edit: Path='%s', Code=%d, Message=%hs"),
+                        *FString(e.path1().wstring().c_str()), e.code().value(), e.what());
+                }
+                catch (const std::exception& e) {
+                    UE_LOG(LogLevel::Error, TEXT("Generic error checking script existence before edit: %hs"), e.what());
+                }
+            } // End Edit Script Button
+        } // End if(bHasScriptName) for Edit Button
+
+         // 1. Input field for new script name
+        ImGui::Spacing();
+        ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x ); // Adjust width as needed
+        ImGui::InputTextWithHint("##NewScriptName", "Enter New Script Name", NewScriptNameBuffer, sizeof(NewScriptNameBuffer));
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+
+        // 4. Display Current Script File Path (Read-Only)
+        ImGui::Spacing(); // Add some vertical space
+        ImGui::Text("Current Script:");
+        ImGui::SameLine();
+
+        // Convert wstring to UTF-8 for ImGui display
+        std::string CurrentScriptNameUtf8;
+        if (!CurrentScriptNameWStr.empty()) {
+            int BufferSize = WideCharToMultiByte(CP_UTF8, 0, CurrentScriptNameWStr.c_str(), -1, NULL, 0, NULL, NULL);
+            if (BufferSize > 0) {
+                std::vector<char> Buffer(BufferSize); // Use vector for dynamic size
+                WideCharToMultiByte(CP_UTF8, 0, CurrentScriptNameWStr.c_str(), -1, Buffer.data(), BufferSize, NULL, NULL);
+                CurrentScriptNameUtf8 = Buffer.data(); // Assign from buffer data
+            }
+        }
+        // Use a temporary buffer for ImGui, as InputText modifies its buffer argument if not ReadOnly
+        char DisplayScriptNameBuffer[512];
+        strncpy_s(DisplayScriptNameBuffer, sizeof(DisplayScriptNameBuffer), CurrentScriptNameUtf8.c_str(), _TRUNCATE);
+
+        ImGui::PushItemWidth(-1); // Use full available width
+        ImGui::InputText("##CurrentScriptNameDisplay", DisplayScriptNameBuffer, sizeof(DisplayScriptNameBuffer), ImGuiInputTextFlags_ReadOnly);
+        ImGui::PopItemWidth();
+
+        // --- End of TreeNode ---
+        ImGui::TreePop();
+    } // End TreeNode "Lua Scripting"
+
+    // --- Pop Style ---
+    ImGui::PopStyleColor();
+    //if (!LuaScriptComp) return;
+
+    //AActor* OwnerActor = Cast<AActor>(LuaScriptComp->GetOwner());
+    //if (!OwnerActor) return;
+
+    //namespace FileSystem = std::filesystem; // 네임스페이스 앨리어스
+
+    //const FileSystem::path ScriptSaveFolder = FileSystem::path(TEXT("Saved")) / TEXT("LuaScripts");
+    //const FileSystem::path TemplateScriptPath = ScriptSaveFolder / TEXT("template.lua");
+    //const std::wstring DefaultExtension = L".lua";
+    //
+    //ImGui::Separator();
+    //ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.15f, 0.1f, 1.0f));
+
+    //if (ImGui::TreeNodeEx("Lua Scripting", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+    //{
+    //    FString CurrentScriptNameFStr = LuaScriptComp->ScriptName;
+    //    std::wstring CurrentScriptNameWStr = CurrentScriptNameFStr.ToWideString();
+    //    FileSystem::path FullScriptPath;
+    //    bool bHasScriptName = !CurrentScriptNameWStr.empty();
+
+    //    // Buffer for the new script name input field
+    //    static char NewScriptNameBuffer[256] = ""; // Keep state between frames
+
+    //    if (bHasScriptName) {
+    //        try {
+    //            FullScriptPath = ScriptSaveFolder / FileSystem::path(CurrentScriptNameWStr).filename();
+    //        }
+    //        catch (const std::exception& e) {
+    //            UE_LOG(LogLevel::Error, TEXT("Error creating script path: %s"), *FString("Generic path error"));
+    //            bHasScriptName = false;
+    //        }
+    //    }
+
+    //    // Input field for new script name
+    //    ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * 0.6f); // Adjust width as needed
+    //    ImGui::InputTextWithHint("##NewScriptName", "Enter New Script Name (e.g., MyActorLogic)", NewScriptNameBuffer, sizeof(NewScriptNameBuffer));
+    //    ImGui::PopItemWidth();
+    //    ImGui::SameLine();
+
+    //    if (!bHasScriptName)
+    //    {
+    //        if (ImGui::Button("Create Script"))
+    //        {
+    //            // 스크립트 이름 생성
+    //            FString SceneNameFStr = OwnerActor->GetWorld() ? OwnerActor->GetWorld()->GetName() : TEXT("UnknownScene");
+    //            FString ActorNameFStr = OwnerActor->GetActorLabel().IsEmpty() ? OwnerActor->GetFName().ToString() : OwnerActor->GetActorLabel();
+
+    //            std::wstring SceneNameWStr = SceneNameFStr.ToWideString();
+    //            std::wstring ActorNameWStr = ActorNameFStr.ToWideString();
+    //            std::replace(ActorNameWStr.begin(), ActorNameWStr.end(), L' ', L'_');
+
+    //            std::wstring NewScriptNameWStr = SceneNameWStr + L"_" + ActorNameWStr + L".lua";
+    //            FileSystem::path DestPath;
+
+    //            try {
+    //                DestPath = ScriptSaveFolder / NewScriptNameWStr;
+
+    //                // 디렉토리 생성
+    //                if (!FileSystem::exists(ScriptSaveFolder)) {
+    //                    if (!FileSystem::create_directories(ScriptSaveFolder)) {
+    //                        if (!FileSystem::exists(ScriptSaveFolder)) {
+    //                            throw FileSystem::filesystem_error("Failed to create directory", ScriptSaveFolder, std::make_error_code(std::errc::operation_not_permitted));
+    //                        }
+    //                    }
+    //                    UE_LOG(LogLevel::Display, TEXT("Created directory: %s"), *FString(ScriptSaveFolder.wstring().c_str()));
+    //                }
+
+    //                // 템플릿 파일 존재 확인
+    //                if (FileSystem::exists(TemplateScriptPath)) {
+    //                    // 파일 복사
+    //                    FileSystem::copy_file(TemplateScriptPath, DestPath, FileSystem::copy_options::skip_existing);
+
+    //                    // 컴포넌트에 스크립트 이름 설정
+    //                    LuaScriptComp->ScriptName = FString(NewScriptNameWStr); // FString(const std::wstring&) 사용
+
+    //                    // UI 업데이트
+    //                    CurrentScriptNameWStr = NewScriptNameWStr;
+    //                    FullScriptPath = DestPath;
+    //                    bHasScriptName = true;
+    //                    UE_LOG(LogLevel::Display, TEXT("Lua script created: %s"), *FString(DestPath.wstring().c_str()));
+
+    //                    // 필요시 Reload 호출
+    //                    // LuaComp->ReloadScript();
+
+    //                }
+    //                else {
+    //                    UE_LOG(LogLevel::Error, TEXT("Template script file not found: %s"), *FString(TemplateScriptPath.wstring().c_str()));
+    //                }
+    //            }
+    //            catch (const FileSystem::filesystem_error& e) {
+    //                UE_LOG(LogLevel::Error, TEXT("Filesystem error during script creation: Path='%s', Code=%d, Message=%s"),
+    //                    *FString(e.path1().wstring().c_str()), e.code().value(), *FString(e.what()));
+    //            }
+    //            catch (const std::exception& e) {
+    //                UE_LOG(LogLevel::Error, TEXT("Error during script creation: %s"), *FString("Generic error"));
+    //            }
+    //        }
+    //    }
+    //    else // bHasScriptName == true
+    //    {
+    //        if (ImGui::Button("Edit Script"))
+    //        {
+    //            try {
+    //                if (FileSystem::exists(FullScriptPath))
+    //                {
+    //                    std::wstring PathWStr = FullScriptPath.wstring();
+    //                    std::wstring ParentPathWStr = FullScriptPath.parent_path().wstring();
+    //                    HINSTANCE InstanceHandle = ShellExecuteW(
+    //                        NULL, L"open", PathWStr.c_str(), NULL, NULL, SW_SHOWNORMAL);
+
+    //                    if ((INT_PTR)InstanceHandle <= 32) {
+    //                        DWORD ErrorCode = GetLastError();
+    //                        UE_LOG(LogLevel::Error, TEXT("Failed to open script file '%s' with ShellExecuteW. Error Code: %d"), *FString(PathWStr.c_str()), ErrorCode);
+    //                    }
+    //                }
+    //                else {
+    //                    UE_LOG(LogLevel::Error, TEXT("Script file not found for editing: %s"), *FString(FullScriptPath.wstring().c_str()));
+    //                }
+    //            }
+    //            catch (const FileSystem::filesystem_error& e) {
+    //                UE_LOG(LogLevel::Error, TEXT("Filesystem error checking script existence: Path='%s', Code=%d, Message=%s"),
+    //                    *FString(e.path1().wstring().c_str()), e.code().value(), *FString(e.what()));
+    //            }
+    //            catch (const std::exception& e) {
+    //                UE_LOG(LogLevel::Error, TEXT("Error checking script existence: %s"), *FString("Generic error"));
+    //            }
+    //        }
+    //    }
+
+    //    // 2. 스크립트 파일 경로 표시
+    //    ImGui::Text("Script File:");
+    //    ImGui::SameLine();
+    //    // wstring -> UTF-8 char* for ImGui
+    //    std::string Utf8ScriptName;
+    //    if (!CurrentScriptNameWStr.empty()) {
+    //        int BufferSize = WideCharToMultiByte(CP_UTF8, 0, CurrentScriptNameWStr.c_str(), -1, NULL, 0, NULL, NULL);
+    //        if (BufferSize > 0) {
+    //            Utf8ScriptName.resize(BufferSize - 1);
+    //            WideCharToMultiByte(CP_UTF8, 0, CurrentScriptNameWStr.c_str(), -1, &Utf8ScriptName[0], BufferSize, NULL, NULL);
+    //        }
+    //    }
+    //    char ScriptNameBuffer[512];
+    //    strncpy_s(ScriptNameBuffer, sizeof(ScriptNameBuffer), Utf8ScriptName.c_str(), _TRUNCATE);
+    //    ImGui::PushItemWidth(-1);
+    //    ImGui::InputText("##ScriptName", ScriptNameBuffer, sizeof(ScriptNameBuffer), ImGuiInputTextFlags_ReadOnly);
+    //    ImGui::PopItemWidth();
+
+    //    ImGui::TreePop(); // "Lua Scripting" TreeNode 닫기
+    //}
+    //ImGui::PopStyleColor();
 }
 
 void PropertyEditorPanel::OnResize(HWND hWnd)
