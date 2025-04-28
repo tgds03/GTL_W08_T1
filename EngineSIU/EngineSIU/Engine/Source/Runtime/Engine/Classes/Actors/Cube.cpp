@@ -9,7 +9,8 @@
 
 ACube::ACube()
 {    
-    AddComponent<USphereComponent>();
+    USphereComponent* sphere = AddComponent<USphereComponent>();
+    sphere->AttachToComponent(RootComponent);
 
     // Begin Test
     //StaticMeshComponent->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/helloBlender.obj"));

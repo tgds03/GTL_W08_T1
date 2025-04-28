@@ -3,6 +3,7 @@
 #include "Math/JungleMath.h"
 #include "UObject/Casts.h"
 #include "UObject/ObjectFactory.h"
+#include "GameFramework/Actor.h"
 
 USceneComponent::USceneComponent()
     : RelativeLocation(FVector(0.f, 0.f, 0.f))
@@ -153,7 +154,9 @@ FVector USceneComponent::GetWorldLocation() const
     {
         return AttachParent->GetWorldLocation() + RelativeLocation;
     }
-    return RelativeLocation;
+    else {
+        return RelativeLocation;
+    }
 }
 
 FRotator USceneComponent::GetWorldRotation() const

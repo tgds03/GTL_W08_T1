@@ -38,6 +38,7 @@ USphereComponent::USphereComponent()
 FVector USphereComponent::GetSphereCenterLocationInWorld() const
 {
     // 부모 클래스(USceneComponent)에 이미 구현된 함수를 호출합니다.
+    //return GetOwner()->GetActorLocation();
     return GetWorldLocation();
 }
 
