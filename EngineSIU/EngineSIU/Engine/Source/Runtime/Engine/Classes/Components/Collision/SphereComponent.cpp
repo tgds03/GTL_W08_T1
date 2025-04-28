@@ -35,6 +35,15 @@ USphereComponent::USphereComponent()
     SphereRadius = 50.0f;
 }
 
+UObject* USphereComponent::Duplicate(UObject* InOuter)
+{
+    ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate(InOuter));
+
+    NewComponent->SphereRadius = SphereRadius;
+
+    return NewComponent;
+}
+
 FVector USphereComponent::GetSphereCenterLocationInWorld() const
 {
     // 부모 클래스(USceneComponent)에 이미 구현된 함수를 호출합니다.
@@ -71,6 +80,11 @@ float USphereComponent::GetSphereScaledRadius() const
     const float ScaledRadius = BaseRadius * MaxAbsScaleXYZ;
     
     return ScaledRadius;
+}
+
+void USphereComponent::SetSphereRadius(float NewRadius)
+{
+    SphereRadius = NewRadius;
 }
 
 bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, const USphereComponent* SphereB)
