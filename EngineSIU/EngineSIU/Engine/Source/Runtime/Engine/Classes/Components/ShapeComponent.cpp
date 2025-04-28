@@ -19,3 +19,14 @@ bool UShapeComponent::CheckCollision(const UShapeComponent* A, const UShapeCompo
     }
     return false;
 }
+
+UObject* UShapeComponent::Duplicate(UObject* InOuter)
+{
+    ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate(InOuter));
+
+    NewComponent->ShapeColor = ShapeColor;
+    NewComponent->bDrawOnlyIfSelected = bDrawOnlyIfSelected;
+
+
+    return NewComponent;
+}

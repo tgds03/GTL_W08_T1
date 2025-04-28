@@ -34,6 +34,16 @@ USphereComponent::USphereComponent()
 {
     ShapeType = EShapeType::Sphere;
     SphereRadius = 50.0f;
+
+}
+
+UObject* USphereComponent::Duplicate(UObject* InOuter)
+{
+    ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate(InOuter));
+
+    NewComponent->SphereRadius = SphereRadius;
+
+    return NewComponent;
 }
 
 FVector USphereComponent::GetSphereCenterLocationInWorld() const
@@ -72,6 +82,11 @@ float USphereComponent::GetSphereScaledRadius() const
     const float ScaledRadius = BaseRadius * MaxAbsScaleXYZ;
     
     return ScaledRadius;
+}
+
+void USphereComponent::SetSphereRadius(float NewRadius)
+{
+    SphereRadius = NewRadius;
 }
 
 void USphereComponent::SetSphereRadius(FVector InScale)
@@ -184,6 +199,9 @@ void USphereComponent::ManualTickCollisionCheck()
 
             // 로그 매크로 사용 (LogLevel 및 포맷팅 방식 확인)
             UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
+
+            // 델리게이트 호출
+            OnComponentBeginOverlap.Broadcast(this, OtherSphere);
         }
     }
 }
