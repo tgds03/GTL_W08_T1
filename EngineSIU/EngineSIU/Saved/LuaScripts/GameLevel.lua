@@ -32,12 +32,10 @@ function Tick(dt)
                 fireball.position = fireball.position + fireball.velocity
                 fireball.ball:SetActorLocation(fireball.position)
                 fireball.light:SetActorLocation(fireball.position)
-                if (time - fireball.borntime > 15) then
-                    fireball.ball:Destroy()
-                    fireball.light:Destroy()
-                    fireball.ball = nil
-                    fireball.light = nil
-                    fireball.destroyed = true
+                if (fireball.position.x > 25 or fireball.position.x < -25) then
+                    fireball:Destroy()
+                elseif (fireball.position.y > 25) then
+                    fireball:Destroy()
                 end
             end
         end
@@ -52,7 +50,13 @@ function SpawnFireball(index)
     fireball.position = FVector(math.random(-25, 25), -30, player:GetActorLocation().z)
     fireball.velocity = player:GetActorLocation() - fireball.position
     fireball.velocity = fireball.velocity:Normal(0.01) * 0.1
-    fireball.borntime = time
     fireball.destroyed = false
+    fireball.Destroy = function (o) 
+        o.ball:Destroy()
+        o.light:Destroy()
+        o.ball = nil
+        o.light = nil
+        o.destroyed = true
+    end
     return fireball
 end

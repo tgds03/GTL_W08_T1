@@ -64,7 +64,7 @@
                         "ComponentName": "StaticMeshComponent_0",
                         "ComponentOwner": "ACube_127",
                         "ComponentOwnerClass": "ACube",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=1.216",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=2.156",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "StaticMeshPath": "Contents/Reference/Reference.obj",
@@ -89,6 +89,19 @@
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "UScriptableComponent",
+                    "ComponentID": "UScriptableComponent_134",
+                    "Properties": {
+                        "ComponentClass": "UScriptableComponent",
+                        "ComponentName": "UScriptableComponent_134",
+                        "ComponentOwner": "ACube_127",
+                        "ComponentOwnerClass": "ACube",
+                        "ScriptName": "Saved/LuaScripts/Player.lua",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
                     }
                 }
             ],

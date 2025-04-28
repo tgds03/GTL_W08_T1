@@ -32,7 +32,9 @@
 
 USphereComponent::USphereComponent()
 {
-    SphereRadius = 100.f;
+    ShapeType = EShapeType::Sphere;
+    SphereRadius = 50.0f;
+
 }
 
 UObject* USphereComponent::Duplicate(UObject* InOuter)
@@ -92,18 +94,18 @@ void USphereComponent::SetSphereRadius(FVector InScale)
     SphereRadius = CalculateMaxAbsXYZ(InScale);
 }
 
-bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, const USphereComponent* SphereB)
+bool USphereComponent::AreSpheresOverlapping(USphereComponent* Other)
 {
-    if (SphereA == nullptr || SphereB == nullptr)
+    if (this == nullptr || Other == nullptr)
     {
         return false;
     }
     
-    FVector CenterOfSphereA = SphereA->GetSphereCenterLocationInWorld();
-    FVector CenterOfSphereB = SphereB->GetSphereCenterLocationInWorld();
+    FVector CenterOfSphereA = this->GetSphereCenterLocationInWorld();
+    FVector CenterOfSphereB = Other->GetSphereCenterLocationInWorld();
 
-    float RadiusOfSphereA = SphereA->GetSphereScaledRadius();
-    float RadiusOfSphereB = SphereB->GetSphereScaledRadius();
+    float RadiusOfSphereA = this->GetSphereScaledRadius();
+    float RadiusOfSphereB = Other->GetSphereScaledRadius();
 
     const float DeltaX = CenterOfSphereA.X - CenterOfSphereB.X;
     const float DeltaY = CenterOfSphereA.Y - CenterOfSphereB.Y;
@@ -117,8 +119,13 @@ bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, co
 
     const float RadiusSumAB = RadiusOfSphereA + RadiusOfSphereB;
     const float RadiusSumABSquared = FMath::Square(RadiusSumAB);
-
-    return DistanceSquared <= RadiusSumABSquared;
+    bool bResult = DistanceSquared <= RadiusSumABSquared;
+    if (bResult)
+    {
+        // 델리게이트 호출
+        OnComponentBeginOverlap.Broadcast(this, Other);
+    }
+    return bResult;
 }
 
 //void USphereComponent::TickComponent(float DeltaTime)
@@ -187,7 +194,7 @@ void USphereComponent::ManualTickCollisionCheck()
         }
 
         // ★★★ Static 겹침 확인 함수 호출 ★★★
-        if (USphereComponent::AreSpheresOverlapping(this, OtherSphere))
+        if (USphereComponent::AreSpheresOverlapping(OtherSphere))
         {
             // 겹치면 로그 출력
             AActor* MyOwner = GetOwner();
@@ -199,8 +206,6 @@ void USphereComponent::ManualTickCollisionCheck()
             //UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
             // UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
 
-            // 델리게이트 호출
-            OnComponentBeginOverlap.Broadcast(this, OtherSphere);
         }
     }
 }
