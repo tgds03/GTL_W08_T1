@@ -178,9 +178,9 @@ void FEngineLoop::Tick()
         // ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
-        if (GEngine->ActiveWorld->WorldType == EWorldType::Editor) {
-            UnrealEditor->Render();
-        }
+        //if (GEngine->ActiveWorld->WorldType == EWorldType::Editor) {
+        UnrealEditor->Render();
+        //}
         if (GEngine->ActiveWorld->WorldType == EWorldType::PIE) {
 
             // 1) 한 번만 크기 설정
