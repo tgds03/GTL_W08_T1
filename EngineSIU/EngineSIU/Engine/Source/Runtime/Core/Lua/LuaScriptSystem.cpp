@@ -64,6 +64,11 @@ void ScriptSystem::BindTypes()
     {
         UE_LOG(LogLevel::Display, luaToString(obj, 0, true).c_str());
     });
+
+    lua.set_function("GetActorByName", [&](const std::string& str)
+    {
+        return GetActorByName(str);
+    });
 }
 
 void ScriptSystem::BindPrimitiveTypes()
@@ -118,6 +123,7 @@ void ScriptSystem::BindPrimitiveTypes()
     stringTypeTable["ToBool"] = &FString::ToBool;
     stringTypeTable["ToFloat"] = &FString::ToFloat;
     stringTypeTable["ToInt"] = &FString::ToInt;
+    stringTypeTable["ToString"] = [](const FString& String) -> const char* { return GetData(String); };
     stringTypeTable["Len"] = &FString::Len;
     stringTypeTable["IsEmpty"] = &FString::IsEmpty;
 
@@ -226,6 +232,19 @@ bool ScriptSystem::IsOutdated(const std::string& fileName)
     // 만약 메인 파일의 저장된 타임스탬프가 없거나 현재와 다르면 변경된 것으로 처리
     if (!FoundTime || (*FoundTime != currentTime)) { return true; }
     return false;
+}
+
+AActor* ScriptSystem::GetActorByName(const std::string& name) const
+{
+    TArray<AActor*> Actors = GEngine->ActiveWorld->GetActiveLevel()->Actors;
+    for (AActor* Actor: Actors)
+    {
+        if (Actor->GetOriginalActorLabel() == FString(name))
+        {
+            return Actor;
+        }
+    }
+    return nullptr;
 }
 
 std::string ScriptSystem::luaToString(const sol::object& obj, int depth = 0, bool showHidden = 0) {

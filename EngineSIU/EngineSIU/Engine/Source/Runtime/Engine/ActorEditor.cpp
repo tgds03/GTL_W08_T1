@@ -27,7 +27,10 @@ FString AActor::GetActorLabel() const
 
 FString AActor::GetOriginalActorLabel() const
 {
-    return OriginalActorLabel;
+    if (OriginalActorLabel.IsEmpty())
+        return GetDefaultActorLabel();
+    else 
+        return OriginalActorLabel;
 }
 
 void AActor::SetActorLabel(const FString& NewActorLabel, bool bUUID)

@@ -26,8 +26,8 @@ private:
     bool IsOutdated(const std::string& fileName);
     sol::environment SharedEnviroment;
     const FString ScriptPath = "Saved/LuaScripts/";
+    AActor* GetActorByName(const std::string& name) const;
     static std::string luaToString(const sol::object& obj, int depth, bool showHidden);
-    
 };
 
 int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> exception, sol::string_view desc);

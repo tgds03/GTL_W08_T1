@@ -17,6 +17,8 @@ end
 
 function Tick(dt)
     time = time + dt
+    PrintLog(ACube167:GetOriginalActorLabel():ToString())
+    PrintObject(GetActorByName("ACube167"))
     local pivot = ACube167:GetActorLocation()   -- 현재 씬의 액터 참조하기
 
     local radius = 10
