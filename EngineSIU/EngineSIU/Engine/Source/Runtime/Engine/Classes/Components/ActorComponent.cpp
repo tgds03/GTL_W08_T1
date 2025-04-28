@@ -2,6 +2,14 @@
 
 #include "GameFramework/Actor.h"
 
+struct UActorComponent::GetOwner_PropRegister {
+    GetOwner_PropRegister()
+    {
+        BindFunctions().Add("GetOwner", [](sol::usertype<ThisClass> table) {
+            table["GetOwner"] = &ThisClass::GetOwner;
+            });
+    }
+} GetOwner_PropRegister_;
 
 UObject* UActorComponent::Duplicate(UObject* InOuter)
 {
@@ -98,6 +106,11 @@ void UActorComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
     assert(bHasBegunPlay);
 
     bHasBegunPlay = false;
+}
+
+AActor* UActorComponent::GetOwner() const 
+{ 
+    return OwnerPrivate; 
 }
 
 void UActorComponent::DestroyComponent()

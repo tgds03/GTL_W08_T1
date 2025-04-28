@@ -20,8 +20,11 @@ public:
     void InitPIEScript(TArray<AActor*> LevelActors);
 private:
     sol::state lua;
+    
     void BindPrimitiveTypes();
     void BindUObject();
+    void BindInputSystem();
+    void BindEKeys();
     void LoadFile(const std::string& fileName);
     bool IsOutdated(const std::string& fileName);
     sol::environment SharedEnviroment;
