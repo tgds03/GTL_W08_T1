@@ -59,6 +59,7 @@ public:
 
     //FIXME : 시연용 하드코딩
     bool IsPlaying = true;
+    int Score = 0;
     
 private:
     FString WorldName = "DefaultWorld";

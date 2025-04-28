@@ -300,3 +300,7 @@ void AActor::SetIsPlayingOff() {
 void AActor::SetIsPlayingOn() {
     GEngine->ActiveWorld->IsPlaying = true;
 }
+
+void AActor::SetScore(int score) {
+    GEngine->ActiveWorld->Score = score;
+}
