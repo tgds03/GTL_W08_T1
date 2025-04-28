@@ -18,6 +18,6 @@ public:
     EShapeType ShapeType;
     bool bCollisionEnabled = true;
 
-    static bool CheckCollision(const UShapeComponent* A, const UShapeComponent* B);
+    static bool CheckCollision(UShapeComponent* A, UShapeComponent* B);
 };
 

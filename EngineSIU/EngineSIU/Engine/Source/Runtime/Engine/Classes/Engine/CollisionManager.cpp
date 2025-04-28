@@ -55,6 +55,7 @@ void FCollisionManager::CheckCollision()
 
                     // 로그 매크로 사용 (LogLevel 및 포맷팅 방식 확인)
                     UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
+
                 }
             }
         }
