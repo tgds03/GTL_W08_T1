@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "ActorComponent.h"
 #include "sol/sol.hpp"
 
@@ -24,10 +24,12 @@ public:
     UPROPERTY(FString, ScriptName)
     
     sol::environment GetEnvironment() { return Environment; }
+
+    void LoadScriptAndBind();
 protected:
     SolEventFunc EventFunc;
 private:
     sol::environment Environment;
-    void LoadScriptAndBind();
+    
     void LogIfErrorExsist(FString funcName, sol::protected_function_result& Result);
 };

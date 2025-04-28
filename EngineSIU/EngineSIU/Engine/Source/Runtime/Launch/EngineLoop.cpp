@@ -165,10 +165,10 @@ void FEngineLoop::Tick()
         }
 
         const float DeltaTime = static_cast<float>(ElapsedTime / 1000.f);
-
+        ScriptSys.Reload();
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
-        // ScriptSys.Tick(DeltaTime);
+        //ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
         UnrealEditor->Render();
