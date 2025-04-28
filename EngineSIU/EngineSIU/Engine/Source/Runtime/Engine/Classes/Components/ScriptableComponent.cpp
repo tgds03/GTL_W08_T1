@@ -36,41 +36,50 @@ void UScriptableComponent::BeginPlay()
     // Key down 이벤트 델리게이트 등록
     auto* Handler = GEngineLoop.GetAppMessageHandler();
 
+
+    // NOTCIE : Add 순서 HandleType 키워드 순서에 맞게 해줘야 함.
     if (EventFunc.OnKeyDown.valid())
     {
-        Handler->OnKeyDownDelegate.AddLambda([this](const FKeyEvent& KeyEvent)
+        FDelegateHandle KeyDownHandle = Handler->OnKeyDownDelegate.AddLambda([this](const FKeyEvent& KeyEvent)
         {
                 sol::protected_function_result Result = EventFunc.OnKeyDown(KeyEvent.GetKey());
                 LogIfErrorExist("OnKeyDown", Result);
 
         });
 
+        InputHandlers.Add(KeyDownHandle);
+
+
     }
     if (EventFunc.OnKeyUp.valid())
     {
-        Handler->OnKeyUpDelegate.AddLambda([this](const FKeyEvent& KeyEvent)
+        FDelegateHandle KeyUpHandle = Handler->OnKeyUpDelegate.AddLambda([this](const FKeyEvent& KeyEvent)
         {
             sol::protected_function_result Result = EventFunc.OnKeyUp(KeyEvent.GetKey());
             LogIfErrorExist("OnKeyUp", Result);
 
         });
+
+        InputHandlers.Add(KeyUpHandle);
     }
     if (EventFunc.OnMouseDown.valid())
     {
-        Handler->OnMouseDownDelegate.AddLambda([this](const FPointerEvent& PointerEvent)
+        FDelegateHandle MouseDownHandle = Handler->OnMouseDownDelegate.AddLambda([this](const FPointerEvent& PointerEvent)
         {
             sol::protected_function_result Result = EventFunc.OnMouseDown(PointerEvent.GetEffectingButton());
             LogIfErrorExist("OnMouseDown", Result);
         });
+        InputHandlers.Add(MouseDownHandle);
     }
     if (EventFunc.OnMouseMove.valid())
     {
-        Handler->OnMouseMoveDelegate.AddLambda([this](const FPointerEvent& PointerEvent)
+        FDelegateHandle MouseMoveHandle = Handler->OnMouseMoveDelegate.AddLambda([this](const FPointerEvent& PointerEvent)
         {
             sol::protected_function_result Result = EventFunc.OnMouseMove(
                 PointerEvent.GetScreenSpacePosition().X, PointerEvent.GetScreenSpacePosition().Y);
             LogIfErrorExist("OnMouseMove", Result);
         });
+        InputHandlers.Add(MouseMoveHandle);
     }
 }
 
@@ -87,7 +96,30 @@ void UScriptableComponent::TickComponent(float DeltaTime)
 
 void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    
+    auto* Handler = GEngineLoop.GetAppMessageHandler();
+
+    for (int i = 0; i < InputHandlers.Num(); i++) {
+        if (InputHandlers[i].IsValid())
+        {
+            switch (i) {
+            case static_cast<int>(HandlerType::KeyDown):
+                Handler->OnKeyDownDelegate.Remove(InputHandlers[i]);
+                break;
+            case static_cast<int>(HandlerType::KeyUp):
+                Handler->OnKeyUpDelegate.Remove(InputHandlers[i]);
+                break;
+            case static_cast<int>(HandlerType::MouseDown):
+                Handler->OnMouseDownDelegate.Remove(InputHandlers[i]);
+                break;
+            case static_cast<int>(HandlerType::MouseMove):
+                Handler->OnMouseMoveDelegate.Remove(InputHandlers[i]);
+                break;
+            }
+        }
+    }
+
+    InputHandlers.Empty();
+
     if (EventFunc.EndPlay.valid())
     {
         sol::protected_function_result Result = EventFunc.EndPlay(EndPlayReason);
@@ -118,6 +150,7 @@ void UScriptableComponent::LoadScriptAndBind()
             EventFunc.EndPlay = Environment["EndPlay"];
             EventFunc.OnOverlap = Environment["OnOverlap"];
             EventFunc.OnKeyDown = Environment["OnKeyDown"];
+            EventFunc.OnKeyUp = Environment["OnKeyUp"];
             EventFunc.OnMouseDown = Environment["OnMouseDown"];
             EventFunc.OnMouseMove = Environment["OnMouseMove"];
         } 

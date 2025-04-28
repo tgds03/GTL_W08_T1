@@ -3,6 +3,15 @@
 #include "sol/sol.hpp"
 #include "Engine/Classes/Components/ScriptableComponent.h"
 
+enum class HandlerType : int
+{
+    KeyDown,
+    KeyUp,
+    MouseDown,
+    MouseMove,
+    InputEnd
+};
+
 struct SolEventFunc
 {
     sol::protected_function Tick, BeginPlay, EndPlay;
@@ -33,4 +42,6 @@ private:
     sol::environment Environment;
     void LoadScriptAndBind();
     void LogIfErrorExist(FString funcName, sol::protected_function_result& Result);
+
+    TArray<FDelegateHandle> InputHandlers;
 };
