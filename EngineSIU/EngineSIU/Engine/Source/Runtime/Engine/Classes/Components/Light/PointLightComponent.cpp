@@ -11,7 +11,7 @@ UPointLightComponent::UPointLightComponent()
 
     PointLightInfo.LightColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    PointLightInfo.Intensity = 1000.f;
+    PointLightInfo.Intensity = 50.f;
     PointLightInfo.Type = ELightType::POINT_LIGHT;
     PointLightInfo.Attenuation = 20.0f;
 
