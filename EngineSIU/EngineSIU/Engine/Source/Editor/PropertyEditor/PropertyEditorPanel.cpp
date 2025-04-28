@@ -19,6 +19,7 @@
 #include "Engine/Engine.h"
 #include "Components/HeightFogComponent.h"
 #include "Components/ProjectileMovementComponent.h"
+#include "Components/ScriptableComponent.h"
 #include "GameFramework/Actor.h"
 #include "Engine/AssetManager.h"
 #include "LevelEditor/SLevelEditor.h"
@@ -62,6 +63,7 @@ void PropertyEditorPanel::Render()
 
     AEditorPlayer* Player = Engine->GetEditorPlayer();
     AActor* PickedActor = Engine->GetSelectedActor();
+
 
     if (PickedActor)
     {
@@ -117,6 +119,31 @@ void PropertyEditorPanel::Render()
         }
     }
 
+    if (PickedActor)
+    {
+        if (UScriptableComponent* scriptableComponent = Cast<UScriptableComponent>(PickedActor->GetComponentByClass<UScriptableComponent>()))
+        {
+            if (ImGui::BeginCombo("Script", GetData(scriptableComponent->ScriptName)))
+            {
+                FEngineLoop::ScriptSys.Reload();
+                for (const auto& pair: FEngineLoop::ScriptSys.LoadScripts)
+                {
+                    std::string filename = (pair.Key.Len() > 0) ? GetData(pair.Key) : "##";
+                    if (ImGui::Selectable(filename.c_str()))
+                    {
+                        scriptableComponent->ScriptName = pair.Key;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        } else
+        {
+            if (ImGui::Button("Add ScriptableComp"))
+            {
+                PickedActor->AddComponent(UScriptableComponent::StaticClass());
+            }
+        }
+    }
     //// TODO: 추후에 RTTI를 이용해서 프로퍼티 출력하기
     //if (PickedActor)
     //    if (ULightComponent* lightObj = PickedActor->GetComponentByClass<ULightComponent>())
@@ -586,6 +613,8 @@ void PropertyEditorPanel::Render()
             ImGui::PopStyleColor();
         }
     }
+    
+
     ImGui::End();
 }
 

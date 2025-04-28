@@ -1,5 +1,8 @@
 #pragma once
 #include "LightActor.h"
+#include "Components/Light/DirectionalLightComponent.h"
+#include "Components/BillboardComponent.h"
+
 class ADirectionalLight : public ALight
 {
     DECLARE_CLASS(ADirectionalLight, ALight)

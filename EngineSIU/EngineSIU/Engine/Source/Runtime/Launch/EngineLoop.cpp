@@ -14,6 +14,7 @@
 #include "Engine/EditorEngine.h"
 #include "Renderer/DepthPrePass.h"
 #include "Renderer/TileLightCullingPass.h"
+#include "InputCore/InputSystem.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -22,6 +23,8 @@ FGraphicsDevice FEngineLoop::GraphicDevice;
 FRenderer FEngineLoop::Renderer;
 UPrimitiveDrawBatch FEngineLoop::PrimitiveDrawBatch;
 FResourceMgr FEngineLoop::ResourceManager;
+ScriptSystem FEngineLoop::ScriptSys;
+FInputSystem FEngineLoop::InputSystem;
 uint32 FEngineLoop::TotalAllocationBytes = 0;
 uint32 FEngineLoop::TotalAllocationCount = 0;
 
@@ -54,7 +57,7 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
 
     UnrealEditor->Initialize();
     GraphicDevice.Initialize(AppWnd);
-
+    
     if (!GPUTimingManager.Initialize(GraphicDevice.Device, GraphicDevice.DeviceContext))
     {
         UE_LOG(LogLevel::Error, TEXT("Failed to initialize GPU Timing Manager!"));
@@ -83,6 +86,7 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     PrimitiveDrawBatch.Initialize(&GraphicDevice);
     UIMgr->Initialize(AppWnd, GraphicDevice.Device, GraphicDevice.DeviceContext);
     ResourceManager.Initialize(&Renderer, &GraphicDevice);
+    ScriptSys.Initialize();
     
     uint32 ClientWidth = 0;
     uint32 ClientHeight = 0;
@@ -92,8 +96,11 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     GEngine = FObjectFactory::ConstructObject<UEditorEngine>(nullptr);
     GEngine->Init();
 
+    // ScriptSys.DoFile("main.lua");
+    
     UpdateUI();
 
+    ScriptSys.BindTypes();
     return 0;
 }
 
@@ -163,6 +170,9 @@ void FEngineLoop::Tick()
 
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
+        // FIXME : Update말고 Tick으로 일관되게 바꾸기
+        FEngineLoop::InputSystem.Update();
+        // ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
         UnrealEditor->Render();
