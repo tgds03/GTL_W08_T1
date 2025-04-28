@@ -52,7 +52,7 @@ void UScriptableComponent::BeginPlay()
                 this,
                 &UScriptableComponent::HandleSphereOverlap
             );
-            InputHandlers.Add(Handle);
+            // DelegateHandlers[HandlerType::Overlap].Add(Handle);
         }
     }
 
@@ -76,7 +76,7 @@ void UScriptableComponent::BeginPlay()
 
         });
 
-        InputHandlers.Add(KeyDownHandle);
+        DelegateHandlers[HandlerType::KeyDown].Add(KeyDownHandle);
 
 
     }
@@ -89,7 +89,7 @@ void UScriptableComponent::BeginPlay()
 
         });
 
-        InputHandlers.Add(KeyUpHandle);
+        DelegateHandlers[HandlerType::KeyUp].Add(KeyUpHandle);
     }
     if (EventFunc.OnMouseDown.valid())
     {
@@ -98,7 +98,7 @@ void UScriptableComponent::BeginPlay()
             sol::protected_function_result Result = EventFunc.OnMouseDown(PointerEvent.GetEffectingButton());
             LogIfErrorExist("OnMouseDown", Result);
         });
-        InputHandlers.Add(MouseDownHandle);
+        DelegateHandlers[HandlerType::MouseDown].Add(MouseDownHandle);
     }
     if (EventFunc.OnMouseMove.valid())
     {
@@ -108,7 +108,7 @@ void UScriptableComponent::BeginPlay()
                 PointerEvent.GetScreenSpacePosition().X, PointerEvent.GetScreenSpacePosition().Y);
             LogIfErrorExist("OnMouseMove", Result);
         });
-        InputHandlers.Add(MouseMoveHandle);
+        DelegateHandlers[HandlerType::MouseMove].Add(MouseMoveHandle);
     }
 }
 
@@ -127,27 +127,29 @@ void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     auto* Handler = GEngineLoop.GetAppMessageHandler();
 
-    for (int i = 0; i < InputHandlers.Num(); i++) {
-        if (InputHandlers[i].IsValid())
+    for (const auto [type, handles]: DelegateHandlers)
+    {
+        for (auto handler : handles)
         {
-            switch (i) {
-            case static_cast<int>(HandlerType::KeyDown):
-                Handler->OnKeyDownDelegate.Remove(InputHandlers[i]);
-                break;
-            case static_cast<int>(HandlerType::KeyUp):
-                Handler->OnKeyUpDelegate.Remove(InputHandlers[i]);
-                break;
-            case static_cast<int>(HandlerType::MouseDown):
-                Handler->OnMouseDownDelegate.Remove(InputHandlers[i]);
-                break;
-            case static_cast<int>(HandlerType::MouseMove):
-                Handler->OnMouseMoveDelegate.Remove(InputHandlers[i]);
-                break;
+            switch (type)
+            {
+                case HandlerType::KeyDown:
+                    Handler->OnKeyDownDelegate.Remove(handler);
+                    break;
+                case HandlerType::KeyUp:
+                    Handler->OnKeyUpDelegate.Remove(handler);
+                    break;
+                case HandlerType::MouseDown:
+                    Handler->OnMouseDownDelegate.Remove(handler);
+                    break;
+                case HandlerType::MouseMove:
+                    Handler->OnMouseMoveDelegate.Remove(handler);
+                    break;
             }
         }
     }
 
-    InputHandlers.Empty();
+    DelegateHandlers.Empty();
 
     if (EventFunc.EndPlay.valid())
     {
