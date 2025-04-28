@@ -1,5 +1,6 @@
 #include "GameFramework/Actor.h"
 #include "ScriptableComponent.h"
+#include "Collision/SphereComponent.h"
 
 extern FEngineLoop GEngineLoop;
 
@@ -41,6 +42,19 @@ void UScriptableComponent::BeginPlay()
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
     
     LoadScriptAndBind();
+
+    // OnOverlap이 Lua에 정의되어 있으면
+    if (EventFunc.OnOverlap.valid())
+    {
+        if (USphereComponent* SphereComp = GetOwner()->GetComponentByClass<USphereComponent>())
+        {
+            FDelegateHandle Handle = SphereComp->OnComponentBeginOverlap.AddDynamic(
+                this,
+                &UScriptableComponent::HandleSphereOverlap
+            );
+            InputHandlers.Add(Handle);
+        }
+    }
 
     if (EventFunc.BeginPlay.valid())
     {
@@ -180,6 +194,15 @@ void UScriptableComponent::LoadScriptAndBind()
     } else
     {
         UE_LOG(LogLevel::Error, "Can not find %s", GetData(ScriptName));
+    }
+}
+
+void UScriptableComponent::HandleSphereOverlap(USphereComponent* OverlappedComponent, USphereComponent* OtherComponent)
+{
+    if (EventFunc.OnOverlap.valid())
+    {
+        sol::protected_function_result Result = EventFunc.OnOverlap(OverlappedComponent, OtherComponent);
+        LogIfErrorExist("OnOverlap", Result);
     }
 }
 

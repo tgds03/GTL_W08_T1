@@ -7,48 +7,51 @@
 #define FUNC_DECLARE_MULTICAST_DELEGATE(MulticastDelegateName, ReturnType, ...) \
 	using MulticastDelegateName = TMulticastDelegate<ReturnType(__VA_ARGS__)>;
 
+#define DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(DelegateName, Param1Type, Param1Name, Param2Type, Param2Name) \
+    using DelegateName = TDynamicMulticastDelegate<void(Param1Type, Param2Type)>;
+
 
 class FDelegateHandle
 {
-	friend class std::hash<FDelegateHandle>;
+    friend class std::hash<FDelegateHandle>;
 
-	uint64 HandleId;
-	explicit FDelegateHandle() : HandleId(0) {}
-	explicit FDelegateHandle(uint64 HandleId) : HandleId(HandleId) {}
+    uint64 HandleId;
+    explicit FDelegateHandle() : HandleId(0) {}
+    explicit FDelegateHandle(uint64 HandleId) : HandleId(HandleId) {}
 
-	static uint64 GenerateNewID()
-	{
-		static std::atomic<uint64> NextHandleId = 1;
-		uint64 Result = NextHandleId.fetch_add(1, std::memory_order_relaxed);
+    static uint64 GenerateNewID()
+    {
+        static std::atomic<uint64> NextHandleId = 1;
+        uint64 Result = NextHandleId.fetch_add(1, std::memory_order_relaxed);
 
-		// Overflow가 발생했다면
-		if (Result == 0)
-		{
-			// 한번 더 더하기
-			Result = NextHandleId.fetch_add(1, std::memory_order_relaxed);
-		}
+        // Overflow가 발생했다면
+        if (Result == 0)
+        {
+            // 한번 더 더하기
+            Result = NextHandleId.fetch_add(1, std::memory_order_relaxed);
+        }
 
-		return Result;
-	}
+        return Result;
+    }
 
 public:
-	static FDelegateHandle CreateHandle()
-	{
-		return FDelegateHandle{GenerateNewID()};
-	}
+    static FDelegateHandle CreateHandle()
+    {
+        return FDelegateHandle{ GenerateNewID() };
+    }
 
-	bool IsValid() const { return HandleId != 0; }
-	void Invalidate() { HandleId = 0; }
+    bool IsValid() const { return HandleId != 0; }
+    void Invalidate() { HandleId = 0; }
 
-	bool operator==(const FDelegateHandle& Other) const
-	{
-		return HandleId == Other.HandleId;
-	}
+    bool operator==(const FDelegateHandle& Other) const
+    {
+        return HandleId == Other.HandleId;
+    }
 
-	bool operator!=(const FDelegateHandle& Other) const
-	{
-		return HandleId != Other.HandleId;
-	}
+    bool operator!=(const FDelegateHandle& Other) const
+    {
+        return HandleId != Other.HandleId;
+    }
 };
 
 template <>
@@ -150,4 +153,57 @@ public:
 			Delegate(std::forward<ParamTypes>(Params)...);  // NOLINT(bugprone-use-after-move)
 		}
 	}
+};
+
+template <typename Signature>
+class TDynamicMulticastDelegate;
+
+template <typename... ParamTypes>
+class TDynamicMulticastDelegate<void(ParamTypes...)>
+{
+    using FuncPtrType = void(UObject::*)(ParamTypes...);
+
+    struct FDelegateBinding
+    {
+        UObject* Object;
+        FuncPtrType Func;
+
+        bool IsValid() const { return Object != nullptr && Func != nullptr; }
+    };
+
+    TMap<FDelegateHandle, FDelegateBinding> DelegateBindings;
+
+public:
+    template<typename UserClass>
+    FDelegateHandle AddDynamic(UserClass* InObject, void(UserClass::* InFunc)(ParamTypes...))
+    {
+        static_assert(std::is_base_of_v<UObject, UserClass>, "AddDynamic: UserClass must be a UObject.");
+
+        FDelegateHandle Handle = FDelegateHandle::CreateHandle();
+        DelegateBindings.Add(Handle, FDelegateBinding{ InObject, reinterpret_cast<FuncPtrType>(InFunc) });
+        return Handle;
+    }
+
+    bool Remove(FDelegateHandle Handle)
+    {
+        return DelegateBindings.Remove(Handle) > 0;
+    }
+
+    void Broadcast(ParamTypes... Params) const
+    {
+        auto CopyBindings = DelegateBindings;
+        for (const auto& [Handle, Binding] : CopyBindings)
+        {
+            if (Binding.IsValid())
+            {
+                (Binding.Object->*(Binding.Func))(Params...);
+            }
+        }
+    }
+
+    void Clear()
+    {
+        DelegateBindings.Clear();
+    }
+
 };

@@ -807,9 +807,9 @@
     <ClCompile Include="Engine\Source\Runtime\Renderer\ShadowManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Lua\LuaScriptSystem.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ScriptableComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\InputCore\InputSystem.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Collision\SphereComponent.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\InputCore\InputSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />

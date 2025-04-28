@@ -1,4 +1,4 @@
-local speed = 3
+local speed = 50
 local isMoveForward = false
 local isMoveRight = false
 local isMoveLeft = false
