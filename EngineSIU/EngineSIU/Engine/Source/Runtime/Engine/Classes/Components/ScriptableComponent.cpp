@@ -37,7 +37,6 @@ void UScriptableComponent::BeginPlay()
     UActorComponent::BeginPlay();
 
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
-    Environment = sol::environment(lua, sol::create, lua.globals());
     
     LoadScriptAndBind();
 
@@ -77,9 +76,11 @@ void UScriptableComponent::LoadScriptAndBind()
         return;
     }
     
+    sol::state& lua = FEngineLoop::ScriptSys.Lua();
+    if (!Environment.valid())
+        Environment = sol::environment(lua, sol::create, lua.globals());
     Environment["obj"] = GetOwner();
     
-    sol::state& lua = FEngineLoop::ScriptSys.Lua();
     std::string scriptText = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
     sol::load_result loadresult = lua.load_buffer(scriptText.c_str(), scriptText.length());
     sol::function script = loadresult;
