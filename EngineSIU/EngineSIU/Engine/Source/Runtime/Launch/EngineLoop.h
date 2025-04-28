@@ -8,6 +8,7 @@
 #include "Stats/GPUTimingManager.h"
 #include "Runtime/Core/Lua/LuaScriptSystem.h"
 
+
 class FSlateAppMessageHandler;
 class UnrealEd;
 class UImGuiManager;
@@ -19,7 +20,7 @@ class FGraphicDevice;
 class SLevelEditor;
 class FDXDBufferManager;
 class ScriptSystem;
-
+class FInputSystem;
 class FEngineLoop
 {
 public:
@@ -45,8 +46,10 @@ public:
     static UPrimitiveDrawBatch PrimitiveDrawBatch;
     static FResourceMgr ResourceManager;
     static ScriptSystem ScriptSys;
+    static FInputSystem InputSystem;
     static uint32 TotalAllocationBytes;
     static uint32 TotalAllocationCount;
+    
 
     HWND AppWnd;
 

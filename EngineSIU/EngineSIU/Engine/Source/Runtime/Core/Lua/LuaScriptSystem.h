@@ -15,8 +15,11 @@ public:
     TMap<FString, std::filesystem::file_time_type> ScriptTimeStamps;
 private:
     sol::state lua;
+    
     void BindPrimitiveTypes();
     void BindUObject();
+    void BindInputSystem();
+    void BindEKeys();
     void LoadFile(const std::string& fileName);
     bool IsOutdated(const std::string& fileName);
     const FString ScriptPath = "Saved/LuaScripts/";

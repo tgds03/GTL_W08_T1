@@ -1,7 +1,6 @@
-﻿#pragma once
+#pragma once
 #include <functional>
 #include "Core/Container/Map.h"
-
 #define FUNC_DECLARE_DELEGATE(DelegateName, ReturnType, ...) \
 	using DelegateName = TDelegate<ReturnType(__VA_ARGS__)>;
 

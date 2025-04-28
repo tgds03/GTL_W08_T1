@@ -1,6 +1,8 @@
 #include "GameFramework/Actor.h"
 #include "ScriptableComponent.h"
 
+extern FEngineLoop GEngineLoop;
+
 UScriptableComponent::UScriptableComponent()
 {
     //ScriptName = "Saved/LuaScripts/template.lua";
@@ -43,7 +45,56 @@ void UScriptableComponent::BeginPlay()
     if (EventFunc.BeginPlay.valid())
     {
         sol::protected_function_result Result = EventFunc.BeginPlay();
-        LogIfErrorExsist("BeginPlay", Result);
+        LogIfErrorExist("BeginPlay", Result);   
+    }
+
+    // Key down 이벤트 델리게이트 등록
+    auto* Handler = GEngineLoop.GetAppMessageHandler();
+
+
+    // NOTCIE : Add 순서 HandleType 키워드 순서에 맞게 해줘야 함.
+    if (EventFunc.OnKeyDown.valid())
+    {
+        FDelegateHandle KeyDownHandle = Handler->OnKeyDownDelegate.AddLambda([this](const FKeyEvent& KeyEvent)
+        {
+                sol::protected_function_result Result = EventFunc.OnKeyDown(KeyEvent.GetKey());
+                LogIfErrorExist("OnKeyDown", Result);
+
+        });
+
+        InputHandlers.Add(KeyDownHandle);
+
+
+    }
+    if (EventFunc.OnKeyUp.valid())
+    {
+        FDelegateHandle KeyUpHandle = Handler->OnKeyUpDelegate.AddLambda([this](const FKeyEvent& KeyEvent)
+        {
+            sol::protected_function_result Result = EventFunc.OnKeyUp(KeyEvent.GetKey());
+            LogIfErrorExist("OnKeyUp", Result);
+
+        });
+
+        InputHandlers.Add(KeyUpHandle);
+    }
+    if (EventFunc.OnMouseDown.valid())
+    {
+        FDelegateHandle MouseDownHandle = Handler->OnMouseDownDelegate.AddLambda([this](const FPointerEvent& PointerEvent)
+        {
+            sol::protected_function_result Result = EventFunc.OnMouseDown(PointerEvent.GetEffectingButton());
+            LogIfErrorExist("OnMouseDown", Result);
+        });
+        InputHandlers.Add(MouseDownHandle);
+    }
+    if (EventFunc.OnMouseMove.valid())
+    {
+        FDelegateHandle MouseMoveHandle = Handler->OnMouseMoveDelegate.AddLambda([this](const FPointerEvent& PointerEvent)
+        {
+            sol::protected_function_result Result = EventFunc.OnMouseMove(
+                PointerEvent.GetScreenSpacePosition().X, PointerEvent.GetScreenSpacePosition().Y);
+            LogIfErrorExist("OnMouseMove", Result);
+        });
+        InputHandlers.Add(MouseMoveHandle);
     }
 }
 
@@ -54,17 +105,40 @@ void UScriptableComponent::TickComponent(float DeltaTime)
     if (EventFunc.Tick.valid())
     {
         sol::protected_function_result Result = EventFunc.Tick(DeltaTime);
-        LogIfErrorExsist("Tick", Result);
+        LogIfErrorExist("Tick", Result);
     }
 }
 
 void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-    
+    auto* Handler = GEngineLoop.GetAppMessageHandler();
+
+    for (int i = 0; i < InputHandlers.Num(); i++) {
+        if (InputHandlers[i].IsValid())
+        {
+            switch (i) {
+            case static_cast<int>(HandlerType::KeyDown):
+                Handler->OnKeyDownDelegate.Remove(InputHandlers[i]);
+                break;
+            case static_cast<int>(HandlerType::KeyUp):
+                Handler->OnKeyUpDelegate.Remove(InputHandlers[i]);
+                break;
+            case static_cast<int>(HandlerType::MouseDown):
+                Handler->OnMouseDownDelegate.Remove(InputHandlers[i]);
+                break;
+            case static_cast<int>(HandlerType::MouseMove):
+                Handler->OnMouseMoveDelegate.Remove(InputHandlers[i]);
+                break;
+            }
+        }
+    }
+
+    InputHandlers.Empty();
+
     if (EventFunc.EndPlay.valid())
     {
         sol::protected_function_result Result = EventFunc.EndPlay(EndPlayReason);
-        LogIfErrorExsist("EndPlay", Result);
+        LogIfErrorExist("EndPlay", Result);
     }
 }
 
@@ -94,10 +168,11 @@ void UScriptableComponent::LoadScriptAndBind()
             EventFunc.Tick = Environment["Tick"];
             EventFunc.EndPlay = Environment["EndPlay"];
             EventFunc.OnOverlap = Environment["OnOverlap"];
-        } else
-        {
-            LogIfErrorExsist("", res);
-        }
+            EventFunc.OnKeyDown = Environment["OnKeyDown"];
+            EventFunc.OnKeyUp = Environment["OnKeyUp"];
+            EventFunc.OnMouseDown = Environment["OnMouseDown"];
+            EventFunc.OnMouseMove = Environment["OnMouseMove"];
+        } 
     } else if (script)
     {
         sol::error err = loadresult;
@@ -108,7 +183,7 @@ void UScriptableComponent::LoadScriptAndBind()
     }
 }
 
-void UScriptableComponent::LogIfErrorExsist(FString funcName, sol::protected_function_result& Result)
+void UScriptableComponent::LogIfErrorExist(FString funcName, sol::protected_function_result& Result)
 {
     if (!Result.valid())
     {

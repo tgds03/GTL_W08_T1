@@ -6,6 +6,10 @@
 
 #include "Engine/EditorEngine.h"
 #include "Runtime/Engine/World/World.h"
+#include <InputCore/InputSystem.h>
+#include <Components/ScriptableComponent.h>
+
+extern FEngineLoop GEngineLoop;
 #include <fstream>
 #include "Components/ScriptableComponent.h"
 #include "UObject/UObjectIterator.h"
@@ -31,6 +35,8 @@ void ScriptSystem::BindTypes()
 {
     BindPrimitiveTypes();
     BindUObject();
+    BindInputSystem();
+    BindEKeys();
 
     // 스폰 함수 바인딩(예: 문자열로 클래스 지정)
     lua.set_function("SpawnActor", [&](const std::string& className, sol::optional<std::string> luaActorName) -> AActor* 
@@ -134,6 +140,38 @@ void ScriptSystem::BindUObject()
     {
         meta->BindPropertiesToLua(lua);
     }
+}
+
+void ScriptSystem::BindInputSystem()
+{
+    sol::usertype<FInputSystem> inputSysType = lua.new_usertype<FInputSystem>("InputSystem");
+    inputSysType.set_function("IsKeyDown", &FInputSystem::isKeyDown);
+    lua["Input"] = &GEngineLoop.InputSystem;
+}
+
+void ScriptSystem::BindEKeys()
+{
+    sol::table keys = lua.create_named_table("EKeys");
+    sol::table keyNames = lua.create_named_table("EKeyNames");
+
+#define ADD_KEY(name) \
+        keys[#name] = EKeys::name; \
+        keyNames[EKeys::name] = #name;
+
+    ADD_KEY(Invalid);
+    ADD_KEY(SpaceBar);
+    ADD_KEY(W);
+    ADD_KEY(A);
+    ADD_KEY(S);
+    ADD_KEY(D);
+    ADD_KEY(LeftMouseButton);
+    ADD_KEY(RightMouseButton);
+
+#undef ADD_KEY
+
+    lua["KeyCodeToString"] = keyNames;
+
+    // NOTICE : 필요한 키 추가 시 확장
 }
 
 void ScriptSystem::LoadFile(const std::string& fileName)
