@@ -116,8 +116,9 @@ void UWorld::Tick(float DeltaTime)
 
 void UWorld::BeginPlay()
 {
-    FEngineLoop::ScriptSys.Reload();
     TArray<AActor*> Actors = ActiveLevel->Actors;
+    FEngineLoop::ScriptSys.InitPIEScript(Actors);
+    FEngineLoop::ScriptSys.ReloadForce();
     for (AActor* Actor : Actors)
     {
         if (Actor->GetWorld() == this)

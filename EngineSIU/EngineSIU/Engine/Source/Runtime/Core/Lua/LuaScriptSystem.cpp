@@ -23,6 +23,7 @@ void ScriptSystem::Initialize()
     // 스크립트 경로 지정
     lua["SCRIPT_PATH"] = ScriptPath;
     lua["USERTYPES"] = lua.create_table();
+    SharedEnviroment = sol::environment(lua, sol::create, lua.globals());
 
     lua.set_exception_handler(&LuaExceptionHandler);
 }
@@ -136,6 +137,15 @@ void ScriptSystem::BindUObject()
     }
 }
 
+void ScriptSystem::InitPIEScript(TArray<AActor*> LevelActors)
+{
+    SharedEnviroment = sol::environment(lua, sol::create, lua.globals());
+    for (AActor* Actor: LevelActors)
+    {
+        SharedEnviroment[GetData(Actor->GetOriginalActorLabel())] = Actor;
+    }
+}
+
 void ScriptSystem::LoadFile(const std::string& fileName)
 {
     // lua.script_file(lua["SCRIPT_PATH"].get<std::string>() + fileName);
@@ -184,6 +194,26 @@ void ScriptSystem::Reload()
             {
                 iter->LoadScriptAndBind();
             }
+        }
+    }
+}
+
+void ScriptSystem::ReloadForce()
+{
+    
+    TArray<FString> paths;
+    for (const auto& entry: std::filesystem::recursive_directory_iterator(GetData(ScriptPath)))
+    {
+        paths.Add(entry.path().string());
+    }
+    for (const auto& path: paths)
+    {
+        LoadFile(GetData(path));
+
+        for (const auto iter : TObjectRange<UScriptableComponent>())
+        {
+            iter->InitEnvironment();
+            iter->LoadScriptAndBind();
         }
     }
 }
@@ -274,7 +304,9 @@ int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> excep
     }
     else
     {
-        UE_LOG(LogLevel::Error, "Failed: %s", desc.data());
+        std::string msg;
+        msg.assign(desc.data(), desc.size());
+        UE_LOG(LogLevel::Error, "Failed: %s", msg.c_str());
     }
     return sol::stack::push(L, desc);
 }

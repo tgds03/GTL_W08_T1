@@ -115,6 +115,9 @@ public:
     /** Actor의 Label을 가져옵니다. */
     UFUNCTION_CONST(FString, GetActorLabel)
 
+    /** 원본 Actor의 Label을 가져옵니다. */
+    UFUNCTION_CONST(FString, GetOriginalActorLabel)
+
     /** Actor의 Label을 설정합니다. */
     void SetActorLabel(const FString& NewActorLabel, bool bUUID = true);
 
@@ -122,6 +125,9 @@ private:
     /** 에디터상에 보이는 Actor의 이름 */
     UPROPERTY
     (FString, ActorLabel)
+    /** PIE의 Actor가 갖는 원본 Actor의 이름 */
+    UPROPERTY
+    (FString, OriginalActorLabel)
 #endif
 
 public:

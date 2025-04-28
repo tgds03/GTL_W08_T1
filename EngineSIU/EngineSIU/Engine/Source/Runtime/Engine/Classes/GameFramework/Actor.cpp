@@ -8,6 +8,8 @@ UObject* AActor::Duplicate(UObject* InOuter)
 
     NewActor->Owner = Owner;
     NewActor->bTickInEditor = bTickInEditor;
+    NewActor->OriginalActorLabel = GetActorLabel();
+    
     // 기본적으로 있던 컴포넌트 제거
     TSet CopiedComponents = NewActor->OwnedComponents;
 

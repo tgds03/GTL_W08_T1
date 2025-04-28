@@ -78,7 +78,7 @@ void UScriptableComponent::LoadScriptAndBind()
     
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
     if (!Environment.valid())
-        Environment = sol::environment(lua, sol::create, lua.globals());
+        InitEnvironment();
     Environment["obj"] = GetOwner();
     
     std::string scriptText = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
@@ -108,6 +108,12 @@ void UScriptableComponent::LoadScriptAndBind()
     }
 }
 
+void UScriptableComponent::InitEnvironment()
+{
+    sol::state& lua = FEngineLoop::ScriptSys.Lua();
+    Environment = sol::environment(lua, sol::create, FEngineLoop::ScriptSys.GetSharedEnviroment());
+}
+
 void UScriptableComponent::LogIfErrorExsist(FString funcName, sol::protected_function_result& Result)
 {
     if (!Result.valid())
@@ -117,7 +123,7 @@ void UScriptableComponent::LogIfErrorExsist(FString funcName, sol::protected_fun
             UE_LOG(LogLevel::Error, "Failed to call %s@%s", GetData(funcName), err.what());
         } else
         {
-            UE_LOG(LogLevel::Error, "Failed to call %s with non-string error", GetData(funcName));
+            UE_LOG(LogLevel::Error, "Failed to call %s@%s with non-string error", GetData(funcName), ScriptName);
         }
         
     }

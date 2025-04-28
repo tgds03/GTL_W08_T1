@@ -26,6 +26,7 @@ public:
     sol::environment GetEnvironment() { return Environment; }
 
     void LoadScriptAndBind();
+    void InitEnvironment();
 protected:
     SolEventFunc EventFunc;
 private:

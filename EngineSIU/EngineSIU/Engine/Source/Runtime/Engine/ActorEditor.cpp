@@ -25,6 +25,11 @@ FString AActor::GetActorLabel() const
     return ActorLabel; 
 }
 
+FString AActor::GetOriginalActorLabel() const
+{
+    return OriginalActorLabel;
+}
+
 void AActor::SetActorLabel(const FString& NewActorLabel, bool bUUID)
 {
     // NewActorLabel != GetActorLabel

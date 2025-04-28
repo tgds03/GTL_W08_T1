@@ -20,6 +20,8 @@ function Tick(dt)
     end
     obj:SetActorLocation(pos)
 
+    PrintObject(ACube167:GetActorLocation())
+
 end
 
 function EndPlay()

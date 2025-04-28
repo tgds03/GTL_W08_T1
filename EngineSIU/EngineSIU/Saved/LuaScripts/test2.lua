@@ -20,5 +20,5 @@ function Tick(dt)
     end
     obj:SetActorLocation(pos)
     -- PrintObject(obj:GetActorLocation().x)
-    PrintObject(obj:GetActorLabel())
+    -- PrintObject(obj:GetActorLabel())
 end
