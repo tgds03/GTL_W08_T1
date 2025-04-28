@@ -15,6 +15,7 @@
 #include "Renderer/DepthPrePass.h"
 #include "Renderer/TileLightCullingPass.h"
 #include "InputCore/InputSystem.h"
+#include "Classes/Engine/CollisionManager.h"
 
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -25,6 +26,7 @@ UPrimitiveDrawBatch FEngineLoop::PrimitiveDrawBatch;
 FResourceMgr FEngineLoop::ResourceManager;
 ScriptSystem FEngineLoop::ScriptSys;
 FInputSystem FEngineLoop::InputSystem;
+FCollisionManager FEngineLoop::CollisionManager;
 uint32 FEngineLoop::TotalAllocationBytes = 0;
 uint32 FEngineLoop::TotalAllocationCount = 0;
 
@@ -87,7 +89,7 @@ int32 FEngineLoop::Init(HINSTANCE hInstance)
     UIMgr->Initialize(AppWnd, GraphicDevice.Device, GraphicDevice.DeviceContext);
     ResourceManager.Initialize(&Renderer, &GraphicDevice);
     ScriptSys.Initialize();
-    
+    CollisionManager.Initialize();
     uint32 ClientWidth = 0;
     uint32 ClientHeight = 0;
     GetClientSize(ClientWidth, ClientHeight);
@@ -170,6 +172,7 @@ void FEngineLoop::Tick()
         ScriptSys.Reload();
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
+        CollisionManager.Tick(DeltaTime);
         // FIXME : Update말고 Tick으로 일관되게 바꾸기
         FEngineLoop::InputSystem.Update();
         // ScriptSys.Tick(DeltaTime);
@@ -216,7 +219,7 @@ void FEngineLoop::Exit()
     ResourceManager.Release(&Renderer);
     Renderer.Release();
     GraphicDevice.Release();
-    
+    CollisionManager.Release();
     GEngine->Release();
 
     delete UnrealEditor;
