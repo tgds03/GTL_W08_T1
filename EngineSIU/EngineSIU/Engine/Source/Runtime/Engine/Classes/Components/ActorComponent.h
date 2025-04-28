@@ -50,8 +50,7 @@ public:
 
 public:
     /** 이 컴포넌트를 소유하고 있는 Actor를 반환합니다. */
-    AActor* GetOwner () const;
-    struct GetOwner_PropRegister;
+    AActor* GetOwner() const;
 
     /** 이 컴포넌트를 제거합니다. */
     virtual void DestroyComponent();

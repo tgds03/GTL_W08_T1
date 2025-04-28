@@ -147,6 +147,10 @@ void ScriptSystem::BindUObject()
     {
         meta->BindPropertiesToLua(lua);
     }
+    
+    // UFUNCTION으로 안되는 케이스들.
+    lua["UActorComponent"]["GetOwner"] = &UActorComponent::GetOwner;
+    lua["USphereComponent"]["GetOwner"] = &USphereComponent::GetOwner;
 }
 
 void ScriptSystem::InitPIEScript(TArray<AActor*> LevelActors)
@@ -309,9 +313,7 @@ std::string ScriptSystem::luaToString(const sol::object& obj, int depth = 0, boo
         }
         result += "}";
         return result;
-    } else if (obj.get_type() == sol::type::function) {
-        return "[function]";
-    } else if (obj.get_type() == sol::type::userdata) {
+    } else  if (obj.get_type() == sol::type::userdata) {
         sol::table tbl = obj;
         sol::table metatable = tbl[sol::metatable_key];
         std::string type = metatable["__type"]["name"];
@@ -346,8 +348,9 @@ std::string ScriptSystem::luaToString(const sol::object& obj, int depth = 0, boo
             result += luaToString(metatable, depth + 1, false);
             return result;
         }
-    } else
-    {
+    } else if (obj.get_type() == sol::type::function) {
+        return "[function]";
+    } else {
         return "[unknown type]";
     }
 }

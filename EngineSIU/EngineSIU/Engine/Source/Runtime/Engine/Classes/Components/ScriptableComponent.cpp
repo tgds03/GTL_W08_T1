@@ -171,7 +171,14 @@ void UScriptableComponent::LoadScriptAndBind()
     
     std::string scriptText = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
     sol::load_result loadresult = lua.load_buffer(scriptText.c_str(), scriptText.length());
-    sol::function script = loadresult;
+    sol::function script;
+    if (loadresult.valid())
+        script = loadresult;
+    else
+    {
+        sol::error err = loadresult;
+        UE_LOG(LogLevel::Error, "Failed to compile %s@%s", GetData(ScriptName), err.what());
+    }
     if (script && script.valid())
     {
         set_environment(Environment, script);
