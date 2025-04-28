@@ -21,6 +21,7 @@ class SLevelEditor;
 class FDXDBufferManager;
 class ScriptSystem;
 class FInputSystem;
+class FCollisionManager;
 class FEngineLoop
 {
 public:
@@ -47,6 +48,7 @@ public:
     static FResourceMgr ResourceManager;
     static ScriptSystem ScriptSys;
     static FInputSystem InputSystem;
+    static FCollisionManager CollisionManager;
     static uint32 TotalAllocationBytes;
     static uint32 TotalAllocationCount;
     

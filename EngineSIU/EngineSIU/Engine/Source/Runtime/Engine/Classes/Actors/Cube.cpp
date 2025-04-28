@@ -11,6 +11,7 @@ ACube::ACube()
 {    
     USphereComponent* sphere = AddComponent<USphereComponent>();
     sphere->AttachToComponent(RootComponent);
+    sphere->SetSphereRadius(GetActorScale());
 
     // Begin Test
     //StaticMeshComponent->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/helloBlender.obj"));
@@ -33,7 +34,7 @@ void ACube::Tick(float DeltaTime)
     // CollisionSphere가 유효한지 확인하고 수동 충돌 검사 호출
     if (sphere)
     {
-        sphere->ManualTickCollisionCheck(); // 여기서 스피어 컴포넌트 검사 로직 실행
+        //sphere->ManualTickCollisionCheck(); // 여기서 스피어 컴포넌트 검사 로직 실행
     }
 
     //SetActorRotation(GetActorRotation() + FRotator(0, 0, 1));

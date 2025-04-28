@@ -32,6 +32,7 @@
 
 USphereComponent::USphereComponent()
 {
+    ShapeType = EShapeType::Sphere;
     SphereRadius = 50.0f;
 }
 
@@ -71,6 +72,11 @@ float USphereComponent::GetSphereScaledRadius() const
     const float ScaledRadius = BaseRadius * MaxAbsScaleXYZ;
     
     return ScaledRadius;
+}
+
+void USphereComponent::SetSphereRadius(FVector InScale)
+{
+    SphereRadius = CalculateMaxAbsXYZ(InScale);
 }
 
 bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, const USphereComponent* SphereB)

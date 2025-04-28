@@ -3,6 +3,7 @@
 
 class USphereComponent : public UShapeComponent
 {
+    DECLARE_CLASS(USphereComponent, UShapeComponent)
     float SphereRadius;
 
 public:
@@ -17,6 +18,9 @@ public:
     
     // Utility Function
     float CalculateMaxAbsXYZ(const FVector& WorldScale3D) const;
+
+    void SetSphereRadius(float InRadius) { SphereRadius = InRadius; }
+    void SetSphereRadius(FVector InScale);
 
     static bool AreSpheresOverlapping(const USphereComponent* SphereA, const USphereComponent* SphereB);
 
