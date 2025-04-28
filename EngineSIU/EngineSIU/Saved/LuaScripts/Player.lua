@@ -15,7 +15,7 @@ function EndPlay()
 end
 
 function OnOverlap(OtherActor)
-    -- PrintObject(OtherActor)
+    PrintObject(OtherActor)
 end
 
 function Tick(dt)

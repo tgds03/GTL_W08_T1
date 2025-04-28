@@ -54,5 +54,5 @@ private:
 
     void LogIfErrorExist(FString funcName, sol::protected_function_result& Result);
 
-    TArray<FDelegateHandle> InputHandlers;
+    TMap<HandlerType, TArray<FDelegateHandle>> DelegateHandlers;
 };
