@@ -15,7 +15,6 @@ public:
     USphereComponent();
 
     UPROPERTY(FComponentBeginOverlapSignature, OnComponentBeginOverlap)
-    FComponentBeginOverlapSignature OnComponentBeginOverlap;
 
     virtual UObject* Duplicate(UObject* InOuter) override;
     // Getter Function

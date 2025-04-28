@@ -12,6 +12,9 @@ end
 
 function OnOverlap(overlappedComp, otherComp)
     -- owner 액터 가져오기
+    PrintObject(UActorComponent)
+    PrintObject(getmetatable(overlappedComp))
+    PrintObject(otherComp)
     local ownerA = overlappedComp:GetOwner()
     local ownerB = otherComp:GetOwner()
 
