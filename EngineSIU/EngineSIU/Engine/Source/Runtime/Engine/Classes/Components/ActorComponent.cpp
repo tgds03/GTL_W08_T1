@@ -2,15 +2,6 @@
 
 #include "GameFramework/Actor.h"
 
-struct UActorComponent::GetOwner_PropRegister {
-    GetOwner_PropRegister()
-    {
-        BindFunctions().Add("GetOwner", [](sol::usertype<ThisClass> table) {
-            table["GetOwner"] = &ThisClass::GetOwner;
-            });
-    }
-} GetOwner_PropRegister_;
-
 UObject* UActorComponent::Duplicate(UObject* InOuter)
 {
     ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate(InOuter));

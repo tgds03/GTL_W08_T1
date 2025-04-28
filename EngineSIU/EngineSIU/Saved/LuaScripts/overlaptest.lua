@@ -1,8 +1,9 @@
 local Velocity = FVector(0.0, 1.0, 0.0)
-
+local cube = nil
 function BeginPlay()
     --print("[BeginPlay] " .. obj.UUID)
     --obj:PrintLocation()
+    cube = SpawnActor("ACube", "MyCube")
 end
 
 function EndPlay()
@@ -12,8 +13,9 @@ end
 
 function OnOverlap(overlappedComp, otherComp)
     -- owner 액터 가져오기
-    PrintObject(UActorComponent)
-    PrintObject(getmetatable(overlappedComp))
+    PrintObject(self)
+    PrintObject(getmetatable(cube)["__index"]())
+    PrintObject(cube)
     PrintObject(otherComp)
     local ownerA = overlappedComp:GetOwner()
     local ownerB = otherComp:GetOwner()
