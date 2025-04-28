@@ -2,6 +2,11 @@
 #include "World/World.h"
 
 
+#include "Engine/EditorEngine.h"
+
+
+
+
 UObject* AActor::Duplicate(UObject* InOuter)
 {
     ThisClass* NewActor = Cast<ThisClass>(Super::Duplicate(InOuter));
@@ -285,4 +290,13 @@ bool AActor::SetActorScale(const FVector& NewScale)
 void AActor::SetActorTickInEditor(bool InbInTickInEditor)
 {
     bTickInEditor = InbInTickInEditor;
+}
+
+// FIXME : GameManager 관련 하드코딩
+void AActor::SetIsPlayingOff() {
+    GEngine->ActiveWorld->IsPlaying = false;
+}
+
+void AActor::SetIsPlayingOn() {
+    GEngine->ActiveWorld->IsPlaying = true;
 }

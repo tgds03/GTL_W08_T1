@@ -175,7 +175,68 @@ void FEngineLoop::Tick()
         // ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
-        UnrealEditor->Render();
+        if (GEngine->ActiveWorld->WorldType == EWorldType::Editor) {
+            UnrealEditor->Render();
+        }
+        if (GEngine->ActiveWorld->WorldType == EWorldType::PIE) {
+            if (GEngine->ActiveWorld->IsPlaying == false)
+            {
+                // 창 크기/위치 초기 설정 (한 번만)
+                ImGui::SetNextWindowSize(ImVec2(300, 150), ImGuiCond_Once);
+                // ImGui IO 레퍼런스
+                auto& io = ImGui::GetIO();
+                // 화면 중앙 위치 계산
+                ImVec2 center(
+                    io.DisplaySize.x * 0.5f,
+                    io.DisplaySize.y * 0.5f
+                );
+                // 창 정렬 값: 중앙(0.5,0.5) 기준으로 한 번만 설정
+                ImGui::SetNextWindowPos(
+                    center,
+                    ImGuiCond_Once,
+                    ImVec2(0.5f, 0.5f)
+                );
+
+                // 투명 배경 + 텍스트·버튼 색상 설정
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));           // 창 배경 투명
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f)); // 밝은 레드 텍스트
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.2f, 0.2f, 0.7f)); // 버튼 기본
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.8f)); // 버튼 호버
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.1f, 0.1f, 0.6f)); // 버튼 클릭
+
+                if (ImGui::Begin(". . . ", nullptr,
+                    ImGuiWindowFlags_NoCollapse |
+                    ImGuiWindowFlags_NoResize))
+                {
+                    // 중앙 정렬된 제목
+                    const char* title = "Game Over";
+                    float winW = ImGui::GetWindowWidth();
+                    float txtW = ImGui::CalcTextSize(title).x;
+                    ImGui::SetCursorPosX((winW - txtW) * 0.5f);
+                    ImGui::Text("%s", title);
+
+                    ImGui::Spacing();
+
+                    // Restart 버튼 (가운데로 살짝 이동)
+                    float btnW = 120;
+                    ImGui::SetCursorPosX((winW - btnW * 2 - ImGui::GetStyle().ItemSpacing.x) * 0.5f);
+                    if (ImGui::Button("Restart", ImVec2(btnW, 0)))
+                    {
+                        //GEngine->RestartPlayInEditor();
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Quit to Editor", ImVec2(btnW, 0)))
+                    {
+                        //GEngine->RequestEndPlayMap();
+                    }
+                }
+                ImGui::End();
+
+                // 푸시한 스타일 해제
+                ImGui::PopStyleColor(5);
+            }
+        }
+        
 
         Console::GetInstance().Draw();
         EngineProfiler.Render(GraphicDevice.DeviceContext, GraphicDevice.ScreenWidth, GraphicDevice.ScreenHeight);

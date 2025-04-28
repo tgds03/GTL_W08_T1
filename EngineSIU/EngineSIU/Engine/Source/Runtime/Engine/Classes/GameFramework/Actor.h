@@ -91,6 +91,10 @@ public:
     UFUNCTION(bool, SetActorRotation, const FRotator&)
     UFUNCTION(bool, SetActorScale, const FVector&)
 
+    //FIXME : 시연용 하드코딩
+    UFUNCTION(void, SetIsPlayingOff)
+    UFUNCTION(void, SetIsPlayingOn)
+
 protected:
     UPROPERTY
     (USceneComponent*, RootComponent, = nullptr)
@@ -134,6 +138,24 @@ private:
 public:
     bool IsActorTickInEditor() const { return bTickInEditor; }
     void SetActorTickInEditor(bool InbInTickInEditor);
+
+
+    // FIXME : Timer 관련 하드코딩
+
+    /*UFUNCTION(void, Start)
+    UFUNCTION(void, Stop)
+    UFUNCTION(void, Tick, float)
+    UFUNCTION(void, Reset)
+    UFUNCTION(void, Pause)
+    UFUNCTION(void, Resume)
+
+    UFUNCTION(bool, IsRunning)
+    UFUNCTION(bool, IsPaused)
+    UFUNCTION(float, GetElapsedTime)*/
+private:
+    /*bool bIsRunning;
+    bool bIsPaused;
+    float ElapsedTime;*/
 
 private:
     bool bTickInEditor = false;

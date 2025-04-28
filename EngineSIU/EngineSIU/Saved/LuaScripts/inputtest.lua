@@ -70,7 +70,9 @@ function OnKeyUp(keycode)
         PrintLog("D Key Up")
     end
 end
-
+function OnOverlap(overlappedComp, otherComp)
+    _G["State"]  = false
+end
 -- function OnMouseDown(button)
 --     if button == EKeys.LeftMouseButton then
 --         PrintLog("Mouse1 Click Down")

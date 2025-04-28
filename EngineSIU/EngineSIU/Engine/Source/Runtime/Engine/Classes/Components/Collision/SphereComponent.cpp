@@ -196,7 +196,7 @@ void USphereComponent::ManualTickCollisionCheck()
             FString OtherOwnerName = OtherOwner ? OtherOwner->GetName() : TEXT("Unknown");
 
             // 로그 매크로 사용 (LogLevel 및 포맷팅 방식 확인)
-            UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
+            //UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
 
             // 델리게이트 호출
             OnComponentBeginOverlap.Broadcast(this, OtherSphere);

@@ -57,6 +57,8 @@ public:
 
     EWorldType WorldType = EWorldType::None;
 
+    //FIXME : 시연용 하드코딩
+    bool IsPlaying = true;
     
 private:
     FString WorldName = "DefaultWorld";

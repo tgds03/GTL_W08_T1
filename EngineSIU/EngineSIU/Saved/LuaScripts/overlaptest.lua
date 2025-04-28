@@ -13,19 +13,24 @@ end
 
 function OnOverlap(overlappedComp, otherComp)
     -- owner 액터 가져오기
-    PrintObject(self)
-    PrintObject(getmetatable(cube)["__index"]())
-    PrintObject(cube)
-    PrintObject(otherComp)
-    local ownerA = overlappedComp:GetOwner()
-    local ownerB = otherComp:GetOwner()
+    -- PrintObject(self)
+    -- PrintObject(getmetatable(cube)["__index"]())
+    -- PrintObject(cube)
+    -- PrintObject(otherComp)
+    -- local ownerA = overlappedComp:GetOwner()
+    -- local ownerB = otherComp:GetOwner()
+    -- PrintObject(UActorComponent)
+    -- PrintObject(getmetatable(overlappedComp))
+    -- PrintObject(otherComp)
+    -- local ownerA = overlappedComp:GetOwner()
+    -- local ownerB = otherComp:GetOwner()
 
-    -- 액터 이름 추출 (GetName()은 AActor에 바인딩된 UFUNCTION)
-    local nameA = ownerA and ownerA:GetName() or "UnknownA"
-    local nameB = ownerB and ownerB:GetName() or "UnknownB"
+    -- -- 액터 이름 추출 (GetName()은 AActor에 바인딩된 UFUNCTION)
+    -- local nameA = ownerA and ownerA:GetName() or "UnknownA"
+    -- local nameB = ownerB and ownerB:GetName() or "UnknownB"
 
     -- 로그 출력
-    PrintLog("Overlap 발생: "..nameA.." <> "..nameB)
+    --PrintLog("Overlap 발생: "..nameA.." <> "..nameB)
 end
 
 function Tick(dt)
