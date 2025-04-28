@@ -7,30 +7,10 @@
 
 #include "Components/Collision/SphereComponent.h"
 
-ACube::ACube(): CollisionSphere(nullptr)
+ACube::ACube()
 {    
-    // USphereComponent 생성 및 설정
-    CollisionSphere = AddComponent<USphereComponent>(FName("CollisionSphere"));
-
-    // 생성된 컴포넌트를 액터의 계층 구조에 붙임. 
-    // StaticMeshComponent 가 Root 컴포넌트라고 가정
-    if (CollisionSphere && GetRootComponent()) // 루트 컴포넌트가 있는지 확인
-    {
-        CollisionSphere->SetupAttachment(GetRootComponent());
-        UE_LOG(LogLevel::Display, TEXT("ACube '%s' : CollisionSphere attached to Root"), *GetName());
-    }
-
-    else if (CollisionSphere)
-    {
-        // 혹시 루트 컴포넌트가 없다면 (그럴 가능성은 낮음), 스피어를 루트로 설정 시도
-        SetRootComponent(CollisionSphere);
-        UE_LOG(LogLevel::Display, TEXT("ACube '%s' : CollisionSphere set as Root"), *GetName());
-    }
-
-    else
-    {
-        UE_LOG(LogLevel::Error, TEXT("ACube '%s' : Failed to create CollisionSphere."), *GetName());
-    }
+    USphereComponent* sphere = AddComponent<USphereComponent>();
+    sphere->AttachToComponent(RootComponent);
 
     // Begin Test
     //StaticMeshComponent->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/helloBlender.obj"));
@@ -49,11 +29,11 @@ void ACube::Tick(float DeltaTime)
     UE_LOG(LogLevel::Warning, TEXT("ACube Tick: %s"), *GetName()); // 확인용 로그
 
     Super::Tick(DeltaTime);
-
+    USphereComponent* sphere = GetComponentByClass<USphereComponent>();
     // CollisionSphere가 유효한지 확인하고 수동 충돌 검사 호출
-    if (CollisionSphere)
+    if (sphere)
     {
-        CollisionSphere->ManualTickCollisionCheck(); // 여기서 스피어 컴포넌트 검사 로직 실행
+        sphere->ManualTickCollisionCheck(); // 여기서 스피어 컴포넌트 검사 로직 실행
     }
 
     //SetActorRotation(GetActorRotation() + FRotator(0, 0, 1));
