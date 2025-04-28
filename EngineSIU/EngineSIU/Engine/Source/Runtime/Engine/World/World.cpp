@@ -107,7 +107,8 @@ UObject* UWorld::Duplicate(UObject* InOuter)
 void UWorld::Tick(float DeltaTime)
 {
     // SpawnActor()에 의해 Actor가 생성된 경우, 여기서 BeginPlay 호출
-    for (AActor* Actor : PendingBeginPlayActors)
+    TArray<AActor*> pending = PendingBeginPlayActors;
+    for (AActor* Actor : pending)
     {
         Actor->BeginPlay();
     }
