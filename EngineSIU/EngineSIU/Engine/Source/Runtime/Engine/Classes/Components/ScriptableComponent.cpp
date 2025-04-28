@@ -5,7 +5,7 @@ extern FEngineLoop GEngineLoop;
 
 UScriptableComponent::UScriptableComponent()
 {
-    ScriptName = "Saved/LuaScripts/template.lua";
+    //ScriptName = "Saved/LuaScripts/template.lua";
 }
 
 UObject* UScriptableComponent::Duplicate(UObject* InOuter)
@@ -17,13 +17,28 @@ UObject* UScriptableComponent::Duplicate(UObject* InOuter)
     return NewComponent;
 }
 
+void UScriptableComponent::GetProperties(TMap<FString, FString>& OutProperties) const
+{
+    Super::GetProperties(OutProperties);
+    OutProperties.Add(TEXT("ScriptName"), ScriptName);
+}
+
+void UScriptableComponent::SetProperties(const TMap<FString, FString>& InProperties)
+{
+    Super::SetProperties(InProperties);
+    const FString* TempStr = nullptr;
+    TempStr = InProperties.Find(TEXT("ScriptName"));
+    if (TempStr)
+    {
+        ScriptName = *TempStr;
+    }
+}
+
 void UScriptableComponent::BeginPlay()
 {
     UActorComponent::BeginPlay();
 
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
-    Environment = sol::environment(lua, sol::create, lua.globals());
-    Environment["obj"] = GetOwner();
     
     LoadScriptAndBind();
 
@@ -136,6 +151,10 @@ void UScriptableComponent::LoadScriptAndBind()
     }
     
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
+    if (!Environment.valid())
+        Environment = sol::environment(lua, sol::create, lua.globals());
+    Environment["obj"] = GetOwner();
+    
     std::string scriptText = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
     sol::load_result loadresult = lua.load_buffer(scriptText.c_str(), scriptText.length());
     sol::function script = loadresult;
@@ -168,7 +187,13 @@ void UScriptableComponent::LogIfErrorExist(FString funcName, sol::protected_func
 {
     if (!Result.valid())
     {
-        sol::error err = Result;
-        UE_LOG(LogLevel::Error, "Failed to call %s@%s", GetData(funcName), err.what());
+        if (Result.get_type() == sol::type::string) {
+            sol::error err = Result;
+            UE_LOG(LogLevel::Error, "Failed to call %s@%s", GetData(funcName), err.what());
+        } else
+        {
+            UE_LOG(LogLevel::Error, "Failed to call %s with non-string error", GetData(funcName));
+        }
+        
     }
 }

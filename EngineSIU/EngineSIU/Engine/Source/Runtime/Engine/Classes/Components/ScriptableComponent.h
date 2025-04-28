@@ -36,11 +36,16 @@ public:
     
     sol::environment GetEnvironment() { return Environment; }
     SolEventFunc GetEventFunc() { return EventFunc; }
+
+    void GetProperties(TMap<FString, FString>& OutProperties) const;
+    void SetProperties(const TMap<FString, FString>& InProperties);
+
+    void LoadScriptAndBind();
 protected:
     SolEventFunc EventFunc;
 private:
     sol::environment Environment;
-    void LoadScriptAndBind();
+
     void LogIfErrorExist(FString funcName, sol::protected_function_result& Result);
 
     TArray<FDelegateHandle> InputHandlers;

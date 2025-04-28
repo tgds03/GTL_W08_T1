@@ -167,7 +167,7 @@ void FEngineLoop::Tick()
         }
 
         const float DeltaTime = static_cast<float>(ElapsedTime / 1000.f);
-
+        ScriptSys.Reload();
         GEngine->Tick(DeltaTime);
         LevelEditor->Tick(DeltaTime);
         // FIXME : Update말고 Tick으로 일관되게 바꾸기

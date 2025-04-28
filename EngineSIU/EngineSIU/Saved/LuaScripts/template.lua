@@ -1,3 +1,5 @@
+local Velocity = FVector(0.0, 1.0, 0.0)
+
 function BeginPlay()
     --print("[BeginPlay] " .. obj.UUID)
     --obj:PrintLocation()
