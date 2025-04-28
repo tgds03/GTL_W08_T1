@@ -144,7 +144,7 @@ bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, co
 
 void USphereComponent::ManualTickCollisionCheck()
 {
-    UE_LOG(LogLevel::Warning, TEXT("ManualTickCollisionCheck called for: %s"), *GetName()); // ★★★ 추가 ★★★
+    UE_LOG(LogLevel::Warning, TEXT("ManualTickCollisionCheck called for: %s"), GetData(GetOwner()->GetName())); // ★★★ 추가 ★★★
     
     UWorld* MyWorld = GetWorld();
     if (!MyWorld) { return; }
@@ -158,32 +158,25 @@ void USphereComponent::ManualTickCollisionCheck()
         if (!ActorInLevel) continue;
 
         // ★★★ 액터의 컴포넌트 목록 가져오기 ★★★
-        const TSet<UActorComponent*>& Components = ActorInLevel->GetComponents();
-
-        // ★★★ 각 컴포넌트가 Sphere 인지 확인하고 충돌 검사 ★★★
-        for (UActorComponent* FoundComp : Components)
+        // const TSet<UActorComponent*>& Components = ActorInLevel->GetComponents();
+        USphereComponent* OtherSphere = ActorInLevel->GetComponentByClass<USphereComponent>();
+        // 유효하지 않거나 자기 자신이거나, 파괴 중(확인 기능 있다면)이면 건너뛰기
+        if (!OtherSphere || OtherSphere == this /* || OtherSphere->IsBeingDestroyed() */)
         {
-            // dynamic_cast 또는 다른 RTTI 방법 사용
-            USphereComponent* OtherSphere = dynamic_cast<USphereComponent*>(FoundComp);
+            continue;
+        }
 
-            // 유효하지 않거나 자기 자신이거나, 파괴 중(확인 기능 있다면)이면 건너뛰기
-            if (!OtherSphere || OtherSphere == this /* || OtherSphere->IsBeingDestroyed() */)
-            {
-                continue;
-            }
+        // ★★★ Static 겹침 확인 함수 호출 ★★★
+        if (USphereComponent::AreSpheresOverlapping(this, OtherSphere))
+        {
+            // 겹치면 로그 출력
+            AActor* MyOwner = GetOwner();
+            AActor* OtherOwner = OtherSphere->GetOwner();
+            FString MyOwnerName = MyOwner ? MyOwner->GetName() : TEXT("Unknown");
+            FString OtherOwnerName = OtherOwner ? OtherOwner->GetName() : TEXT("Unknown");
 
-            // ★★★ Static 겹침 확인 함수 호출 ★★★
-            if (USphereComponent::AreSpheresOverlapping(this, OtherSphere))
-            {
-                // 겹치면 로그 출력
-                AActor* MyOwner = GetOwner();
-                AActor* OtherOwner = OtherSphere->GetOwner();
-                FString MyOwnerName = MyOwner ? MyOwner->GetName() : TEXT("Unknown");
-                FString OtherOwnerName = OtherOwner ? OtherOwner->GetName() : TEXT("Unknown");
-
-                // 로그 매크로 사용 (LogLevel 및 포맷팅 방식 확인)
-                UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
-            }
+            // 로그 매크로 사용 (LogLevel 및 포맷팅 방식 확인)
+            UE_LOG(LogLevel::Warning, TEXT("[Manual Overlap Check] %s's Sphere overlaps with %s's Sphere!"), *MyOwnerName, *OtherOwnerName);
         }
     }
 }
