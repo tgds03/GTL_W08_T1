@@ -32,7 +32,7 @@
 
 USphereComponent::USphereComponent()
 {
-    SphereRadius = 50.0f;
+    SphereRadius = 100.f;
 }
 
 UObject* USphereComponent::Duplicate(UObject* InOuter)
@@ -85,6 +85,11 @@ float USphereComponent::GetSphereScaledRadius() const
 void USphereComponent::SetSphereRadius(float NewRadius)
 {
     SphereRadius = NewRadius;
+}
+
+void USphereComponent::SetSphereRadius(FVector InScale)
+{
+    SphereRadius = CalculateMaxAbsXYZ(InScale);
 }
 
 bool USphereComponent::AreSpheresOverlapping(const USphereComponent* SphereA, const USphereComponent* SphereB)

@@ -37,14 +37,14 @@ ACube::ACube()
             {
                 // ★★★ SetupAttachment 호출 가능! ★★★
                 CreatedSphere->SetupAttachment(CurrentRoot);
-                CreatedSphere->SetSphereRadius(50.0f); // 반지름 설정
+                CreatedSphere->SetSphereRadius(GetActorScale()); // 반지름 설정
                 UE_LOG(LogLevel::Display, TEXT("ACube '%s': SphereComponent attached to Root."), *GetName());
             }
             else
             {
                 // ★★★ SetRootComponent 호출 가능! ★★★
                 SetRootComponent(CreatedSphere);
-                CreatedSphere->SetSphereRadius(50.0f);
+                CreatedSphere->SetSphereRadius(GetActorScale());
                 UE_LOG(LogLevel::Display, TEXT("ACube '%s': SphereComponent set as Root."), *GetName());
             }
         }

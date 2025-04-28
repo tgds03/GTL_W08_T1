@@ -17,6 +17,7 @@ public:
     float GetSphereScaledRadius() const;
     
     void SetSphereRadius(float NewRadius); 
+    void SetSphereRadius(FVector InScale);
 
     // Utility Function
     float CalculateMaxAbsXYZ(const FVector& WorldScale3D) const;
