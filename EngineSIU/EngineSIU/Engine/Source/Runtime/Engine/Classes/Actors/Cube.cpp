@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 
 #include "Components/Collision/SphereComponent.h"
-
+#include "Components/Collision/BoxComponent.h"
     
 
 ACube::ACube()
@@ -66,6 +66,9 @@ ACube::ACube()
     {
         StaticMeshComponent->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/Reference/Reference.obj"));
     }
+
+    UBoxComponent* BoxComp = AddComponent<UBoxComponent>();
+    BoxComp->SetupAttachment(RootComponent);
 
     UE_LOG(LogLevel::Display, TEXT("ACube '%s': Constructor finished."), *GetName());
 }

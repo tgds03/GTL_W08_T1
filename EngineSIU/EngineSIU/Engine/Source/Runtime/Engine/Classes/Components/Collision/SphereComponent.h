@@ -4,8 +4,7 @@
 
 class USphereComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FComponentBeginOverlapSignature,
-    USphereComponent*, OverlappedComponent, USphereComponent*, OtherComponent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FComponentBeginOverlapSignature, USphereComponent*, OverlappedComponent, USphereComponent*, OtherComponent);
 
 class USphereComponent : public UShapeComponent
 {
@@ -31,7 +30,7 @@ public:
     // Utility Function
     float CalculateMaxAbsXYZ(const FVector& WorldScale3D) const;
 
-    bool AreSpheresOverlapping(USphereComponent* Other);
+    bool AreSpheresOverlapping(USphereComponent* Ohter);
 
     //virtual void TickComponent(float DeltaTime) override;
 
