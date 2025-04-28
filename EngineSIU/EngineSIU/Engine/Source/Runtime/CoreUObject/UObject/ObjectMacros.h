@@ -25,21 +25,16 @@ private: \
         static TMap<FString, std::function<void(sol::usertype<TClass>)>> _binds; \
         return _binds; \
     } \
+protected: \
+    template<typename Derived> \
+    struct InheritList { \
+        using base_list = typename TSuperClass::InheritList<Derived>::type; \
+        using type = PushBack_t<base_list, Derived>; \
+    }; \
 public: \
     using Super = TSuperClass; \
     using ThisClass = TClass; \
-    static sol::usertype<TClass> GetLuaUserType(sol::state& lua) { \
-        static sol::usertype<TClass> usertype = lua.new_usertype<TClass>(#TClass, sol::base_classes, sol::bases<TSuperClass>()); \
-        return usertype; \
-    } \
-    static void BindPropertiesToLua(sol::state& lua) { \
-        sol::usertype<TClass> table = GetLuaUserType(lua); \
-        for (const auto [name, bind] : BindFunctions()) \
-        { \
-            bind(table); \
-        } \
-        lua["USERTYPES"][#TClass] = table; \
-    } \
+
 
 
 // RTTI를 위한 클래스 매크로
@@ -56,7 +51,7 @@ public: \
                 ::new (RawMemory) TClass; \
                 return static_cast<UObject*>(RawMemory); \
             }, \
-            TClass::BindPropertiesToLua \
+            nullptr \
         }; \
         return &ClassInfo; \
     } \
@@ -71,7 +66,7 @@ public: \
             static_cast<uint32>(alignof(TClass)), \
             TSuperClass::StaticClass(), \
             []() -> UObject* { return nullptr; }, \
-            TClass::BindPropertiesToLua \
+            nullptr \
         }; \
         return &ClassInfo; \
     } \
