@@ -2,7 +2,8 @@
 #include "Components/ShapeComponent.h"
 #include "UObject/UObjectIterator.h"
 #include "Engine/Engine.h"
-
+#include "LevelEditor/SLevelEditor.h"
+#include "World/World.h"
 FCollisionManager::FCollisionManager()
 {
 }
@@ -25,7 +26,7 @@ void FCollisionManager::Tick(float DeltaTime)
 {
     for (const auto iter : TObjectRange<UShapeComponent>())
     {
-        if (iter->bCollisionEnabled)
+        if (GEngine->ActiveWorld == iter->GetWorld() && iter->bCollisionEnabled)
         {
             ShapeComponents.Add(iter);
         }
