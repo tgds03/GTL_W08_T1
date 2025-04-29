@@ -3,79 +3,74 @@
 #include "NameTypes.h"
 #include "sol/sol.hpp"
 
-// for sol2 typing
-template<typename... Types>
-struct TypeList {};
-
-// PushBack
-template<typename List, typename NewType>
-struct PushBack;
-
-template<typename... Types, typename NewType>
-struct PushBack<TypeList<Types...>, NewType> {
-    using type = TypeList<Types..., NewType>;
-};
-
-// Base 클래스를 상속하는 모든 타입을 리스트로 모은다
-template<typename Derived, typename Base = void>
-struct InheritList;
-
-// Base 없는 경우 (Root 클래스)
-template<typename Derived>
-struct InheritList<Derived, void> {
-    using type = TypeList<Derived>;
-};
-
-// Base 있는 경우 (Derived -> Base)
-template<typename Derived, typename Base>
-struct InheritList {
-    using base_list = typename Base::InheritTypes;
-    using type = typename PushBack<base_list, Derived>::type;
-};
-
-// pop type
-// template<typename List>
-// struct PopBack;
-//
-// template<typename T, typename... Rest>
-// struct PopBack<TypeList<T, Rest...>> {
-// private:
-//     template<typename... Accum>
-//     struct Helper;
-//
-//     template<typename Head, typename... Tail, typename... Accum>
-//     struct Helper<TypeList<Head, Tail...>, Accum...> {
-//         using type = typename Helper<TypeList<Tail...>, Accum..., Head>::type;
-//     };
-//
-//     template<typename Last, typename... Accum>
-//     struct Helper<TypeList<Last>, Accum...> {
-//         using type = TypeList<Accum...>; // 마지막은 버린다
-//     };
-//
-// public:
-//     using type = typename Helper<TypeList<Rest...>, T>::type;
-// };
-
-// template<typename List>
-// using PopBack_t = typename PopBack<List>::type;
-
-// unpack types
-
-template<typename TypeList>
-struct TypeListToBases;
-
-template<typename... Types>
-struct TypeListToBases<TypeList<Types...>> {
-    static auto Get() {
-        return sol::bases<Types...>();
-    }
-};
-
 extern FEngineLoop GEngineLoop;
 class UClass;
 class UWorld;
 class AActor;
+class UActorComponent;
+
+// for sol2 typing
+namespace SolTypeBinding
+{
+    template<typename... Types>
+    struct TypeList {};
+
+    // PushBack
+    template<typename List, typename NewType>
+    struct PushBack;
+
+    // Pushback
+    template<typename... Types, typename NewType>
+    struct PushBack<TypeList<Types...>, NewType> {
+        using type = TypeList<Types..., NewType>;
+    };
+
+    // Base 클래스를 상속하는 모든 타입을 리스트로 모은다
+    template<typename Derived, typename Base = void>
+    struct InheritList;
+
+    // Base 없는 경우 (Root 클래스)
+    template<typename Derived>
+    struct InheritList<Derived, void> {
+        using type = TypeList<Derived>;
+    };
+
+    // Base 있는 경우 (Derived -> Base)
+    template<typename Derived, typename Base>
+    struct InheritList {
+        using base_list = typename Base::InheritTypes;
+        using type = typename PushBack<base_list, Derived>::type;
+    };
+
+    // to unpack types
+    template<typename TypeList>
+    struct TypeListToBases;
+
+    // to unpack types
+    template<typename... Types>
+    struct TypeListToBases<TypeList<Types...>> {
+        static auto Get() {
+            return sol::bases<Types...>();
+        }
+    };
+
+    // for Register to AActor::GetComponentByClass
+    template <typename T>
+    constexpr bool IsCompleteType_v = requires { sizeof(T); };
+    
+    // Register to AActor::GetComponentByClass
+    template <typename T>
+    void RegisterGetComponentByClass(sol::state& lua, std::string className)
+    {
+        if constexpr ( IsCompleteType_v<AActor> && IsCompleteType_v<UActorComponent> && std::derived_from<T, UActorComponent> )
+        {
+            // 암시적 형변환에서 AActor가 완전한 타입임을 요구해서 명시적으로 형변환.
+            using FuncType = T* (AActor::*)();
+            auto funcPtr = static_cast<FuncType>(&AActor::GetComponentByClass<T>);
+            AActor::GetLuaUserType(lua)["Get" + className] = funcPtr;
+        }
+    }
+}
 
 class UObject
 {
@@ -86,7 +81,7 @@ private:
     UObject(UObject&&) = delete;
     UObject& operator=(UObject&&) = delete;
 public:
-    using InheritTypes = InheritList<UObject>::type;
+    using InheritTypes = SolTypeBinding::InheritList<UObject>::type;
     using Super = UObject;
     using ThisClass = UObject;
 

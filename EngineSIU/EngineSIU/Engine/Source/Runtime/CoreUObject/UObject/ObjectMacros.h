@@ -26,12 +26,12 @@ private: \
         return _binds; \
     } \
 public: \
-    using InheritTypes = InheritList<TClass, TSuperClass>::type; \
+    using InheritTypes = SolTypeBinding::InheritList<TClass, TSuperClass>::type; \
     static sol::usertype<TClass> GetLuaUserType(sol::state& lua) { \
         static sol::usertype<TClass> usertype = lua.new_usertype<TClass>( \
             #TClass, \
             sol::base_classes, \
-            TypeListToBases<typename InheritList<TClass, TSuperClass>::base_list>::Get() \
+            SolTypeBinding::TypeListToBases<typename SolTypeBinding::InheritList<TClass, TSuperClass>::base_list>::Get() \
         ); \
         return usertype; \
     } \
@@ -41,6 +41,7 @@ public: \
         { \
             bind(table); \
         } \
+        SolTypeBinding::RegisterGetComponentByClass<TClass>(lua, #TClass); \
     } \
 public: \
     using Super = TSuperClass; \

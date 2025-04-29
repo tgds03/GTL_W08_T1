@@ -9,6 +9,9 @@
 #include <InputCore/InputSystem.h>
 #include <Components/ScriptableComponent.h>
 
+#include "Components/Light/LightComponent.h"
+#include "Components/Light/PointLightComponent.h"
+
 extern FEngineLoop GEngineLoop;
 #include <fstream>
 #include "Components/ScriptableComponent.h"
@@ -151,6 +154,14 @@ void ScriptSystem::BindUObject()
     // UFUNCTION으로 안되는 케이스들.
     sol::usertype<UActorComponent> UActorTypeTable = UActorComponent::GetLuaUserType(lua);
     UActorTypeTable["GetOwner"] = &UActorComponent::GetOwner;
+
+    // GetComponentByClass
+    sol::usertype<AActor> AActorTypeTable = AActor::GetLuaUserType(lua);
+    AActorTypeTable["GetUActorComponent"] = &AActor::GetComponentByClass<UActorComponent>;
+    AActorTypeTable["GetUSceneComponent"] = &AActor::GetComponentByClass<USceneComponent>;
+    AActorTypeTable["GetUPrimitiveComponent"] = &AActor::GetComponentByClass<UPrimitiveComponent>;
+    AActorTypeTable["GetULightComponentBase"] = &AActor::GetComponentByClass<ULightComponentBase>;
+    AActorTypeTable["GetUPointLightComponent"] = &AActor::GetComponentByClass<UPointLightComponent>;
 }
 
 void ScriptSystem::InitPIEScript(TArray<AActor*> LevelActors)
