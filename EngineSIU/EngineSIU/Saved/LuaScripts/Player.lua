@@ -14,8 +14,8 @@ function EndPlay()
     --obj:PrintLocation()
 end
 
-function OnOverlap(OtherActor)
-    PrintObject(OtherActor)
+function OnOverlap(thisComp)
+    PrintObject(thisComp)
 end
 
 function Tick(dt)

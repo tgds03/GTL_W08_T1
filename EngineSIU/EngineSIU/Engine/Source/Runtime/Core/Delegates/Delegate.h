@@ -203,7 +203,7 @@ public:
 
     void Clear()
     {
-        DelegateBindings.Clear();
+        DelegateBindings.Empty();
     }
 
 };

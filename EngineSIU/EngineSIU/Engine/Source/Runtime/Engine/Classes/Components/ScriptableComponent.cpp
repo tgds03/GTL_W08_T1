@@ -52,7 +52,7 @@ void UScriptableComponent::BeginPlay()
                 this,
                 &UScriptableComponent::HandleSphereOverlap
             );
-            // DelegateHandlers[HandlerType::Overlap].Add(Handle);
+            DelegateHandlers[HandlerType::Overlap].Add(Handle);
         }
     }
 
@@ -149,6 +149,13 @@ void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
         }
     }
 
+    if (USphereComponent* SphereComp = GetOwner()->GetComponentByClass<USphereComponent>())
+    {
+        for (const auto handle: DelegateHandlers[HandlerType::Overlap])
+        {
+           SphereComp->OnComponentBeginOverlap.Clear();
+        }
+    }
     DelegateHandlers.Empty();
 
     if (EventFunc.EndPlay.valid())

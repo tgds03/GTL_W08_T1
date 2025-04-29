@@ -10,7 +10,8 @@ enum class HandlerType : int
     KeyUp,
     MouseDown,
     MouseMove,
-    InputEnd
+    InputEnd,
+    Overlap
 };
 
 struct SolEventFunc
