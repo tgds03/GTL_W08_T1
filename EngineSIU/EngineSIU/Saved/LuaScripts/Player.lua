@@ -14,9 +14,12 @@ function EndPlay()
     --obj:PrintLocation()
 end
 
-function OnOverlap(thisComp)
-    _G["State"] = false
-    PrintObject(thisComp:GetOwner())
+function OnOverlap(thisComp, otherComp)
+    if (otherComp:GetOwner():GetOriginalActorLabel() ~= FString("OBJ_CUBE_131")) then
+        PrintObject(thisComp:GetOwner():GetActorLabel())
+        PrintObject(otherComp:GetOwner():GetActorLabel())
+        _G["State"] = false
+    end
 end
 
 function Tick(dt)
