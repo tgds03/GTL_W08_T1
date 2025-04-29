@@ -15,8 +15,7 @@ function Tick(dt)
         local timerInt = math.floor(_G["Timer"])
         PrintLog(timerInt.."")
         obj:SetScore(timerInt)
-    end
-    if _G["State"] == false then 
+    elseif _G["State"] == false then 
         obj:SetIsPlayingOff()
         PrintLog("Player Dead")
     end
