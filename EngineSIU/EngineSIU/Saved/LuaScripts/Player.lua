@@ -15,6 +15,7 @@ function EndPlay()
 end
 
 function OnOverlap(thisComp)
+    _G["State"] = false
     PrintObject(thisComp:GetOwner())
 end
 
