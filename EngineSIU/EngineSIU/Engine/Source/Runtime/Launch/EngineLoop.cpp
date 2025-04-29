@@ -178,10 +178,57 @@ void FEngineLoop::Tick()
         // ScriptSys.Tick(DeltaTime);
         Render();
         UIMgr->BeginFrame();
-        if (GEngine->ActiveWorld->WorldType == EWorldType::Editor) {
-            UnrealEditor->Render();
-        }
+        //if (GEngine->ActiveWorld->WorldType == EWorldType::Editor) {
+        UnrealEditor->Render();
+        //}
         if (GEngine->ActiveWorld->WorldType == EWorldType::PIE) {
+
+            // 1) 한 번만 크기 설정
+            ImGui::SetNextWindowSize(ImVec2(150, 100), ImGuiCond_Once);
+
+            // 2) 상단 중앙에 배치 (pivot = 0.5, 0.0 -> X는 중앙, Y는 위쪽)
+            auto& io = ImGui::GetIO();
+            ImGui::SetNextWindowPos(
+                ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.05f),
+                ImGuiCond_Once,
+                ImVec2(0.5f, 0.0f)
+            );
+
+            // 3) 스타일 푸시: 반투명 배경, 흰 테두리, 둥근 모서리
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.3f));
+            ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(1, 1, 1, 0.5f));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+
+            if (ImGui::Begin("Scoreboard", nullptr,
+                ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoTitleBar))
+            {
+                // 내부 가로 너비
+                ImVec2 avail = ImGui::GetContentRegionAvail();
+                float regionW = avail.x;
+                // ——— 제목 “Score” 중앙정렬 ———
+                const char* title = "Score";
+                float titleW = ImGui::CalcTextSize(title).x;
+                ImGui::SetCursorPosX((regionW - titleW) * 0.5f);
+                ImGui::Text("%s", title);
+
+                ImGui::Spacing();
+
+                // ——— 실제 점수 중앙정렬 ———
+                char buf[32];
+                snprintf(buf, sizeof(buf), "%d", GEngine->ActiveWorld->Score);
+                float textW = ImGui::CalcTextSize(buf).x;
+                ImGui::SetCursorPosX((regionW - textW) * 0.5f);
+                ImGui::Text("%s", buf);
+            }
+            ImGui::End();
+
+            // 4) 스타일 팝
+            ImGui::PopStyleVar(2);
+            ImGui::PopStyleColor(2);
+
             if (GEngine->ActiveWorld->IsPlaying == false)
             {
                 // 창 크기/위치 초기 설정 (한 번만)

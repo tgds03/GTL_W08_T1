@@ -95,6 +95,7 @@ public:
     //FIXME : 시연용 하드코딩
     UFUNCTION(void, SetIsPlayingOff)
     UFUNCTION(void, SetIsPlayingOn)
+    UFUNCTION(void, SetScore, int)
 
 protected:
     UPROPERTY
