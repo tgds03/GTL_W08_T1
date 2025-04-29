@@ -55,21 +55,20 @@ namespace SolTypeBinding
     };
 
     // for Register to AActor::GetComponentByClass
+    template <typename T, typename = void>
+    constexpr bool IsCompleteType_v = false;
+
     template <typename T>
-    constexpr bool IsCompleteType_v = requires { sizeof(T); };
+    constexpr bool IsCompleteType_v<T, std::void_t<decltype(sizeof(T))>> = true;
     
     // Register to AActor::GetComponentByClass
+    // impl is in Object.impl.h
     template <typename T>
-    void RegisterGetComponentByClass(sol::state& lua, std::string className)
-    {
-        if constexpr ( IsCompleteType_v<AActor> && IsCompleteType_v<UActorComponent> && std::derived_from<T, UActorComponent> )
-        {
-            // 암시적 형변환에서 AActor가 완전한 타입임을 요구해서 명시적으로 형변환.
-            using FuncType = T* (AActor::*)();
-            auto funcPtr = static_cast<FuncType>(&AActor::GetComponentByClass<T>);
-            AActor::GetLuaUserType(lua)["Get" + className] = funcPtr;
-        }
-    }
+        requires (IsCompleteType_v<AActor> && IsCompleteType_v<UActorComponent> && std::derived_from<T, UActorComponent>)
+    void RegisterGetComponentByClass(sol::state& lua, std::string className);
+
+    template <typename T>
+    void RegisterGetComponentByClass(sol::state& lua, std::string className);
 }
 
 class UObject
