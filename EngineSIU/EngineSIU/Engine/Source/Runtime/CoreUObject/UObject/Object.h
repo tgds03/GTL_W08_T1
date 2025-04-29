@@ -62,13 +62,20 @@ namespace SolTypeBinding
     constexpr bool IsCompleteType_v<T, std::void_t<decltype(sizeof(T))>> = true;
     
     // Register to AActor::GetComponentByClass
-    // impl is in Object.impl.h
     template <typename T>
-        requires (IsCompleteType_v<AActor> && IsCompleteType_v<UActorComponent> && std::derived_from<T, UActorComponent>)
-    void RegisterGetComponentByClass(sol::state& lua, std::string className);
+    requires (IsCompleteType_v<AActor> && IsCompleteType_v<UActorComponent> && std::derived_from<T, UActorComponent>)
+    void RegisterGetComponentByClass(sol::state& lua, std::string className)
+    {
+        // MSVC는 constexpr if니 SFINAE니 적용해도 무조건 타입 완전함 검사를 수행하는 듯하다.
+        auto wrapper = [](AActor* actor)
+        {
+            return actor->GetComponentByClass<T>();
+        };
+        AActor::GetLuaUserType(lua)["Get" + className] = wrapper;
+    }
 
     template <typename T>
-    void RegisterGetComponentByClass(sol::state& lua, std::string className);
+    void RegisterGetComponentByClass(sol::state& lua, std::string className) {};
 }
 
 class UObject

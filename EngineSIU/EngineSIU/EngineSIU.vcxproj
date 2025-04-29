@@ -394,7 +394,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Source\Runtime\CoreUObject\UObject\Object.impl.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaScriptSystem.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaTimer.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Math\Plane.h" />
