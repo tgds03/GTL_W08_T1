@@ -15,7 +15,7 @@ function EndPlay()
 end
 
 function OnOverlap(thisComp)
-    PrintObject(thisComp)
+    PrintObject(thisComp:GetOwner())
 end
 
 function Tick(dt)

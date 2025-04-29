@@ -1,6 +1,7 @@
 #include "GameFramework/Actor.h"
 #include "ScriptableComponent.h"
 #include "Collision/SphereComponent.h"
+#include "World/World.h"
 
 extern FEngineLoop GEngineLoop;
 
@@ -42,7 +43,12 @@ void UScriptableComponent::BeginPlay()
     sol::state& lua = FEngineLoop::ScriptSys.Lua();
     
     LoadScriptAndBind();
+    if (GetWorld()->WorldType == EWorldType::Game || GetWorld()->WorldType == EWorldType::PIE)
+        BindDelegate();
+}
 
+void UScriptableComponent::BindDelegate()
+{
     // OnOverlap이 Lua에 정의되어 있으면
     if (EventFunc.OnOverlap.valid())
     {
@@ -151,10 +157,7 @@ void UScriptableComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     if (USphereComponent* SphereComp = GetOwner()->GetComponentByClass<USphereComponent>())
     {
-        for (const auto handle: DelegateHandlers[HandlerType::Overlap])
-        {
-           SphereComp->OnComponentBeginOverlap.Clear();
-        }
+       SphereComp->OnComponentBeginOverlap.Clear();
     }
     DelegateHandlers.Empty();
 

@@ -31,6 +31,7 @@ public:
     UScriptableComponent();
     virtual UObject* Duplicate(UObject* InOuter) override;
     virtual void BeginPlay() override;
+    void BindDelegate();
     virtual void TickComponent(float DeltaTime) override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
