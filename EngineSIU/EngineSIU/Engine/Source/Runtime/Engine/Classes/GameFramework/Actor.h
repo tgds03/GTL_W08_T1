@@ -13,24 +13,6 @@ class UActorComponent;
 class AActor : public UObject
 {
     DECLARE_CLASS(AActor, UObject)
-
-
-    static sol::usertype<AActor> GetLuaUserType(sol::state& lua) {
-        static sol::usertype<AActor> usertype = lua.new_usertype<AActor>(
-            "AActor", 
-            sol::base_classes,
-            TypeListToBases<typename InheritList<AActor>::base_list>::Get()
-        );
-        return usertype;
-    }
-
-    static void BindPropertiesToLua(sol::state& lua) {
-        sol::usertype<AActor> table = GetLuaUserType(lua);
-        for (const auto [name, bind] : BindFunctions())
-        {
-            bind(table);
-        }
-    } 
 public:
     AActor() = default;
 

@@ -7,7 +7,7 @@
 template<typename... Types>
 struct TypeList {};
 
-// push type
+// PushBack
 template<typename List, typename NewType>
 struct PushBack;
 
@@ -16,44 +16,54 @@ struct PushBack<TypeList<Types...>, NewType> {
     using type = TypeList<Types..., NewType>;
 };
 
-template<typename List, typename NewType>
-using PushBack_t = typename PushBack<List, NewType>::type;
+// Base 클래스를 상속하는 모든 타입을 리스트로 모은다
+template<typename Derived, typename Base = void>
+struct InheritList;
+
+// Base 없는 경우 (Root 클래스)
+template<typename Derived>
+struct InheritList<Derived, void> {
+    using type = TypeList<Derived>;
+};
+
+// Base 있는 경우 (Derived -> Base)
+template<typename Derived, typename Base>
+struct InheritList {
+    using base_list = typename Base::InheritTypes;
+    using type = typename PushBack<base_list, Derived>::type;
+};
 
 // pop type
-template<typename List>
-struct PopBack;
+// template<typename List>
+// struct PopBack;
+//
+// template<typename T, typename... Rest>
+// struct PopBack<TypeList<T, Rest...>> {
+// private:
+//     template<typename... Accum>
+//     struct Helper;
+//
+//     template<typename Head, typename... Tail, typename... Accum>
+//     struct Helper<TypeList<Head, Tail...>, Accum...> {
+//         using type = typename Helper<TypeList<Tail...>, Accum..., Head>::type;
+//     };
+//
+//     template<typename Last, typename... Accum>
+//     struct Helper<TypeList<Last>, Accum...> {
+//         using type = TypeList<Accum...>; // 마지막은 버린다
+//     };
+//
+// public:
+//     using type = typename Helper<TypeList<Rest...>, T>::type;
+// };
 
-template<typename T, typename... Rest>
-struct PopBack<TypeList<T, Rest...>> {
-private:
-    template<typename... Accum>
-    struct Helper;
-
-    template<typename Head, typename... Tail, typename... Accum>
-    struct Helper<TypeList<Head, Tail...>, Accum...> {
-        using type = typename Helper<TypeList<Tail...>, Accum..., Head>::type;
-    };
-
-    template<typename Last, typename... Accum>
-    struct Helper<TypeList<Last>, Accum...> {
-        using type = TypeList<Accum...>; // 마지막은 버린다
-    };
-
-public:
-    using type = typename Helper<TypeList<Rest...>, T>::type;
-};
-
-template<typename List>
-using PopBack_t = typename PopBack<List>::type;
+// template<typename List>
+// using PopBack_t = typename PopBack<List>::type;
 
 // unpack types
+
 template<typename TypeList>
-struct TypeListToBases {
-    static auto Get() {
-        using BasesOnly = PopBack_t<TypeList>;
-        return TypeListToBases<BasesOnly>::Get();
-    }
-};
+struct TypeListToBases;
 
 template<typename... Types>
 struct TypeListToBases<TypeList<Types...>> {
@@ -61,8 +71,6 @@ struct TypeListToBases<TypeList<Types...>> {
         return sol::bases<Types...>();
     }
 };
-
-
 
 extern FEngineLoop GEngineLoop;
 class UClass;
@@ -77,20 +85,8 @@ private:
     UObject& operator=(const UObject&) = delete;
     UObject(UObject&&) = delete;
     UObject& operator=(UObject&&) = delete;
-
-protected:
-   
-    // Base 클래스를 상속하는 모든 타입을 리스트로 모은다
-    template<typename Derived, typename Base = void>
-    struct InheritList;
-
-    // Base 없는 경우 (Root 클래스)
-    template<typename Derived>
-    struct InheritList<Derived, void> {
-        using type = TypeList<Derived>;
-    };
- 
 public:
+    using InheritTypes = InheritList<UObject>::type;
     using Super = UObject;
     using ThisClass = UObject;
 

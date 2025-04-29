@@ -19,8 +19,8 @@ function EndPlay()
     PrintObject(obj:GetActorLocation())
 end
 
-function OnOverlap(OtherActor)
-    OtherActor:PrintLocation();
+function OnOverlap(OtherComp)
+    PrintObject(OtherComp:GetOwner():GetOriginalActorLabel())
 end
 
 function Tick(dt)

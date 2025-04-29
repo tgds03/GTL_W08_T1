@@ -150,7 +150,6 @@ void ScriptSystem::BindUObject()
     
     // UFUNCTION으로 안되는 케이스들.
     lua["UActorComponent"]["GetOwner"] = &UActorComponent::GetOwner;
-    lua["USphereComponent"]["GetOwner"] = &USphereComponent::GetOwner;
 }
 
 void ScriptSystem::InitPIEScript(TArray<AActor*> LevelActors)

@@ -25,12 +25,23 @@ private: \
         static TMap<FString, std::function<void(sol::usertype<TClass>)>> _binds; \
         return _binds; \
     } \
-protected: \
-    template<typename Derived> \
-    struct InheritList { \
-        using base_list = typename TSuperClass::InheritList<Derived>::type; \
-        using type = PushBack_t<base_list, Derived>; \
-    }; \
+public: \
+    using InheritTypes = InheritList<TClass, TSuperClass>::type; \
+    static sol::usertype<TClass> GetLuaUserType(sol::state& lua) { \
+        static sol::usertype<TClass> usertype = lua.new_usertype<TClass>( \
+            #TClass, \
+            sol::base_classes, \
+            TypeListToBases<typename InheritList<TClass, TSuperClass>::base_list>::Get() \
+        ); \
+        return usertype; \
+    } \
+    static void BindPropertiesToLua(sol::state& lua) { \
+        sol::usertype<TClass> table = GetLuaUserType(lua); \
+        for (const auto [name, bind] : BindFunctions()) \
+        { \
+            bind(table); \
+        } \
+    } \
 public: \
     using Super = TSuperClass; \
     using ThisClass = TClass; \
@@ -51,7 +62,7 @@ public: \
                 ::new (RawMemory) TClass; \
                 return static_cast<UObject*>(RawMemory); \
             }, \
-            nullptr \
+            TClass::BindPropertiesToLua \
         }; \
         return &ClassInfo; \
     } \
@@ -66,7 +77,7 @@ public: \
             static_cast<uint32>(alignof(TClass)), \
             TSuperClass::StaticClass(), \
             []() -> UObject* { return nullptr; }, \
-            nullptr \
+            TClass::BindPropertiesToLua \
         }; \
         return &ClassInfo; \
     } \
