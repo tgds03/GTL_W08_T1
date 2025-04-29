@@ -10,8 +10,8 @@ function EndPlay()
     --obj:PrintLocation()
 end
 
-function OnOverlap(OtherActor)
-    OtherActor:PrintLocation();
+function OnOverlap(OtherComp)
+    -- OtherComp:GetUUID()
 end
 
 function Tick(dt)

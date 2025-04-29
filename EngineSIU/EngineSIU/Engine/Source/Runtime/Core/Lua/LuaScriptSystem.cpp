@@ -151,9 +151,6 @@ void ScriptSystem::BindUObject()
     // UFUNCTION으로 안되는 케이스들.
     sol::usertype<UActorComponent> UActorTypeTable = UActorComponent::GetLuaUserType(lua);
     UActorTypeTable["GetOwner"] = &UActorComponent::GetOwner;
-    sol::usertype<USphereComponent> USphereTypeTable = USphereComponent::GetLuaUserType(lua);
-    USphereTypeTable["GetOwner"] = &USphereComponent::GetOwner;
-    USphereTypeTable["GetUUID"] = &USphereComponent::GetUUID;
 }
 
 void ScriptSystem::InitPIEScript(TArray<AActor*> LevelActors)

@@ -26,10 +26,13 @@ private: \
         return _binds; \
     } \
 public: \
-    using Super = TSuperClass; \
-    using ThisClass = TClass; \
+    using InheritTypes = InheritList<TClass, TSuperClass>::type; \
     static sol::usertype<TClass> GetLuaUserType(sol::state& lua) { \
-        static sol::usertype<TClass> usertype = lua.new_usertype<TClass>(#TClass, sol::base_classes, sol::bases<TSuperClass>()); \
+        static sol::usertype<TClass> usertype = lua.new_usertype<TClass>( \
+            #TClass, \
+            sol::base_classes, \
+            TypeListToBases<typename InheritList<TClass, TSuperClass>::base_list>::Get() \
+        ); \
         return usertype; \
     } \
     static void BindPropertiesToLua(sol::state& lua) { \
@@ -38,8 +41,11 @@ public: \
         { \
             bind(table); \
         } \
-        lua["USERTYPES"][#TClass] = table; \
     } \
+public: \
+    using Super = TSuperClass; \
+    using ThisClass = TClass; \
+
 
 
 // RTTI를 위한 클래스 매크로

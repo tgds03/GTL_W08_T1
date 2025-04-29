@@ -13,8 +13,6 @@ class UActorComponent;
 class AActor : public UObject
 {
     DECLARE_CLASS(AActor, UObject)
-
-
 public:
     AActor() = default;
 
