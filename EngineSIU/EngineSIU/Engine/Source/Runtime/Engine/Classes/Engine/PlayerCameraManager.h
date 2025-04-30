@@ -14,6 +14,7 @@ public:
     void SetViewTargetEyeRotation(FVector rot);
     FViewTarget GetViewTarget() { return ViewTarget; };
 
+    // FIXME : 템플릿 활용해서 수정하기
     UCameraModifier* AddTestCameraModifier();
 
     void AddCameraModifier(UCameraModifier* NewModifier);
@@ -34,4 +35,5 @@ private:
 
     // location, rotation 테스트용 임시 함수
     void ApplyTest(float DeltaTime);
+    void UpdateViewportTarget(); 
 };

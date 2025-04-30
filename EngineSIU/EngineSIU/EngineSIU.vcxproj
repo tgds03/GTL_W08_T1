@@ -215,6 +215,8 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\ActorEditor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\CameraComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCameraModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCameraShakeModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCurveFloat.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Camera.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.cpp" />
@@ -461,6 +463,8 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Stats\Stats.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\CameraComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCameraModifier.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCameraShakeModifier.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCurveFloat.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\ViewTargetDefine.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Camera.h" />

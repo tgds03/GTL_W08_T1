@@ -3,6 +3,7 @@
 #include "Editor/LevelEditor/SLevelEditor.h"
 #include "Editor/UnrealEd/EditorViewportClient.h"
 #include <Camera/UTestCameraModifier.h>
+#include <Camera/UCameraShakeModifier.h>
 
 extern FEngineLoop GEngineLoop;
 
@@ -31,7 +32,7 @@ void APlayerCameraManager::SetViewTargetEyeRotation(FVector rot)
 
 UCameraModifier* APlayerCameraManager::AddTestCameraModifier()
 {
-    UCameraModifier* obj  = FObjectFactory::ConstructObject<UTestCameraModifier>(nullptr);
+    UCameraModifier* obj  = FObjectFactory::ConstructObject<UCameraShakeModifier>(nullptr);
 
     obj->OwnerMgr = this;
     ModifierList.Add(obj);
@@ -62,4 +63,12 @@ void APlayerCameraManager::ApplyTest(float DeltaTime)
 
 void APlayerCameraManager::AddCameraModifier(UCameraModifier* NewModifier) {
     ModifierList.Add(NewModifier);
+}
+
+void APlayerCameraManager::UpdateViewportTarget()
+{
+    std::shared_ptr<FEditorViewportClient> ViewportClient = GEngineLoop.GetLevelEditor()->GetActiveViewportClient();
+    ViewportClient->PerspectiveCamera.SetLocation(ViewTarget.EyeLocation);
+    ViewportClient->PerspectiveCamera.SetRotation(ViewTarget.EyeRotation);
+
 }
