@@ -34,8 +34,12 @@ void ACamera::UpdateViewportClient(float DeltaTime)
         Interpolate();
     }
     std::shared_ptr<FEditorViewportClient> ViewportClient = GEngineLoop.GetLevelEditor()->GetActiveViewportClient();
+    FVector rot = ViewTarget.EyeRotation;
+    rot.X = FMath::RadiansToDegrees(rot.X);
+    rot.Y = -FMath::RadiansToDegrees(rot.Y);    // why???
+    rot.Z = FMath::RadiansToDegrees(rot.Z);
     ViewportClient->PerspectiveCamera.SetLocation(ViewTarget.EyeLocation);
-    ViewportClient->PerspectiveCamera.SetRotation(ViewTarget.EyeRotation);
+    ViewportClient->PerspectiveCamera.SetRotation(rot);
     SetActorLocation(ViewTarget.EyeLocation);
     SetActorRotation(ViewTarget.EyeRotation);
 }
