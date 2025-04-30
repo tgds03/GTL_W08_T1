@@ -85,6 +85,7 @@ void FCompositingPass::Render(const std::shared_ptr<FEditorViewportClient>& View
     // 카메라 효과 상수버퍼 업데이트
     FCameraEffectConstants CameraEffectData = {};
     
+    // TODO : Manager로 조건/타이밍 옮겨야함 
     FadeAmountTest += FadeDelta;
     if (FadeAmountTest <= 0.0f || FadeAmountTest >= 1.0f)
     {
@@ -125,8 +126,6 @@ void FCompositingPass::Render(const std::shared_ptr<FEditorViewportClient>& View
         }
     }
 
-    //BufferManager->BindConstantBuffer(TEXT("FCameraEffectConstants"), 11, EShaderStage::Vertex);
-   
 
     // Render
     ID3D11VertexShader* VertexShader = ShaderManager->GetVertexShaderByKey(L"Compositing");
