@@ -1,4 +1,5 @@
-﻿#include "UCameraModifier.h"
+#include "UCameraModifier.h"
+#include "Engine/PlayerCameraManager.h"
 
 UCameraModifier::UCameraModifier()
 {
@@ -26,14 +27,19 @@ void UCameraModifier::SetOff()
 
 float UCameraModifier::GetBlendAmount()
 {
+    return 0;
 }
 
 float UCameraModifier::GetInterpolated(float x)
 {
     float nowTime = 0.f;
-    float x = (nowTime - StartTime) / (!bDisabled ? BlendInTime : BlendOutTime);
+    float calcX = (nowTime - StartTime) / (!bDisabled ? BlendInTime : BlendOutTime);
     if (!bDisabled)
-        return BlendInCurve.GetYFromX(x);
+        return BlendInCurve.GetYFromX(calcX);
     else
-        return BlendOutCurve.GetYFromX(x);
+        return BlendOutCurve.GetYFromX(calcX);
+}
+
+void UCameraModifier::Modify(float DeltaTime, FViewTarget& ViewTarget) {
+
 }

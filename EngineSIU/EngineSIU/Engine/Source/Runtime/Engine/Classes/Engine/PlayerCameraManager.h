@@ -1,22 +1,19 @@
 #pragma once
 #include "Engine/Classes/GameFramework/Actor.h"
 #include "Core/Math/Quat.h"
-struct FViewTarget {
-   
-    // FIXME : FViewTarget or SpringArm 둘 중
-    // 따라갈 액터 
-   // AActor* TargetActor = nullptr;
-    // 카메라 위치
-    FVector EyeLocation = FVector::Zero();
-    // 카메라 회전(쿼터니언)
-    FVector EyeRotation = FVector::Zero();
-};
+#include "Camera/UCameraModifier.h"
+#include "Engine/Camera/ViewTargetDefine.h"
 
 class APlayerCameraManager : public AActor
 {
     DECLARE_CLASS(APlayerCameraManager, AActor)
 public:
     APlayerCameraManager();
+
+    void SetViewTargetEyeLocation(FVector pos);
+    void SetViewTargetEyeRotation(FVector rot);
+
+    UCameraModifier* AddTestCameraModifier();
 
     // FIXME : UCameraModifier 클래스 추가 시 수도 코드
     //void AddCameraModifier(UCameraModifier* NewModifier);
@@ -30,7 +27,7 @@ private:
     FName CameraStyle;
     struct FViewTarget ViewTarget;
 
-    //TArray<UCameraModifier*> ModifierList;
+    TArray<UCameraModifier*> ModifierList;
     
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
