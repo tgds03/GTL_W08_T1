@@ -93,6 +93,7 @@ void ACamera::Interpolate()
 UObject* ACamera::Duplicate(UObject* InOuter)
 {
     ThisClass* NewActor = Cast<ThisClass>(Super::Duplicate(InOuter));
+    NewActor->TransitionCurve = TransitionCurve;
     NewActor->TransitionStartTime = TransitionStartTime;
     NewActor->TransitionTime = TransitionTime;
     NewActor->TransitionDuration = TransitionDuration;
