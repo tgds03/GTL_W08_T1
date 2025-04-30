@@ -21,4 +21,5 @@ function Tick(dt)
     obj:SetActorLocation(pos)
     -- PrintObject(obj:GetActorLocation().x)
     -- PrintObject(obj:GetActorLabel())
+    PrintObject(FString("asdf"):ToString())
 end

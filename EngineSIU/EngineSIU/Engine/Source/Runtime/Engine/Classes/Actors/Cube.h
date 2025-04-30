@@ -9,6 +9,10 @@ class ACube : public AStaticMeshActor
 {
     DECLARE_CLASS(ACube, AStaticMeshActor)
 
+
+
+
+
 public:
     ACube();
 
