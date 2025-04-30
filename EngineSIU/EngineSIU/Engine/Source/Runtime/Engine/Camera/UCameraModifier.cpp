@@ -32,6 +32,7 @@ float UCameraModifier::GetBlendAmount()
 
 float UCameraModifier::GetInterpolated(float x)
 {
+    // TODO: How get now time??
     float nowTime = 0.f;
     float calcX = (nowTime - StartTime) / (!bDisabled ? BlendInTime : BlendOutTime);
     if (!bDisabled)

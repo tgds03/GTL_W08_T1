@@ -42,20 +42,10 @@ void APlayerCameraManager::BeginPlay() {
 }
 
 void APlayerCameraManager::Tick(float DeltaTime) {
-    /* UCameraModifier 클래스 추가 시 수도 코드*/
-    /*for (auto modifier : ModifierList) {
-        modifier->Apply(&ViewTarget);
-    }*/
-    ApplyTest(DeltaTime);
-    UpdateViewportTarget();
-}
-
-void APlayerCameraManager::UpdateViewportTarget()
-{
-    std::shared_ptr<FEditorViewportClient> ViewportClient = GEngineLoop.GetLevelEditor()->GetActiveViewportClient();
-    ViewportClient->PerspectiveCamera.SetLocation(ViewTarget.EyeLocation);
-    ViewportClient->PerspectiveCamera.SetRotation(ViewTarget.EyeRotation);
-
+    for (auto modifier : ModifierList) {
+        modifier->Modify(DeltaTime, ViewTarget);
+    }
+    // ApplyTest(DeltaTime);
 }
 
 void APlayerCameraManager::ApplyTest(float DeltaTime)
@@ -67,7 +57,6 @@ void APlayerCameraManager::ApplyTest(float DeltaTime)
     ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
 }
 
-// FIXME : UCameraModifier 클래스 추가 시 수도 코드
-//void APlayerCameraManager::AddCameraModifier(UCameraModifier* NewModifier) {
-//    ModifierList.Add(NewModifier);
-//}
+void APlayerCameraManager::AddCameraModifier(UCameraModifier* NewModifier) {
+    ModifierList.Add(NewModifier);
+}

@@ -110,6 +110,42 @@
             "ActorLabel": "ACube193",
             "Components": [
                 {
+                    "ComponentClass": "UShapeComponent",
+                    "ComponentID": "UShapeComponent_198",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "ComponentClass": "UShapeComponent",
+                        "ComponentName": "UShapeComponent_198",
+                        "ComponentOwner": "ACube_193",
+                        "ComponentOwnerClass": "ACube",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "USphereComponent",
+                    "ComponentID": "MySimpleSphere",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "ComponentClass": "USphereComponent",
+                        "ComponentName": "MySimpleSphere",
+                        "ComponentOwner": "ACube_193",
+                        "ComponentOwnerClass": "ACube",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
+                {
                     "ComponentClass": "UStaticMeshComponent",
                     "ComponentID": "StaticMeshComponent_0",
                     "Properties": {
@@ -142,42 +178,6 @@
                     }
                 },
                 {
-                    "ComponentClass": "USphereComponent",
-                    "ComponentID": "MySimpleSphere",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "ComponentClass": "USphereComponent",
-                        "ComponentName": "MySimpleSphere",
-                        "ComponentOwner": "ACube_193",
-                        "ComponentOwnerClass": "ACube",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
-                    "ComponentClass": "UShapeComponent",
-                    "ComponentID": "UShapeComponent_198",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "ComponentClass": "UShapeComponent",
-                        "ComponentName": "UShapeComponent_198",
-                        "ComponentOwner": "ACube_193",
-                        "ComponentOwnerClass": "ACube",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
                     "ComponentClass": "UShapeComponent",
                     "ComponentID": "UShapeComponent_196",
                     "Properties": {
@@ -203,6 +203,24 @@
             "ActorID": "ACube_201",
             "ActorLabel": "ACube201",
             "Components": [
+                {
+                    "ComponentClass": "UShapeComponent",
+                    "ComponentID": "UShapeComponent_204",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "ComponentClass": "UShapeComponent",
+                        "ComponentName": "UShapeComponent_204",
+                        "ComponentOwner": "ACube_201",
+                        "ComponentOwnerClass": "ACube",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
                 {
                     "ComponentClass": "UStaticMeshComponent",
                     "ComponentID": "StaticMeshComponent_0",
@@ -242,12 +260,12 @@
                 },
                 {
                     "ComponentClass": "UShapeComponent",
-                    "ComponentID": "UShapeComponent_204",
+                    "ComponentID": "UShapeComponent_208",
                     "Properties": {
                         "AABB_max": "X=0.000 Y=0.000 Z=0.000",
                         "AABB_min": "X=0.000 Y=0.000 Z=0.000",
                         "ComponentClass": "UShapeComponent",
-                        "ComponentName": "UShapeComponent_204",
+                        "ComponentName": "UShapeComponent_208",
                         "ComponentOwner": "ACube_201",
                         "ComponentOwnerClass": "ACube",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
@@ -269,24 +287,6 @@
                         "ScriptName": "Saved/LuaScripts/overlaptest.lua",
                         "bAutoActive": "true",
                         "bIsActive": "true"
-                    }
-                },
-                {
-                    "ComponentClass": "UShapeComponent",
-                    "ComponentID": "UShapeComponent_208",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "ComponentClass": "UShapeComponent",
-                        "ComponentName": "UShapeComponent_208",
-                        "ComponentOwner": "ACube_201",
-                        "ComponentOwnerClass": "ACube",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
                     }
                 }
             ],
@@ -502,25 +502,6 @@
             "Components": [
                 {
                     "ComponentClass": "USphereComp",
-                    "ComponentID": "USphereComp_136",
-                    "Properties": {
-                        "AABB_max": "X=1.000 Y=1.000 Z=1.000",
-                        "AABB_min": "X=-1.000 Y=-1.000 Z=-1.000",
-                        "ComponentClass": "USphereComp",
-                        "ComponentName": "USphereComp_136",
-                        "ComponentOwner": "AActor_135",
-                        "ComponentOwnerClass": "AActor",
-                        "RelativeLocation": "X=-8.480 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "StaticMeshPath": "Contents/Sphere.obj",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": "USphereComp"
-                    }
-                },
-                {
-                    "ComponentClass": "USphereComp",
                     "ComponentID": "USphereComp_137",
                     "Properties": {
                         "AABB_max": "X=1.000 Y=1.000 Z=1.000",
@@ -537,9 +518,74 @@
                         "bIsActive": "true",
                         "m_Type": "USphereComp"
                     }
+                },
+                {
+                    "ComponentClass": "USphereComp",
+                    "ComponentID": "USphereComp_136",
+                    "Properties": {
+                        "AABB_max": "X=1.000 Y=1.000 Z=1.000",
+                        "AABB_min": "X=-1.000 Y=-1.000 Z=-1.000",
+                        "ComponentClass": "USphereComp",
+                        "ComponentName": "USphereComp_136",
+                        "ComponentOwner": "AActor_135",
+                        "ComponentOwnerClass": "AActor",
+                        "RelativeLocation": "X=-8.480 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Sphere.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": "USphereComp"
+                    }
                 }
             ],
             "RootComponentID": "USphereComp_136"
+        },
+        {
+            "ActorClass": "ACamera",
+            "ActorID": "ACamera_139",
+            "ActorLabel": "OBJ_CAMERA_139",
+            "Components": [
+                {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent",
+                    "Properties": {
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent",
+                        "ComponentOwner": "ACamera_139",
+                        "ComponentOwnerClass": "ACamera",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                }
+            ],
+            "RootComponentID": "USceneComponent"
+        },
+        {
+            "ActorClass": "APlayerCameraManager",
+            "ActorID": "APlayerCameraManager_141",
+            "ActorLabel": "OBJ_PLAYERCAMMGR_141",
+            "Components": [
+                {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_0",
+                    "Properties": {
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_0",
+                        "ComponentOwner": "APlayerCameraManager_141",
+                        "ComponentOwnerClass": "APlayerCameraManager",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                }
+            ],
+            "RootComponentID": "USceneComponent_0"
         }
     ],
     "NextUUID": 0,

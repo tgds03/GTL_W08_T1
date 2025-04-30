@@ -12,11 +12,11 @@ public:
 
     void SetViewTargetEyeLocation(FVector pos);
     void SetViewTargetEyeRotation(FVector rot);
+    FViewTarget GetViewTarget() { return ViewTarget; };
 
     UCameraModifier* AddTestCameraModifier();
 
-    // FIXME : UCameraModifier 클래스 추가 시 수도 코드
-    //void AddCameraModifier(UCameraModifier* NewModifier);
+    void AddCameraModifier(UCameraModifier* NewModifier);
 private:
     FLinearColor FadeColor;
     float FadeAmount;
@@ -32,11 +32,6 @@ private:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
-    void UpdateViewportTarget();
-
     // location, rotation 테스트용 임시 함수
     void ApplyTest(float DeltaTime);
-
-    
-
 };

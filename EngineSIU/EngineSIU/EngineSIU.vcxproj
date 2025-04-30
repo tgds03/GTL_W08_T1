@@ -216,6 +216,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\CameraComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCameraModifier.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Camera.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\DirectionalLightActor.cpp" />
@@ -461,6 +462,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCameraModifier.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\ViewTargetDefine.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Camera.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\DirectionalLightActor.h" />
