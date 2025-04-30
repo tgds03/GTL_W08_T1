@@ -2,7 +2,7 @@
 #include <cmath>
 #include <numbers>
 #include "Core/HAL/PlatformType.h"
-
+#include <cstdlib> 
 
 #define PI                   (3.1415926535897932f)
 #define SMALL_NUMBER         (1.e-8f)
@@ -192,4 +192,69 @@ struct FMath
 		}
 		return A;
 	}
+
+    /** 0.0f 이상 1.0f 이하 범위의 난수(균등 분포)를 반환 */
+    [[nodiscard]] static FORCEINLINE float FRand()
+    {
+        return static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    }
+
+    /**
+     * InMin 이상 InMax 이하 범위의 난수(균등 분포)를 반환
+     *
+     * @param InMin 난수 최소값
+     * @param InMax 난수 최대값
+     */
+    [[nodiscard]] static FORCEINLINE float FRandRange(float InMin, float InMax)
+    {
+        return InMin + FRand() * (InMax - InMin);
+    }
+
+    // 페를린 Noise 1D 관련
+private:
+    static constexpr uint8 Permutation[256] = {
+        151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,
+        140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,
+        247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,
+        57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,
+        74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,
+        60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,
+        65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,
+        200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,
+        52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,
+        207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,
+        119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,
+        129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,
+        218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,
+        81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,
+        184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,
+        222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
+    };
+
+    [[nodiscard]] static FORCEINLINE float Fade(float t)
+    {
+        // 6t^5 - 15t^4 + 10t^3
+        return t * t * t * (t * (t * 6.f - 15.f) + 10.f);
+    }
+
+    [[nodiscard]] static FORCEINLINE float Gradient(int hash, float x)
+    {
+        int h = hash & 15;
+        float grad = 1.f + static_cast<float>(h & 7); // grad ∈ [1,8]
+        return (h & 8) ? -grad * x : grad * x;
+    }
+
+public:
+    /** Perlin 노이즈 (1D) */
+    [[nodiscard]] static FORCEINLINE float PerlinNoise1D(float x)
+    {
+        int xi = static_cast<int>(floorf(x)) & 255;
+        float xf = x - floorf(x);
+        float u = Fade(xf);
+
+        float g1 = Gradient(Permutation[xi], xf);
+        float g2 = Gradient(Permutation[(xi + 1) & 255], xf - 1.f);
+
+        return Lerp(g1, g2, u); // 출력 범위는 대략 -1.0 ~ 1.0
+    }
 };
