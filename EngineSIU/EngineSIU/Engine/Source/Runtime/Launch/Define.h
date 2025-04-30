@@ -458,3 +458,37 @@ struct FFogConstants
     float padding1;
     float padding2;
 };
+
+struct FEasingCurve
+{
+    FVector2D Point1;
+    FVector2D Point2;
+    FVector2D Handle1;
+    FVector2D Handle2;
+    float GetYFromX(float x)
+    {
+        // Binary Search With t
+        float lower = 0.f;
+        float upper = 1.f;
+        float center = 0.5f;
+        FVector2D now = GetPointFromValue(center);
+        while (FMath::Abs(now.X - x) < KINDA_SMALL_NUMBER)
+        {
+            if (x > now.X)
+                lower = center;
+            else
+                upper = center;
+            center = (lower + upper) / 2.0f;
+            now = GetPointFromValue(center);
+        }
+        return now.Y;
+    }
+    FVector2D GetPointFromValue(float t)
+    {
+        FVector2D result;
+        float tt = 1.0 - t;
+        result.X = tt*tt*tt * Point1.X + 3*tt*tt * Handle1.X + 3*t*t * Handle2.X + t*t*t * Point2.X;
+        result.Y = tt*tt*tt * Point1.Y + 3*tt*tt * Handle1.Y + 3*t*t * Handle2.Y + t*t*t * Point2.Y;
+        return result;
+    }
+};
