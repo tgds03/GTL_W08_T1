@@ -1,7 +1,5 @@
 #include "PostProcessCompositingPass.h"
-
 #include <array>
-
 #include "RendererHelpers.h"
 #include "UnrealClient.h"
 #include "D3D11RHI/DXDShaderManager.h"

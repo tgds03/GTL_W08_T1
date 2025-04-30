@@ -1,9 +1,19 @@
-﻿
+
 #pragma once
 #include <memory>
 
 #include "IRenderPass.h"
 #include "D3D11RHI/DXDShaderManager.h"
+#include "Math/Color.h"
+
+struct FCameraEffectConstants
+{
+    FVector2D LetterboxScale;
+    FVector2D LetterboxOffset;
+    FLinearColor FadeColor;
+    float FadeAmount;
+    FVector Padding;
+};
 
 class FCompositingPass : public IRenderPass
 {
@@ -27,4 +37,8 @@ private:
     ID3D11SamplerState* Sampler;
 
     ID3D11Buffer* ViewModeBuffer;
+
+    // TODO: Manager로 빼야함
+    float FadeAmountTest;
+    float FadeDelta = 0.01f; // Fade 속도
 };

@@ -11,6 +11,7 @@ FCompositingPass::FCompositingPass()
     : BufferManager(nullptr)
     , Graphics(nullptr)
     , ShaderManager(nullptr)
+    , FadeAmountTest(1.f)
 {
 }
 
@@ -57,6 +58,10 @@ void FCompositingPass::Render(const std::shared_ptr<FEditorViewportClient>& View
 
     const EResourceType ResourceType = EResourceType::ERT_Compositing; 
     FRenderTargetRHI* RenderTargetRHI = Viewport->GetViewportResource()->GetRenderTarget(ResourceType);
+    if (!RenderTargetRHI)
+    {
+        return;
+    }
 
     Graphics->DeviceContext->PSSetShaderResources(static_cast<UINT>(EShaderSRVSlot::SRV_Scene), 1, &ViewportResource->GetRenderTarget(EResourceType::ERT_Scene)->SRV);
     Graphics->DeviceContext->PSSetShaderResources(static_cast<UINT>(EShaderSRVSlot::SRV_PostProcess), 1, &ViewportResource->GetRenderTarget(EResourceType::ERT_PP_Fog)->SRV);
@@ -77,12 +82,62 @@ void FCompositingPass::Render(const std::shared_ptr<FEditorViewportClient>& View
     ViewModeConstantData.ViewMode = static_cast<uint32>(Viewport->GetViewMode());
     BufferManager->UpdateConstantBuffer<FViewModeConstants>("FViewModeConstants", ViewModeConstantData);
 
+    // 카메라 효과 상수버퍼 업데이트
+    FCameraEffectConstants CameraEffectData = {};
+    
+    FadeAmountTest += FadeDelta;
+    if (FadeAmountTest <= 0.0f || FadeAmountTest >= 1.0f)
+    {
+        FadeDelta *= -1.0f; // 방향 반전
+        FadeAmountTest = std::clamp(FadeAmountTest, 0.0f, 1.0f); // 오버슈팅 보정
+    }
+    
+
+    CameraEffectData.FadeAmount = FadeAmountTest;
+    CameraEffectData.FadeColor = FLinearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    
+    // 레터박스 Scale, Offset 계산
+    CameraEffectData.LetterboxScale = FVector2D(1.0f, 1.0f);
+    CameraEffectData.LetterboxOffset = FVector2D(0.0f, 0.0f);
+
+    // TODO : Manager가 나오면 TargetRatio를 받아서 계산
+    float TargetAspectRatio = 16.0f / 9.0f;
+
+    D3D11_TEXTURE2D_DESC WindowTextureDesc;
+    RenderTargetRHI->Texture2D->GetDesc(&WindowTextureDesc);
+
+    // TODO : CameraManager에서 조건을 받아서 활성화 
+    if (true)
+    {
+        float WindowWidth = static_cast<float>(WindowTextureDesc.Width);
+        float WindowHeight = static_cast<float>(WindowTextureDesc.Height);
+        float WindowAspectRatio = WindowWidth / WindowHeight;
+
+        if (WindowAspectRatio < TargetAspectRatio)
+        {
+            CameraEffectData.LetterboxScale.Y = WindowAspectRatio / TargetAspectRatio;
+            CameraEffectData.LetterboxOffset.Y = (1.0f - CameraEffectData.LetterboxScale.Y) * 0.5f;
+        }
+        else
+        {
+            CameraEffectData.LetterboxScale.X = TargetAspectRatio / WindowAspectRatio;
+            CameraEffectData.LetterboxOffset.X = (1.0f - CameraEffectData.LetterboxScale.X) * 0.5f;
+        }
+    }
+
+    //BufferManager->BindConstantBuffer(TEXT("FCameraEffectConstants"), 11, EShaderStage::Vertex);
+   
+
     // Render
     ID3D11VertexShader* VertexShader = ShaderManager->GetVertexShaderByKey(L"Compositing");
     ID3D11PixelShader* PixelShader = ShaderManager->GetPixelShaderByKey(L"Compositing");
     Graphics->DeviceContext->VSSetShader(VertexShader, nullptr, 0);
     Graphics->DeviceContext->PSSetShader(PixelShader, nullptr, 0);
     Graphics->DeviceContext->IASetInputLayout(nullptr);
+
+    BufferManager->BindConstantBuffer(TEXT("FCameraEffectConstants"), 1, EShaderStage::Pixel);
+    BufferManager->UpdateConstantBuffer<FCameraEffectConstants>("FCameraEffectConstants", CameraEffectData);
+
     Graphics->DeviceContext->Draw(6, 0);
 
     // Finish

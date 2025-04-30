@@ -2,6 +2,7 @@
 #include "IRenderPass.h"
 #include "LevelEditor/SlateAppMessageHandler.h"
 
+
 class FPostProcessCompositingPass : public IRenderPass
 {
 public:
