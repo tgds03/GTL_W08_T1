@@ -315,6 +315,13 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     SpawnedActor->SetActorLabel(TEXT("OBJ_SPHERE"));
                     USphereComp* SphereComp = SpawnedActor->AddComponent<USphereComp>();
                     SphereComp->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/Sphere.obj"));
+                    SphereComp->SetupAttachment(SpawnedActor->GetRootComponent());
+
+                    SphereComp = SpawnedActor->AddComponent<USphereComp>();
+                    SphereComp->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/Sphere.obj"));
+                    SphereComp->SetRelativeLocation(FVector(0, 5, 0));
+                    SphereComp->SetupAttachment(SpawnedActor->GetRootComponent());
+
                     break;
                 }
                 case OBJ_CUBE:
