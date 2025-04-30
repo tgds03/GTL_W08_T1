@@ -310,6 +310,8 @@
     <ClCompile Include="Engine\Source\Runtime\Renderer\ShadowRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Collision\SphereComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\SpringArmComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Camera\SpringArmCameraModifier.cpp" />
     <None Include="Shaders\CompositingShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -595,6 +597,8 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShadowRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\Collision\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SpringArmComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\SpringArmCameraModifier.h" />
     <None Include="Shaders\EditorShaderConstants.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

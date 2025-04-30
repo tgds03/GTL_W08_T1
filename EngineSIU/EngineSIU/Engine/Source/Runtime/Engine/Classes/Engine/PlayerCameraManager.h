@@ -3,6 +3,7 @@
 #include "Core/Math/Quat.h"
 #include "Camera/UCameraModifier.h"
 #include "Engine/Camera/ViewTargetDefine.h"
+#include "Camera/SpringArmCameraModifier.h"
 
 class APlayerCameraManager : public AActor
 {
@@ -14,11 +15,11 @@ public:
     void SetViewTargetEyeRotation(FVector rot);
     FViewTarget GetViewTarget() { return ViewTarget; };
 
+    UCameraModifier* AddSpringArmCameraModifier();
     // FIXME : 템플릿 활용해서 수정하기
-    UCameraModifier* AddTestCameraModifier();
-
+    UCameraModifier* AddCameraShakeModifier();
     void AddCameraModifier(UCameraModifier* NewModifier);
-private:
+public:
     FLinearColor FadeColor;
     float FadeAmount;
     FVector2D FadeAlpha;
@@ -33,7 +34,5 @@ private:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
-    // location, rotation 테스트용 임시 함수
-    void ApplyTest(float DeltaTime);
     void UpdateViewportTarget(); 
 };
