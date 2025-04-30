@@ -29,6 +29,7 @@
 #include "Actors/DirectionalLightActor.h"
 #include "Actors/SpotLightActor.h"
 #include "Actors/AmbientLightActor.h"
+#include <Engine/PlayerCameraManager.h>
 
 void ControlEditorPanel::Render()
 {
@@ -296,7 +297,8 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             { .Label= "Particle",  .OBJ= OBJ_PARTICLE },
             { .Label= "Text",      .OBJ= OBJ_TEXT },
             { .Label= "Fireball",  .OBJ = OBJ_FIREBALL},
-            { .Label= "Fog",       .OBJ= OBJ_FOG }
+            { .Label= "Fog",       .OBJ= OBJ_FOG },
+            { .Label= "PlayerCamMgr", .OBJ= OBJ_PLAYERCAMMGR }
         };
 
         for (const auto& primitive : primitives)
@@ -313,6 +315,13 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     SpawnedActor->SetActorLabel(TEXT("OBJ_SPHERE"));
                     USphereComp* SphereComp = SpawnedActor->AddComponent<USphereComp>();
                     SphereComp->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/Sphere.obj"));
+                    SphereComp->SetupAttachment(SpawnedActor->GetRootComponent());
+
+                    SphereComp = SpawnedActor->AddComponent<USphereComp>();
+                    SphereComp->SetStaticMesh(FManagerOBJ::GetStaticMesh(L"Contents/Sphere.obj"));
+                    SphereComp->SetRelativeLocation(FVector(0, 5, 0));
+                    SphereComp->SetupAttachment(SpawnedActor->GetRootComponent());
+
                     break;
                 }
                 case OBJ_CUBE:
@@ -386,6 +395,10 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                 case OBJ_TRIANGLE:
                 case OBJ_CAMERA:
                 case OBJ_PLAYER:
+                case OBJ_PLAYERCAMMGR:
+                    SpawnedActor = World->SpawnActor<APlayerCameraManager>();
+                    SpawnedActor->SetActorLabel(TEXT("OBJ_PLAYERCAMMGR"));
+                    break;
                 case OBJ_END:
                     break;
                 }

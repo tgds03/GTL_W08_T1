@@ -31,6 +31,33 @@ private:
     const FString ScriptPath = "Saved/LuaScripts/";
     AActor* GetActorByName(const std::string& name) const;
     static std::string luaToString(const sol::object& obj, int depth, bool showHidden);
+
+    template <typename T>
+    sol::table ArrayToTable(TArray<T> arr);
+    template <typename T>
+    sol::table ArrayToTable(std::vector<T> arr);
 };
 
 int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> exception, sol::string_view desc);
+
+template <typename T>
+sol::table ScriptSystem::ArrayToTable(TArray<T> arr)
+{
+    sol::table table = lua.create_table();
+    for (int i = 1; i <= arr.Num(); ++i)
+    {
+        table[i] = arr[i-1];
+    }
+    return table;
+}
+
+template <typename T>
+sol::table ScriptSystem::ArrayToTable(std::vector<T> arr)
+{
+    sol::table table = lua.create_table();
+    for (int i = 1; i <= arr.size(); ++i)
+    {
+        table[i] = arr[i-1];
+    }
+    return table;
+}

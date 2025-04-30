@@ -9,6 +9,9 @@
 #include <InputCore/InputSystem.h>
 #include <Components/ScriptableComponent.h>
 
+#include "Components/Light/LightComponent.h"
+#include "Components/Light/PointLightComponent.h"
+
 extern FEngineLoop GEngineLoop;
 #include <fstream>
 #include "Components/ScriptableComponent.h"
@@ -141,6 +144,7 @@ void ScriptSystem::BindUObject()
 {
     sol::usertype<UObject> UObjectTypeTable = lua.new_usertype<UObject>("UObject");
     UObjectTypeTable["GetUUID"] = &UObject::GetUUID;
+    UObjectTypeTable["StaticClass"] = &UObject::StaticClass;
     
     TMap<FName, UClass*> ClassMap = UClass::GetClassMap();
     for (auto [name, meta]: ClassMap)
@@ -151,6 +155,14 @@ void ScriptSystem::BindUObject()
     // UFUNCTION으로 안되는 케이스들.
     sol::usertype<UActorComponent> UActorTypeTable = UActorComponent::GetLuaUserType(lua);
     UActorTypeTable["GetOwner"] = &UActorComponent::GetOwner;
+
+    // GetComponentByClass
+    sol::usertype<AActor> AActorTypeTable = AActor::GetLuaUserType(lua);
+    AActorTypeTable["GetUActorComponent"] = &AActor::GetComponentByClass<UActorComponent>;
+    AActorTypeTable["GetUSceneComponent"] = &AActor::GetComponentByClass<USceneComponent>;
+    AActorTypeTable["GetUPrimitiveComponent"] = &AActor::GetComponentByClass<UPrimitiveComponent>;
+    AActorTypeTable["GetULightComponentBase"] = &AActor::GetComponentByClass<ULightComponentBase>;
+    AActorTypeTable["GetUPointLightComponent"] = &AActor::GetComponentByClass<UPointLightComponent>;
 }
 
 void ScriptSystem::InitPIEScript(TArray<AActor*> LevelActors)
@@ -370,3 +382,4 @@ int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> excep
     }
     return sol::stack::push(L, desc);
 }
+
