@@ -15,6 +15,9 @@
 #include <filesystem>
 #include <Windows.h>
 #include <shellapi.h>
+
+#include "ImGuiBezier.h"
+#include "Actors/Camera.h"
 #include "Engine/EditorEngine.h"
 #include "Engine/FLoaderOBJ.h"
 #include "UnrealEd/ImGuiWidget.h"
@@ -523,6 +526,23 @@ void PropertyEditorPanel::Render()
         }
     }
 
+    if (PickedActor)
+    {
+        if (ACamera* cam = Cast<ACamera>(PickedActor))
+        {
+            float p[5] = {};
+            p[0] = cam->TransitionCurve.Handle1.X;
+            p[1] = cam->TransitionCurve.Handle1.Y;
+            p[2] = cam->TransitionCurve.Handle2.X;
+            p[3] = cam->TransitionCurve.Handle2.Y;
+            ImGui::Bezier("Transition Curve", p);
+            cam->TransitionCurve.Handle1.X = p[0];
+            cam->TransitionCurve.Handle1.Y = p[1];
+            cam->TransitionCurve.Handle2.X = p[2];
+            cam->TransitionCurve.Handle2.Y = p[3];
+        }
+    }
+    
     if (PickedActor)
     {
         if (UHeightFogComponent* FogComponent = Cast<UHeightFogComponent>(PickedActor->GetRootComponent()))

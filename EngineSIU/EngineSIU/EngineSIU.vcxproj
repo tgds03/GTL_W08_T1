@@ -218,6 +218,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCameraShakeModifier.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCurveFloat.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Camera.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\DirectionalLightActor.cpp" />
@@ -401,6 +402,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Editor\PropertyEditor\ImGuiBezier.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaScriptSystem.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaTimer.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Math\Plane.h" />
@@ -467,6 +469,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCurveFloat.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Camera\ViewTargetDefine.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Camera.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\DirectionalLightActor.h" />

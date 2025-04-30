@@ -13,13 +13,12 @@ public:
 
     void SetViewTargetEyeLocation(FVector pos);
     void SetViewTargetEyeRotation(FVector rot);
+    FViewTarget GetViewTarget() { return ViewTarget; };
 
     UCameraModifier* AddSpringArmCameraModifier();
     // FIXME : 템플릿 활용해서 수정하기
     UCameraModifier* AddCameraShakeModifier();
-
-    // FIXME : UCameraModifier 클래스 추가 시 수도 코드
-    //void AddCameraModifier(UCameraModifier* NewModifier);
+    void AddCameraModifier(UCameraModifier* NewModifier);
 public:
     FLinearColor FadeColor;
     float FadeAmount;
@@ -35,5 +34,5 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
-    void UpdateViewportTarget();
+    void UpdateViewportTarget(); 
 };

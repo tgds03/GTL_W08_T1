@@ -18,6 +18,7 @@ APlayerCameraManager::APlayerCameraManager()
     FadeTime = 0 ;
     FadeTimeRemaining = 0;
 
+
     AddSpringArmCameraModifier();
     AddCameraShakeModifier();
 }
@@ -49,19 +50,20 @@ UCameraModifier* APlayerCameraManager::AddCameraShakeModifier()
 }
 
 void APlayerCameraManager::BeginPlay() {
+    AActor::BeginPlay();
+    ViewTarget.EyeLocation = GetActorLocation();
+    ViewTarget.EyeRotation = GetActorRotation();
 }
 
 void APlayerCameraManager::Tick(float DeltaTime) {
-
-
-    // Modifier 가 수정한 최종 viewtarget 값으로 화면 업데이트 
-    /* UCameraModifier 클래스 추가 시 수도 코드*/
     for (auto modifier : ModifierList) {
         modifier->Modify(DeltaTime, ViewTarget);
     }
-    UpdateViewportTarget();
+    // ApplyTest(DeltaTime);
+}
 
-    //ApplySpringArmCamera(DeltaTime);
+void APlayerCameraManager::AddCameraModifier(UCameraModifier* NewModifier) {
+    ModifierList.Add(NewModifier);
 }
 
 void APlayerCameraManager::UpdateViewportTarget()

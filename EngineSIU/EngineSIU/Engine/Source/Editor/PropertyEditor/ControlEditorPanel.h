@@ -3,6 +3,7 @@
 #include "UnrealEd/EditorPanel.h"
 #include "LightGridGenerator.h"
 
+#include "ImGUI/imgui.h"
 class ControlEditorPanel : public UEditorPanel
 {
 public:
