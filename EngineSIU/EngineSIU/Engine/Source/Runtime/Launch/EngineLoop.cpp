@@ -17,6 +17,7 @@
 #include "InputCore/InputSystem.h"
 #include "Classes/Engine/CollisionManager.h"
 
+#include "ImGUI/imgui.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

@@ -11,11 +11,14 @@ UCameraModifier::UCameraModifier()
     BlendOutCurve.Point2 = FVector2D(1.f, 0.f);
     BlendOutCurve.Handle1 = BlendOutCurve.Point1;
     BlendOutCurve.Handle2 = BlendOutCurve.Point2;
+    bDisabled = false;
+    BlendOutTime = 20.f;
 }
 
 void UCameraModifier::SetOn()
 {
     bDisabled = false;
+    StartTime = 0;
     // TODO: How get now time??
     // StartTime =
 }
@@ -25,13 +28,15 @@ void UCameraModifier::SetOff()
     bDisabled = true;
 }
 
-float UCameraModifier::GetBlendAmount()
+
+float UCameraModifier::GetDisabled()
 {
-    return 0;
+    return bDisabled;
 }
 
 float UCameraModifier::GetInterpolated(float x)
 {
+    // TODO: How get now time??
     float nowTime = 0.f;
     float calcX = (nowTime - StartTime) / (!bDisabled ? BlendInTime : BlendOutTime);
     if (!bDisabled)

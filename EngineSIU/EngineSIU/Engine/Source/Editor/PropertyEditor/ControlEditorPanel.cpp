@@ -31,6 +31,8 @@
 #include "Actors/AmbientLightActor.h"
 #include <Engine/PlayerCameraManager.h>
 
+#include "Actors/Camera.h"
+
 void ControlEditorPanel::Render()
 {
     /* Pre Setup */
@@ -298,6 +300,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             { .Label= "Text",      .OBJ= OBJ_TEXT },
             { .Label= "Fireball",  .OBJ = OBJ_FIREBALL},
             { .Label= "Fog",       .OBJ= OBJ_FOG },
+            { .Label= "Camera",       .OBJ= OBJ_CAMERA },
             { .Label= "PlayerCamMgr", .OBJ= OBJ_PLAYERCAMMGR }
         };
 
@@ -394,6 +397,8 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                 }
                 case OBJ_TRIANGLE:
                 case OBJ_CAMERA:
+                    SpawnedActor = World->SpawnActor<ACamera>();
+                    SpawnedActor->SetActorLabel(TEXT("OBJ_CAMERA"));
                 case OBJ_PLAYER:
                 case OBJ_PLAYERCAMMGR:
                     SpawnedActor = World->SpawnActor<APlayerCameraManager>();

@@ -2,6 +2,7 @@
 #include "World/World.h"
 #include "GameFramework/Actor.h"
 #include "Engine/EditorEngine.h"
+#include "ImGUI/imgui.h"
 #include <functional>
 
 void OutlinerEditorPanel::Render()

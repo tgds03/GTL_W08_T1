@@ -13,6 +13,7 @@
 #include "Components/Light/AmbientLightComponent.h"
 #include "Stats/ProfilerStatsManager.h"
 #include "Stats/GPUTimingManager.h"
+#include "ImGUI/imgui.h"
 
 void StatOverlay::ToggleStat(const std::string& Command)
 {
@@ -270,6 +271,7 @@ void Console::Draw() {
 
     ImGui::Separator();
 
+    static ImGuiTextFilter Filter; // 필터링을 위한 ImGuiTextFilter
     // 필터 입력 창
     ImGui::Text("Filter:");
     ImGui::SameLine();

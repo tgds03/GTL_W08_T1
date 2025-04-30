@@ -472,7 +472,7 @@ struct FEasingCurve
         float upper = 1.f;
         float center = 0.5f;
         FVector2D now = GetPointFromValue(center);
-        while (FMath::Abs(now.X - x) < KINDA_SMALL_NUMBER)
+        while (FMath::Abs(now.X - x) > 0.01f)
         {
             if (x > now.X)
                 lower = center;
@@ -486,9 +486,9 @@ struct FEasingCurve
     FVector2D GetPointFromValue(float t)
     {
         FVector2D result;
-        float tt = 1.0 - t;
-        result.X = tt*tt*tt * Point1.X + 3*tt*tt * Handle1.X + 3*t*t * Handle2.X + t*t*t * Point2.X;
-        result.Y = tt*tt*tt * Point1.Y + 3*tt*tt * Handle1.Y + 3*t*t * Handle2.Y + t*t*t * Point2.Y;
+        float rt = 1.0 - t;
+        result.X = rt*rt*rt * Point1.X + 3*rt*rt*t * Handle1.X + 3*rt*t*t * Handle2.X + t*t*t * Point2.X;
+        result.Y = rt*rt*rt * Point1.Y + 3*rt*rt*t * Handle1.Y + 3*rt*t*t * Handle2.Y + t*t*t * Point2.Y;
         return result;
     }
 };

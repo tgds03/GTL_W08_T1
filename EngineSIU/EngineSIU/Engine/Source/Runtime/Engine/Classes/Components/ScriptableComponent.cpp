@@ -2,6 +2,12 @@
 #include "ScriptableComponent.h"
 #include "Collision/SphereComponent.h"
 #include "World/World.h"
+#include "UObject/UObjectIterator.h"
+#include "Engine/Camera/SpringArmCameraModifier.h"
+#include "Engine/Classes/Engine/PlayerCameraManager.h"
+
+#include "Engine/Engine.h"
+#include "Engine/EditorEngine.h"
 
 extern FEngineLoop GEngineLoop;
 
@@ -181,6 +187,27 @@ void UScriptableComponent::LoadScriptAndBind()
         InitEnvironment();
     Environment["obj"] = GetOwner();
     
+    if (ScriptName == "Saved/LuaScripts/Player.lua") 
+    {
+        for (const auto iter : TObjectRange<APlayerCameraManager>()) 
+        {
+            if (iter->GetWorld() != GEngine->ActiveWorld) 
+            {
+                continue;
+            }
+
+            for (const auto modi : iter->ModifierList) {
+
+                if (USpringArmCameraModifier* springArm = Cast<USpringArmCameraModifier>(modi)) 
+                {
+                    springArm->SetFollowTargetActor(GetOwner());
+                }
+            }
+
+            
+        }
+    }
+
     std::string scriptText = FEngineLoop::ScriptSys.LoadScripts[ScriptName];
     sol::load_result loadresult = lua.load_buffer(scriptText.c_str(), scriptText.length());
     sol::function script;

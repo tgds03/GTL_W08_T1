@@ -3,7 +3,6 @@
 #include "D3D11RHI/GraphicDevice.h"
 #include "HAL/PlatformType.h"
 #include "UObject/NameTypes.h"
-#include "ImGUI/imgui.h"
 #include "PropertyEditor/IWindowToggleable.h"
 
 #define UE_LOG Console::GetInstance().AddLog
@@ -99,7 +98,6 @@ public:
     char InputBuf[256] = "";
     bool ScrollToBottom = false;
 
-    ImGuiTextFilter Filter; // 필터링을 위한 ImGuiTextFilter
 
     bool ShowLogTemp = true; // LogTemp 체크박스
     bool ShowWarning = true; // Warning 체크박스
