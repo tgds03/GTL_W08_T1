@@ -144,6 +144,7 @@ void ScriptSystem::BindUObject()
 {
     sol::usertype<UObject> UObjectTypeTable = lua.new_usertype<UObject>("UObject");
     UObjectTypeTable["GetUUID"] = &UObject::GetUUID;
+    UObjectTypeTable["StaticClass"] = &UObject::StaticClass;
     
     TMap<FName, UClass*> ClassMap = UClass::GetClassMap();
     for (auto [name, meta]: ClassMap)
@@ -381,3 +382,4 @@ int LuaExceptionHandler(lua_State* L, sol::optional<const std::exception&> excep
     }
     return sol::stack::push(L, desc);
 }
+

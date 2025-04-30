@@ -55,27 +55,6 @@
             "ActorLabel": "ASpotLight128",
             "Components": [
                 {
-                    "ComponentClass": "UBillboardComponent",
-                    "ComponentID": "UBillboardComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "BufferKey": "Assets/Editor/Icon/SpotLight_64x.png",
-                        "ComponentClass": "UBillboardComponent",
-                        "ComponentName": "UBillboardComponent_0",
-                        "ComponentOwner": "ASpotLight_128",
-                        "ComponentOwnerClass": "ASpotLight",
-                        "FinalIndexU": "0.000000",
-                        "FinalIndexV": "0.000000",
-                        "RelativeLocation": "X=8.750 Y=-0.320 Z=5.620",
-                        "RelativeRotation": "Pitch=-27.830 Yaw=171.800 Roll=4.100",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": "UBillboardComponent"
-                    }
-                },
-                {
                     "ComponentClass": "USpotLightComponent",
                     "ComponentID": "USpotLightComponent_0",
                     "Properties": {
@@ -100,6 +79,27 @@
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }
+                },
+                {
+                    "ComponentClass": "UBillboardComponent",
+                    "ComponentID": "UBillboardComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "BufferKey": "Assets/Editor/Icon/SpotLight_64x.png",
+                        "ComponentClass": "UBillboardComponent",
+                        "ComponentName": "UBillboardComponent_0",
+                        "ComponentOwner": "ASpotLight_128",
+                        "ComponentOwnerClass": "ASpotLight",
+                        "FinalIndexU": "0.000000",
+                        "FinalIndexV": "0.000000",
+                        "RelativeLocation": "X=8.750 Y=-0.320 Z=5.620",
+                        "RelativeRotation": "Pitch=-27.830 Yaw=171.800 Roll=4.100",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": "UBillboardComponent"
+                    }
                 }
             ],
             "RootComponentID": "UBillboardComponent_0"
@@ -109,6 +109,24 @@
             "ActorID": "ACube_133",
             "ActorLabel": "ACube133",
             "Components": [
+                {
+                    "ComponentClass": "UShapeComponent",
+                    "ComponentID": "UShapeComponent_139",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "ComponentClass": "UShapeComponent",
+                        "ComponentName": "UShapeComponent_139",
+                        "ComponentOwner": "ACube_133",
+                        "ComponentOwnerClass": "ACube",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
                 {
                     "ComponentClass": "UScriptableComponent",
                     "ComponentID": "UScriptableComponent_140",
@@ -142,24 +160,6 @@
                     }
                 },
                 {
-                    "ComponentClass": "UShapeComponent",
-                    "ComponentID": "UShapeComponent_137",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "ComponentClass": "UShapeComponent",
-                        "ComponentName": "UShapeComponent_137",
-                        "ComponentOwner": "ACube_133",
-                        "ComponentOwnerClass": "ACube",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
                     "ComponentClass": "USphereComponent",
                     "ComponentID": "MySimpleSphere",
                     "Properties": {
@@ -179,12 +179,12 @@
                 },
                 {
                     "ComponentClass": "UShapeComponent",
-                    "ComponentID": "UShapeComponent_139",
+                    "ComponentID": "UShapeComponent_137",
                     "Properties": {
                         "AABB_max": "X=0.000 Y=0.000 Z=0.000",
                         "AABB_min": "X=0.000 Y=0.000 Z=0.000",
                         "ComponentClass": "UShapeComponent",
-                        "ComponentName": "UShapeComponent_139",
+                        "ComponentName": "UShapeComponent_137",
                         "ComponentOwner": "ACube_133",
                         "ComponentOwnerClass": "ACube",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
@@ -204,24 +204,6 @@
             "ActorLabel": "ACube141",
             "Components": [
                 {
-                    "ComponentClass": "UShapeComponent",
-                    "ComponentID": "UShapeComponent_148",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "ComponentClass": "UShapeComponent",
-                        "ComponentName": "UShapeComponent_148",
-                        "ComponentOwner": "ACube_141",
-                        "ComponentOwnerClass": "ACube",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
                     "ComponentClass": "UStaticMeshComponent",
                     "ComponentID": "StaticMeshComponent_0",
                     "Properties": {
@@ -238,19 +220,6 @@
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
-                    }
-                },
-                {
-                    "ComponentClass": "UScriptableComponent",
-                    "ComponentID": "UScriptableComponent_145",
-                    "Properties": {
-                        "ComponentClass": "UScriptableComponent",
-                        "ComponentName": "UScriptableComponent_145",
-                        "ComponentOwner": "ACube_141",
-                        "ComponentOwnerClass": "ACube",
-                        "ScriptName": "Saved/LuaScripts/overlaptest.lua",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
                     }
                 },
                 {
@@ -287,6 +256,37 @@
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "UShapeComponent",
+                    "ComponentID": "UShapeComponent_148",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "ComponentClass": "UShapeComponent",
+                        "ComponentName": "UShapeComponent_148",
+                        "ComponentOwner": "ACube_141",
+                        "ComponentOwnerClass": "ACube",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "UScriptableComponent",
+                    "ComponentID": "UScriptableComponent_145",
+                    "Properties": {
+                        "ComponentClass": "UScriptableComponent",
+                        "ComponentName": "UScriptableComponent_145",
+                        "ComponentOwner": "ACube_141",
+                        "ComponentOwnerClass": "ACube",
+                        "ScriptName": "Saved/LuaScripts/overlaptest.lua",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
                     }
                 }
             ],
