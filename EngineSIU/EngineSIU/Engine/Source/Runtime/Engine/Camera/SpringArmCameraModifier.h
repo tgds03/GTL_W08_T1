@@ -14,6 +14,7 @@ public:
     float ArmLength = 300.f; 
 
     virtual void Modify(float DeltaTime, FViewTarget& ViewTarget) override;
-
+    
+    FVector FakePlayerTarget;
 
 };
