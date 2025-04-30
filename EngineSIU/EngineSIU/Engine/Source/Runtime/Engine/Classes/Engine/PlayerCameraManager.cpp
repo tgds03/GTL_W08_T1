@@ -16,6 +16,7 @@ APlayerCameraManager::APlayerCameraManager()
     FadeTime = 0 ;
     FadeTimeRemaining = 0;
 
+    // FIXME : 테스트용 코드
     AddTestCameraModifier();
 }
 
@@ -43,10 +44,9 @@ void APlayerCameraManager::BeginPlay() {
 
 void APlayerCameraManager::Tick(float DeltaTime) {
     /* UCameraModifier 클래스 추가 시 수도 코드*/
-    /*for (auto modifier : ModifierList) {
-        modifier->Apply(&ViewTarget);
-    }*/
-    ApplyTest(DeltaTime);
+    for (auto modifier : ModifierList) {
+        modifier->Modify(DeltaTime, ViewTarget);
+    }
     UpdateViewportTarget();
 }
 
@@ -57,17 +57,3 @@ void APlayerCameraManager::UpdateViewportTarget()
     ViewportClient->PerspectiveCamera.SetRotation(ViewTarget.EyeRotation);
 
 }
-
-void APlayerCameraManager::ApplyTest(float DeltaTime)
-{
-    const float MoveSpeed = 1.0f;
-    const float RotationSpeed = 45.0f;
-
-    ViewTarget.EyeLocation.X = ViewTarget.EyeLocation.X + MoveSpeed * DeltaTime;
-    ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
-}
-
-// FIXME : UCameraModifier 클래스 추가 시 수도 코드
-//void APlayerCameraManager::AddCameraModifier(UCameraModifier* NewModifier) {
-//    ModifierList.Add(NewModifier);
-//}
