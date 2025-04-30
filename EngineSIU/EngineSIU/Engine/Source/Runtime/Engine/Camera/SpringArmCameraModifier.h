@@ -9,12 +9,18 @@ public:
     USpringArmCameraModifier();
 
     // TargetOffset: 카메라 팔(Arm)이 시작될 위치 눈높이 조정
-    FVector TargetOffset = FVector(0, 0, 60); 
+    FVector TargetOffset = FVector(0, 0, 10); 
     // ArmLength: 카메라를 기준점(Pivot)에서 얼마나 뒤로 뺄지
-    float ArmLength = 300.f; 
+    float TargetArmLength = 10.f; 
+    float CameraLagSpeed = 10.f;
+    bool bEnableLag = true;
+
+    FVector PreviousCameraLocation = FVector::Zero();
 
     virtual void Modify(float DeltaTime, FViewTarget& ViewTarget) override;
     
-    FVector FakePlayerTarget;
+    AActor* FollowTarget = nullptr;
+
+    FVector VInterpTo(const FVector& Current, const FVector& Target, float DeltaTime, float InterpSpeed);
 
 };

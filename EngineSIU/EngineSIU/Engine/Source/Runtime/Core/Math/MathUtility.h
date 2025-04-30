@@ -2,8 +2,7 @@
 #include <cmath>
 #include <numbers>
 #include "Core/HAL/PlatformType.h"
-#include <cstdlib> 
-
+#include <cstdlib>
 #define PI                   (3.1415926535897932f)
 #define SMALL_NUMBER         (1.e-8f)
 #define KINDA_SMALL_NUMBER   (1.e-4f)
@@ -257,4 +256,6 @@ public:
 
         return Lerp(g1, g2, u); // 출력 범위는 대략 -1.0 ~ 1.0
     }
+
+    
 };

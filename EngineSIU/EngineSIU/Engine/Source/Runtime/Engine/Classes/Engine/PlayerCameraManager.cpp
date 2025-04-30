@@ -19,8 +19,7 @@ APlayerCameraManager::APlayerCameraManager()
     FadeTimeRemaining = 0;
 
     AddSpringArmCameraModifier();
-    // FIXME : 테스트용 코드
-    AddTestCameraModifier();
+    AddCameraShakeModifier();
 }
 
 void APlayerCameraManager::SetViewTargetEyeLocation(FVector pos)
@@ -35,24 +34,18 @@ void APlayerCameraManager::SetViewTargetEyeRotation(FVector rot)
 
 UCameraModifier* APlayerCameraManager::AddSpringArmCameraModifier()
 {
-    //UCameraModifier* obj  = FObjectFactory::ConstructObject<UTestCameraModifier>(nullptr);
-    UCameraModifier* obj  = FObjectFactory::ConstructObject<UCameraShakeModifier>(nullptr);
+    USpringArmCameraModifier* obj  = FObjectFactory::ConstructObject<USpringArmCameraModifier>(nullptr);
+    obj->OwnerMgr = this; // 도구에게 "네 주인은 나야" 라고 알려주고
+    ModifierList.Add(obj); // 도구 목록(ModifierList)에 진짜로 추가!
+    //obj->FollowTarget = TargetActor;
 
-    //obj->OwnerMgr = this;
-    //ModifierList.Add(obj);
-    //return obj;
+    return obj; // 예를 들어 이렇게 생성된 객체를 반환
+}
 
-    // 만든 '스프링 암 카메라 필터' 도구를 만들어서 목록에 추가합니다.
-    //    (FObjectFactory 대신 NewObject<> 사용하는 것이 더 최신 방식입니다)
-    USpringArmCameraModifier* MySpringArmTool = FObjectFactory::ConstructObject<USpringArmCameraModifier>(nullptr); // this는 "이 카메라 감독님 소유로 만들어줘" 라는 뜻
-    // 3. 혹시 도구가 잘 만들어졌는지 확인하고 (만약 null이 아니라면)
-    if (MySpringArmTool)
-    {
-        MySpringArmTool->OwnerMgr = this; // 도구에게 "네 주인은 나야" 라고 알려주고
-        ModifierList.Add(MySpringArmTool); // 도구 목록(ModifierList)에 진짜로 추가!
-    }
-
-    return MySpringArmTool; // 예를 들어 이렇게 생성된 객체를 반환
+UCameraModifier* APlayerCameraManager::AddCameraShakeModifier()
+{
+    UCameraModifier* obj = FObjectFactory::ConstructObject<UCameraShakeModifier>(nullptr);
+    return obj;
 }
 
 void APlayerCameraManager::BeginPlay() {
@@ -68,7 +61,7 @@ void APlayerCameraManager::Tick(float DeltaTime) {
     }
     UpdateViewportTarget();
 
-    ApplySpringArmCamera(DeltaTime);
+    //ApplySpringArmCamera(DeltaTime);
 }
 
 void APlayerCameraManager::UpdateViewportTarget()
@@ -79,26 +72,26 @@ void APlayerCameraManager::UpdateViewportTarget()
 
 }
 
-void APlayerCameraManager::ApplySpringArmCamera(float DeltaTime)
-{
-    //const float MoveSpeed = 1.0f;
-    //const float RotationSpeed = 45.0f;
-
-    //ViewTarget.EyeLocation.X = ViewTarget.EyeLocation.X + MoveSpeed * DeltaTime;
-    //ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
-    
-    // --- 1단계: 가짜 플레이어 정보 만들기 ---
-    
-
-    for (UCameraModifier* Modifier : ModifierList)
-    {
-        if (Modifier)
-        {
-            // 위에서 만든 가짜 ViewTarget 정보 전달
-            Modifier->Modify(DeltaTime, ViewTarget);
-        }
-    }
-}
+//void APlayerCameraManager::ApplySpringArmCamera(float DeltaTime)
+//{
+//    //const float MoveSpeed = 1.0f;
+//    //const float RotationSpeed = 45.0f;
+//
+//    //ViewTarget.EyeLocation.X = ViewTarget.EyeLocation.X + MoveSpeed * DeltaTime;
+//    //ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
+//    
+//    // --- 1단계: 가짜 플레이어 정보 만들기 ---
+//    
+//
+//    for (UCameraModifier* Modifier : ModifierList)
+//    {
+//        if (Modifier)
+//        {
+//            // 위에서 만든 가짜 ViewTarget 정보 전달
+//            Modifier->Modify(DeltaTime, ViewTarget);
+//        }
+//    }
+//}
 
 // FIXME : UCameraModifier 클래스 추가 시 수도 코드
 //void APlayerCameraManager::AddCameraModifier(UCameraModifier* NewModifier) {

@@ -16,7 +16,7 @@ public:
 
     UCameraModifier* AddSpringArmCameraModifier();
     // FIXME : 템플릿 활용해서 수정하기
-    UCameraModifier* AddTestCameraModifier();
+    UCameraModifier* AddCameraShakeModifier();
 
     // FIXME : UCameraModifier 클래스 추가 시 수도 코드
     //void AddCameraModifier(UCameraModifier* NewModifier);
@@ -36,7 +36,4 @@ private:
     virtual void Tick(float DeltaTime) override;
 
     void UpdateViewportTarget();
-    // location, rotation 테스트용 임시 함수
-    void ApplySpringArmCamera(float DeltaTime);
-    void UpdateViewportTarget(); 
 };
