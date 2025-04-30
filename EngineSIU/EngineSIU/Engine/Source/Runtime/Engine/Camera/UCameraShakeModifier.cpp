@@ -6,6 +6,15 @@ UCameraShakeModifier::UCameraShakeModifier()
 {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
+    UCurveFloat* CurveX = new UCurveFloat();
+    CurveX->AddKey(0.0f, 1.0f);   // 시작 시 최대 진폭
+    CurveX->AddKey(0.3f, 0.7f);   // 빠르게 감쇠
+    CurveX->AddKey(0.7f, 0.3f);   // 중간 감쇠
+    CurveX->AddKey(1.0f, 0.0f);   // 종료 시 진폭 0
+
+    // 커브 감쇠 적용 (X축만 적용)
+    LocOsc.AmplitudeCurve[0] = CurveX;
+
     LocOsc.Amplitude = FVector(0.1f, 0.1f, 0.1f);
     LocOsc.Frequency = FVector(5.f, 5.f, 5.f);
     LocOsc.InitialPhase = FVector(

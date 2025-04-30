@@ -810,6 +810,13 @@
     <ClCompile Include="Engine\Source\Runtime\InputCore\InputSystem.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Collision\SphereComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Lua\LuaTimer.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCameraModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCameraShakeModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\CollisionManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\PlayerCameraManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Camera\UCurveFloat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -891,6 +898,13 @@
     <ClInclude Include="Engine\Source\Runtime\InputCore\InputSystem.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\Collision\SphereComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaTimer.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCameraModifier.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCameraShakeModifier.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UTestCameraModifier.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\ViewTargetDefine.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\CollisionManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Camera\UCurveFloat.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
