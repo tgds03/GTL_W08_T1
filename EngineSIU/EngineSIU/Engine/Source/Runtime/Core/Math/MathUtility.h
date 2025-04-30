@@ -2,7 +2,7 @@
 #include <cmath>
 #include <numbers>
 #include "Core/HAL/PlatformType.h"
-
+#include <cstdlib> 
 
 #define PI                   (3.1415926535897932f)
 #define SMALL_NUMBER         (1.e-8f)
@@ -192,4 +192,21 @@ struct FMath
 		}
 		return A;
 	}
+
+    /** 0.0f 이상 1.0f 이하 범위의 난수(균등 분포)를 반환 */
+    [[nodiscard]] static FORCEINLINE float FRand()
+    {
+        return static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
+    }
+
+    /**
+     * InMin 이상 InMax 이하 범위의 난수(균등 분포)를 반환
+     *
+     * @param InMin 난수 최소값
+     * @param InMax 난수 최대값
+     */
+    [[nodiscard]] static FORCEINLINE float FRandRange(float InMin, float InMax)
+    {
+        return InMin + FRand() * (InMax - InMin);
+    }
 };
