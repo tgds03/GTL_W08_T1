@@ -64,12 +64,23 @@ void ACamera::Interpolate()
     if (OldCamera != nullptr)
     {
         const float t = TransitionCurve.GetYFromX(TransitionTime / TransitionDuration);
+        // float p[5] = {
+        //     TransitionCurve.Point1.X,
+        //     TransitionCurve.Point1.Y,
+        //     TransitionCurve.Point2.X,
+        //     TransitionCurve.Point2.Y,
+        //     0.f
+        // };
+        // const float t = ImGui::BezierValue(TransitionTime / TransitionDuration, p);
         FVector OldLoc = OldCamera->GetViewTarget().EyeLocation;
         FVector OldRot = OldCamera->GetViewTarget().EyeRotation;
         FVector NewLoc = TargetCamera->GetViewTarget().EyeLocation;
         FVector NewRot = TargetCamera->GetViewTarget().EyeRotation;
-        ViewTarget.EyeLocation = FMath::Lerp(OldLoc, NewLoc, t);
-        ViewTarget.EyeRotation = FMath::Lerp(OldRot, NewRot, t);
+        FVector loc = OldLoc * (1 - t) + NewLoc * t;
+        FVector rot = OldRot * (1 - t) + NewRot * t;
+        ViewTarget.EyeLocation = loc;
+        ViewTarget.EyeRotation = rot;
+        UE_LOG(LogLevel::Display, "t: %f", t);       
     } else
     {
         FVector NewLoc = TargetCamera->GetViewTarget().EyeLocation;
@@ -77,9 +88,13 @@ void ACamera::Interpolate()
         ViewTarget.EyeLocation = NewLoc;
         ViewTarget.EyeRotation = NewRot;
     }
+}
 
-
-    UE_LOG(LogLevel::Display, "TargetCamera: %s", GetData(TargetCamera->GetActorLabel()));
-    UE_LOG(LogLevel::Display, "CamPos: %s", GetData(ViewTarget.EyeLocation.ToString()));
-    UE_LOG(LogLevel::Display, "CamRot: %s", GetData(ViewTarget.EyeRotation.ToString()));
+UObject* ACamera::Duplicate(UObject* InOuter)
+{
+    ThisClass* NewActor = Cast<ThisClass>(Super::Duplicate(InOuter));
+    NewActor->TransitionStartTime = TransitionStartTime;
+    NewActor->TransitionTime = TransitionTime;
+    NewActor->TransitionDuration = TransitionDuration;
+    return NewActor;
 }

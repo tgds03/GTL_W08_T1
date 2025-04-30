@@ -398,6 +398,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Editor\PropertyEditor\ImGuiBezier.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaScriptSystem.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Lua\LuaTimer.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Math\Plane.h" />

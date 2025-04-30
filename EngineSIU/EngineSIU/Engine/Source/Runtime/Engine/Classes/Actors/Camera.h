@@ -1,6 +1,5 @@
 ﻿#pragma once
-#include <Engine/PlayerCameraManager.h>
-
+#include "Engine/PlayerCameraManager.h"
 #include "GameFramework/Actor.h"
 #include "Engine/Camera/ViewTargetDefine.h"
 
@@ -13,15 +12,16 @@ public:
     void BeginPlay() override;
     void Tick(float DeltaTime) override;
     void Interpolate();
+    UObject* Duplicate(UObject* InOuter) override;
 
+    FEasingCurve TransitionCurve;
     UFUNCTION(void, SetTargetCamera, APlayerCameraManager* InCameraManager, float InTransitionDuration)
 private:
     void UpdateViewportClient(float DeltaTime);
-    FViewTarget ViewTarget;
     
+    FViewTarget ViewTarget;
     APlayerCameraManager* TargetCamera;
     APlayerCameraManager* OldCamera;
-    FEasingCurve TransitionCurve;
     float TransitionStartTime = 0.f;
     float TransitionTime = 5.f;
     float TransitionDuration = 5.f;

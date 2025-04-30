@@ -2,8 +2,8 @@
     "Actors": [
         {
             "ActorClass": "ACube",
-            "ActorID": "ACube_209",
-            "ActorLabel": "OBJ_CUBE_209",
+            "ActorID": "ACube_122",
+            "ActorLabel": "ACube122",
             "Components": [
                 {
                     "ComponentClass": "UStaticMeshComponent",
@@ -13,7 +13,7 @@
                         "AABB_min": "X=-15.368 Y=-9.462 Z=-1.012",
                         "ComponentClass": "UStaticMeshComponent",
                         "ComponentName": "StaticMeshComponent_0",
-                        "ComponentOwner": "ACube_209",
+                        "ComponentOwner": "ACube_122",
                         "ComponentOwnerClass": "ACube",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
@@ -32,7 +32,7 @@
                         "AABB_min": "X=0.000 Y=0.000 Z=0.000",
                         "ComponentClass": "USphereComponent",
                         "ComponentName": "MySimpleSphere",
-                        "ComponentOwner": "ACube_209",
+                        "ComponentOwner": "ACube_122",
                         "ComponentOwnerClass": "ACube",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
@@ -44,11 +44,11 @@
                 },
                 {
                     "ComponentClass": "UScriptableComponent",
-                    "ComponentID": "UScriptableComponent_212",
+                    "ComponentID": "UScriptableComponent_127",
                     "Properties": {
                         "ComponentClass": "UScriptableComponent",
-                        "ComponentName": "UScriptableComponent_212",
-                        "ComponentOwner": "ACube_209",
+                        "ComponentName": "UScriptableComponent_127",
+                        "ComponentOwner": "ACube_122",
                         "ComponentOwnerClass": "ACube",
                         "ScriptName": "Saved/LuaScripts/template.lua",
                         "bAutoActive": "true",
@@ -60,8 +60,8 @@
         },
         {
             "ActorClass": "ACamera",
-            "ActorID": "ACamera_221",
-            "ActorLabel": "OBJ_CAMERA_221",
+            "ActorID": "ACamera_128",
+            "ActorLabel": "ACamera128",
             "Components": [
                 {
                     "ComponentClass": "USceneComponent",
@@ -69,10 +69,10 @@
                     "Properties": {
                         "ComponentClass": "USceneComponent",
                         "ComponentName": "USceneComponent",
-                        "ComponentOwner": "ACamera_221",
+                        "ComponentOwner": "ACamera_128",
                         "ComponentOwnerClass": "ACamera",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeLocation": "X=-28.754 Y=-17.085 Z=24.449",
+                        "RelativeRotation": "Pitch=-32.100 Yaw=46.015 Roll=0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "bAutoActive": "true",
                         "bIsActive": "true"
@@ -83,8 +83,8 @@
         },
         {
             "ActorClass": "APlayerCameraManager",
-            "ActorID": "APlayerCameraManager_223",
-            "ActorLabel": "OBJ_PLAYERCAMMGR_223",
+            "ActorID": "APlayerCameraManager_131",
+            "ActorLabel": "APlayerCameraManager131",
             "Components": [
                 {
                     "ComponentClass": "USceneComponent",
@@ -92,7 +92,7 @@
                     "Properties": {
                         "ComponentClass": "USceneComponent",
                         "ComponentName": "USceneComponent_0",
-                        "ComponentOwner": "APlayerCameraManager_223",
+                        "ComponentOwner": "APlayerCameraManager_131",
                         "ComponentOwnerClass": "APlayerCameraManager",
                         "RelativeLocation": "X=-28.766 Y=-17.083 Z=24.450",
                         "RelativeRotation": "Pitch=-32.100 Yaw=46.000 Roll=0.000",
@@ -106,8 +106,8 @@
         },
         {
             "ActorClass": "APlayerCameraManager",
-            "ActorID": "APlayerCameraManager_241",
-            "ActorLabel": "OBJ_PLAYERCAMMGR_241",
+            "ActorID": "APlayerCameraManager_134",
+            "ActorLabel": "APlayerCameraManager134",
             "Components": [
                 {
                     "ComponentClass": "USceneComponent",
@@ -115,7 +115,7 @@
                     "Properties": {
                         "ComponentClass": "USceneComponent",
                         "ComponentName": "USceneComponent_0",
-                        "ComponentOwner": "APlayerCameraManager_241",
+                        "ComponentOwner": "APlayerCameraManager_134",
                         "ComponentOwnerClass": "APlayerCameraManager",
                         "RelativeLocation": "X=36.688 Y=-28.725 Z=20.304",
                         "RelativeRotation": "Pitch=-31.400 Yaw=130.100 Roll=0.000",
@@ -129,8 +129,8 @@
         },
         {
             "ActorClass": "ADirectionalLight",
-            "ActorID": "ADirectionalLight_244",
-            "ActorLabel": "OBJ_DIRECTIONALLGIHT_244",
+            "ActorID": "ADirectionalLight_137",
+            "ActorLabel": "ADirectionalLight137",
             "Components": [
                 {
                     "ComponentClass": "UDirectionalLightComponent",
@@ -140,7 +140,7 @@
                         "AABB_Min": "X=-1.000 Y=-1.000 Z=-0.100",
                         "ComponentClass": "UDirectionalLightComponent",
                         "ComponentName": "UDirectionalLightComponent_0",
-                        "ComponentOwner": "ADirectionalLight_244",
+                        "ComponentOwner": "ADirectionalLight_137",
                         "ComponentOwnerClass": "ADirectionalLight",
                         "Direction": "X=-1.000 Y=-0.000 Z=-0.000",
                         "Intensity": "1.900000",
@@ -161,7 +161,7 @@
                         "BufferKey": "Assets/Editor/Icon/DirectionalLight_64x.png",
                         "ComponentClass": "UBillboardComponent",
                         "ComponentName": "UBillboardComponent_0",
-                        "ComponentOwner": "ADirectionalLight_244",
+                        "ComponentOwner": "ADirectionalLight_137",
                         "ComponentOwnerClass": "ADirectionalLight",
                         "FinalIndexU": "0.000000",
                         "FinalIndexV": "0.000000",
@@ -178,9 +178,22 @@
         },
         {
             "ActorClass": "ACube",
-            "ActorID": "ACube_155",
-            "ActorLabel": "OBJ_CUBE_155",
+            "ActorID": "ACube_142",
+            "ActorLabel": "ACube142",
             "Components": [
+                {
+                    "ComponentClass": "UScriptableComponent",
+                    "ComponentID": "UScriptableComponent_147",
+                    "Properties": {
+                        "ComponentClass": "UScriptableComponent",
+                        "ComponentName": "UScriptableComponent_147",
+                        "ComponentOwner": "ACube_142",
+                        "ComponentOwnerClass": "ACube",
+                        "ScriptName": "Saved/LuaScripts/Player copy.lua",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
                 {
                     "ComponentClass": "UStaticMeshComponent",
                     "ComponentID": "StaticMeshComponent_0",
@@ -189,9 +202,9 @@
                         "AABB_min": "X=-1.000 Y=-1.000 Z=-1.000",
                         "ComponentClass": "UStaticMeshComponent",
                         "ComponentName": "StaticMeshComponent_0",
-                        "ComponentOwner": "ACube_155",
+                        "ComponentOwner": "ACube_142",
                         "ComponentOwnerClass": "ACube",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeLocation": "X=4.638 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "StaticMeshPath": "Contents/Sphere.obj",
@@ -208,7 +221,7 @@
                         "AABB_min": "X=0.000 Y=0.000 Z=0.000",
                         "ComponentClass": "USphereComponent",
                         "ComponentName": "MySimpleSphere",
-                        "ComponentOwner": "ACube_155",
+                        "ComponentOwner": "ACube_142",
                         "ComponentOwnerClass": "ACube",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
@@ -216,19 +229,6 @@
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
-                    }
-                },
-                {
-                    "ComponentClass": "UScriptableComponent",
-                    "ComponentID": "UScriptableComponent_158",
-                    "Properties": {
-                        "ComponentClass": "UScriptableComponent",
-                        "ComponentName": "UScriptableComponent_158",
-                        "ComponentOwner": "ACube_155",
-                        "ComponentOwnerClass": "ACube",
-                        "ScriptName": "Saved/LuaScripts/Player copy.lua",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
                     }
                 }
             ],
