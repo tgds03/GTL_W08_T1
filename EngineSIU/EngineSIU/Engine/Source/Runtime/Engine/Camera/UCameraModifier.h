@@ -18,11 +18,12 @@ public:
     UPROPERTY(float, BlendInTime)
     UPROPERTY(float, BlendOutTime)
 
-    UFUNCTION(void, SetOn)
+    UFUNCTION(virtual void, SetOn)
     UFUNCTION(void, SetOff)
     UFUNCTION(virtual void, Modify, float, FViewTarget&)
+
+    float GetDisabled();
 protected:
-    UFUNCTION(virtual float, GetBlendAmount)
     uint8 Priority;
     float NowBlendAmount;
 private:

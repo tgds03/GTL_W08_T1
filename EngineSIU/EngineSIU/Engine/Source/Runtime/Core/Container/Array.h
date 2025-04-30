@@ -29,6 +29,10 @@ public:
     auto rend() noexcept { return ContainerPrivate.rend(); }
     auto rbegin() const noexcept { return ContainerPrivate.rbegin(); }
     auto rend() const noexcept { return ContainerPrivate.rend(); }
+    T& front() { return ContainerPrivate.front(); }
+    const T& front() const { return ContainerPrivate.front(); }
+    T& back() { return ContainerPrivate.back(); }
+    const T& back() const { return ContainerPrivate.back(); }
 
     T& operator[](SizeType Index);
     const T& operator[](SizeType Index) const;

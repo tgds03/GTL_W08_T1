@@ -3,6 +3,8 @@
 #include "Editor/LevelEditor/SLevelEditor.h"
 #include "Editor/UnrealEd/EditorViewportClient.h"
 #include "Camera/SpringArmCameraModifier.h"
+#include <Camera/UTestCameraModifier.h>
+#include <Camera/UCameraShakeModifier.h>
 
 extern FEngineLoop GEngineLoop;
 
@@ -17,6 +19,8 @@ APlayerCameraManager::APlayerCameraManager()
     FadeTimeRemaining = 0;
 
     AddSpringArmCameraModifier();
+    // FIXME : 테스트용 코드
+    AddTestCameraModifier();
 }
 
 void APlayerCameraManager::SetViewTargetEyeLocation(FVector pos)
@@ -32,6 +36,7 @@ void APlayerCameraManager::SetViewTargetEyeRotation(FVector rot)
 UCameraModifier* APlayerCameraManager::AddSpringArmCameraModifier()
 {
     //UCameraModifier* obj  = FObjectFactory::ConstructObject<UTestCameraModifier>(nullptr);
+    UCameraModifier* obj  = FObjectFactory::ConstructObject<UCameraShakeModifier>(nullptr);
 
     //obj->OwnerMgr = this;
     //ModifierList.Add(obj);
@@ -57,6 +62,10 @@ void APlayerCameraManager::Tick(float DeltaTime) {
 
 
     // Modifier 가 수정한 최종 viewtarget 값으로 화면 업데이트 
+    /* UCameraModifier 클래스 추가 시 수도 코드*/
+    for (auto modifier : ModifierList) {
+        modifier->Modify(DeltaTime, ViewTarget);
+    }
     UpdateViewportTarget();
 
     ApplySpringArmCamera(DeltaTime);
