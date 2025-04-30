@@ -25,10 +25,10 @@ void USpringArmCameraModifier::Modify(float DeltaTime, FViewTarget& ViewTarget)
     //if (!FollowTarget) return;
 
     //FVector TargetLocation = FollowTarget->GetActorLocation() + TargetOffset;
-    FVector TargetLocation = FVector(0, 0, 0);
-    FVector Forward = FVector(1, 0, 0);
-    //FVector Forward = FollowTarget->GetActorForwardVector();
-
+    FVector TargetLocation = FollowTarget->GetActorLocation();
+    FVector Forward = FVector(0, 0, -1);
+    Forward = FRotator(0, 0, 90.f).RotateVector(Forward);
+    //FVector Forward = FollowTarget->GetActorForwardVector();s
     FVector DesiredCameraLocation = TargetLocation - Forward * TargetArmLength;
 
     FVector NewCameraLocation = DesiredCameraLocation;
@@ -40,11 +40,12 @@ void USpringArmCameraModifier::Modify(float DeltaTime, FViewTarget& ViewTarget)
 
     PreviousCameraLocation = NewCameraLocation;
     ViewTarget.EyeLocation = NewCameraLocation;
-    ViewTarget.EyeRotation = FVector(0, 0, 0); 
+    ViewTarget.EyeRotation = Forward; 
     //ViewTarget.EyeRotation = FollowTarget->GetActorRotation().ToVector(); // 혹은 View 로직에 맞게 처리
 
-    OwnerMgr->SetViewTargetEyeLocation(ViewTarget.EyeLocation);
-    OwnerMgr->SetViewTargetEyeRotation(ViewTarget.EyeRotation);
+    OwnerMgr->SetViewTargetEyeLocation(ViewTarget.EyeLocation + FVector(0, 5, 0));
+    //OwnerMgr->SetViewTargetEyeRotation(ViewTarget.EyeRotation);
+    OwnerMgr->SetViewTargetEyeRotation(FVector(0, 0, -90));
 
     //FVector TargetLocation = FollowTarget->GetActorLocation() + TargetOffset;
     //FVector DesiredCameraLocation = TargetLocation - FollowTarget->GetActorForwardVector() * TargetArmLength;
@@ -86,6 +87,11 @@ void USpringArmCameraModifier::Modify(float DeltaTime, FViewTarget& ViewTarget)
     //ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
     //OwnerMgr->SetViewTargetEyeLocation(ViewTarget.EyeRotation);
     //OwnerMgr->SetViewTargetEyeRotation(ViewTarget.EyeRotation);
+}
+
+void USpringArmCameraModifier::SetFollowTargetActor(AActor* InTarget)
+{
+    FollowTarget = InTarget;
 }
 
 FVector USpringArmCameraModifier::VInterpTo(const FVector& Current, const FVector& Target, float DeltaTime, float InterpSpeed)

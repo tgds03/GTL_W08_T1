@@ -20,7 +20,7 @@ public:
 
     // FIXME : UCameraModifier 클래스 추가 시 수도 코드
     //void AddCameraModifier(UCameraModifier* NewModifier);
-private:
+public:
     FLinearColor FadeColor;
     float FadeAmount;
     FVector2D FadeAlpha;

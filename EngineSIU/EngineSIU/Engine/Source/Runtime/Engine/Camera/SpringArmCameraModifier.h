@@ -21,6 +21,8 @@ public:
     
     AActor* FollowTarget = nullptr;
 
+    void SetFollowTargetActor(AActor* InTarget);
+
     FVector VInterpTo(const FVector& Current, const FVector& Target, float DeltaTime, float InterpSpeed);
 
 };
