@@ -472,7 +472,7 @@ struct FEasingCurve
         float upper = 1.f;
         float center = 0.5f;
         FVector2D now = GetPointFromValue(center);
-        while (FMath::Abs(now.X - x) < KINDA_SMALL_NUMBER)
+        while (FMath::Abs(now.X - x) > KINDA_SMALL_NUMBER)
         {
             if (x > now.X)
                 lower = center;

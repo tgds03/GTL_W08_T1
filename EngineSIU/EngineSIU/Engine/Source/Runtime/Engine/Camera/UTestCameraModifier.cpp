@@ -13,7 +13,7 @@ void UTestCameraModifier::Modify(float DeltaTime, FViewTarget& ViewTarget)
    
     // FIXME : 구조체 참조 체크하기
     ViewTarget.EyeLocation.X = ViewTarget.EyeLocation.X + MoveSpeed * DeltaTime;;
-    ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
+    // ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
     OwnerMgr->SetViewTargetEyeLocation(ViewTarget.EyeRotation);
     OwnerMgr->SetViewTargetEyeRotation(ViewTarget.EyeRotation);
 }

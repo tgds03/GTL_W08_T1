@@ -16,7 +16,7 @@ APlayerCameraManager::APlayerCameraManager()
     FadeTime = 0 ;
     FadeTimeRemaining = 0;
 
-    AddTestCameraModifier();
+    // AddTestCameraModifier();
 }
 
 void APlayerCameraManager::SetViewTargetEyeLocation(FVector pos)
@@ -39,6 +39,9 @@ UCameraModifier* APlayerCameraManager::AddTestCameraModifier()
 }
 
 void APlayerCameraManager::BeginPlay() {
+    AActor::BeginPlay();
+    ViewTarget.EyeLocation = GetActorLocation();
+    ViewTarget.EyeRotation = GetActorRotation();
 }
 
 void APlayerCameraManager::Tick(float DeltaTime) {
@@ -54,7 +57,7 @@ void APlayerCameraManager::ApplyTest(float DeltaTime)
     const float RotationSpeed = 45.0f;
 
     ViewTarget.EyeLocation.X = ViewTarget.EyeLocation.X + MoveSpeed * DeltaTime;
-    ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
+    // ViewTarget.EyeRotation.Y = ViewTarget.EyeRotation.Y + RotationSpeed * DeltaTime;
 }
 
 void APlayerCameraManager::AddCameraModifier(UCameraModifier* NewModifier) {

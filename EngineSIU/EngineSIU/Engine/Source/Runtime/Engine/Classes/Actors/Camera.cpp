@@ -10,7 +10,8 @@ ACamera::ACamera() {
     TransitionCurve.Handle2 = TransitionCurve.Point2;
 
     RootComponent = AddComponent<USceneComponent>("USceneComponent");
-    
+    OldCamera = nullptr;
+    TargetCamera = nullptr;
 }
 
 void ACamera::BeginPlay()
@@ -35,23 +36,46 @@ void ACamera::UpdateViewportClient(float DeltaTime)
     std::shared_ptr<FEditorViewportClient> ViewportClient = GEngineLoop.GetLevelEditor()->GetActiveViewportClient();
     ViewportClient->PerspectiveCamera.SetLocation(ViewTarget.EyeLocation);
     ViewportClient->PerspectiveCamera.SetRotation(ViewTarget.EyeRotation);
+    SetActorLocation(ViewTarget.EyeLocation);
+    SetActorRotation(ViewTarget.EyeRotation);
 }
 
 void ACamera::SetTargetCamera(APlayerCameraManager* InCameraManager, float InTransitionDuration)
 {
+    if (InCameraManager == nullptr)
+    {
+        UE_LOG(LogLevel::Error, "SetTargetCamera: InCameraManager is null");
+        return;
+    }
+    if (InCameraManager == TargetCamera)
+        return;
     OldCamera = TargetCamera;
     TargetCamera = InCameraManager;
-    TransitionDuration = 0.f;
+    TransitionTime = 0.f;
     TransitionDuration = InTransitionDuration;
 }
 
 void ACamera::Interpolate()
 {
-    const float t = TransitionCurve.GetYFromX(TransitionTime / TransitionDuration);
-    FVector OldLoc = OldCamera->GetViewTarget().EyeLocation;
-    FVector OldRot = OldCamera->GetViewTarget().EyeRotation;
-    FVector NewLoc = TargetCamera->GetViewTarget().EyeLocation;
-    FVector NewRot = TargetCamera->GetViewTarget().EyeRotation;
-    ViewTarget.EyeLocation = FMath::Lerp(OldLoc, NewLoc, t);
-    ViewTarget.EyeRotation = FMath::Lerp(OldRot, NewRot, t);
+    if (OldCamera != nullptr)
+    {
+        const float t = TransitionCurve.GetYFromX(TransitionTime / TransitionDuration);
+        FVector OldLoc = OldCamera->GetViewTarget().EyeLocation;
+        FVector OldRot = OldCamera->GetViewTarget().EyeRotation;
+        FVector NewLoc = TargetCamera->GetViewTarget().EyeLocation;
+        FVector NewRot = TargetCamera->GetViewTarget().EyeRotation;
+        ViewTarget.EyeLocation = FMath::Lerp(OldLoc, NewLoc, t);
+        ViewTarget.EyeRotation = FMath::Lerp(OldRot, NewRot, t);
+    } else
+    {
+        FVector NewLoc = TargetCamera->GetViewTarget().EyeLocation;
+        FVector NewRot = TargetCamera->GetViewTarget().EyeRotation;
+        ViewTarget.EyeLocation = NewLoc;
+        ViewTarget.EyeRotation = NewRot;
+    }
+
+
+    UE_LOG(LogLevel::Display, "TargetCamera: %s", GetData(TargetCamera->GetActorLabel()));
+    UE_LOG(LogLevel::Display, "CamPos: %s", GetData(ViewTarget.EyeLocation.ToString()));
+    UE_LOG(LogLevel::Display, "CamRot: %s", GetData(ViewTarget.EyeRotation.ToString()));
 }

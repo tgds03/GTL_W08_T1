@@ -12,9 +12,9 @@ public:
 
     void BeginPlay() override;
     void Tick(float DeltaTime) override;
-    void SetTargetCamera(APlayerCameraManager* InCameraManager, float InTransitionDuration);
     void Interpolate();
 
+    UFUNCTION(void, SetTargetCamera, APlayerCameraManager* InCameraManager, float InTransitionDuration)
 private:
     void UpdateViewportClient(float DeltaTime);
     FViewTarget ViewTarget;

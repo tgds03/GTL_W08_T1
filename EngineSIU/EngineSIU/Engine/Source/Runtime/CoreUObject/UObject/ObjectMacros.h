@@ -41,6 +41,9 @@ public: \
         { \
             bind(table); \
         } \
+        lua.set_function(std::string("as_") + #TClass, [](UObject* obj)->TClass* { \
+            return dynamic_cast<TClass*>(obj); \
+        }); \
     } \
 public: \
     using Super = TSuperClass; \
